@@ -1,0 +1,165 @@
+/* General Reset + Font */
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f5f7fa;
+    color: #333;
+    line-height: 1.6;
+}
+
+/* Header */
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 50px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+    color: #2d3748;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #4a5568;
+    font-size: 18px;
+    transition: color 0.3s ease;
+}
+
+.nav-links a:hover {
+    color: #2d3748;
+}
+
+.language-selector select {
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background-color: #ebebeb;
+    font-size: 14px;
+}
+
+/* Hero Section */
+.heroSection {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 80px 100px;
+    background: linear-gradient(to right, #e2e8f0, #f5f7fa);
+    position: relative;
+    z-index: 1;
+}
+
+.heroContent h1 {
+    font-size: 48px;
+    color: #1a202c;
+    margin-bottom: 10px;
+}
+
+.heroContent p {
+    font-size: 20px;
+    color: #4a5568;
+    margin-bottom: 25px;
+}
+
+.ctaButton {
+    background-color: #4a5568;
+    color: #fff;
+    padding: 12px 28px;
+    font-size: 18px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.ctaButton:hover {
+    background-color: #2d3748;
+}
+
+.heroIcon {
+    width: 450px;
+    height: auto;
+    opacity: 0.15;
+    position: absolute;
+    right: 80px;
+    top: 0px;
+    z-index: 0;
+}
+
+/* Features Section */
+.featuresSection {
+    background-color: #fff;
+    padding: 80px 100px;
+    box-shadow: 0 -5px 10px rgba(0, 0, 0, 0.05);
+    border-radius: 60px 60px 0 0;
+    margin-top: -50px;
+    z-index: 2;
+    position: relative;
+}
+
+.featuresSection h2 {
+    text-align: center;
+    font-size: 36px;
+    color: #2d3748;
+    margin-bottom: 50px;
+}
+
+.featuresGrid {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+}
+
+.featureBox {
+    background-color: #edf2f7;
+    padding: 30px;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    flex: 1;
+}
+
+.featureBox h3 {
+    font-size: 22px;
+    color: #1a202c;
+    margin-bottom: 10px;
+}
+
+.featureBox p {
+    font-size: 16px;
+    color: #4a5568;
+}
+
+/* About Section */
+.aboutSection {
+    background-color: #ffffff;
+    padding: 80px 100px;
+    text-align: center;
+}
+
+.aboutSection h2 {
+    font-size: 36px;
+    color: #2d3748;
+    margin-bottom: 20px;
+}
+
+.aboutSection p {
+    font-size: 18px;
+    color: #4a5568;
+    max-width: 800px;
+    margin: 0 auto 40px;
+}
+
+.dmcIcon {
+    width: 200px;
+    opacity: 0.8;
+}

@@ -1,0 +1,158 @@
+.doctorDashboardContainer {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 30px;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #fff;
+}
+
+.sectionTitle {
+    font-size: 20px;
+    font-weight: bold;
+    color: #111827;
+    margin-bottom: 20px;
+}
+
+.divider {
+    border: none;
+    border-top: 1px solid #d1d5db;
+    margin: 20px 0;
+}
+
+.currentAppointmentCard {
+    background-color: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.currentDetails {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.patientName {
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.metaRow {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    font-size: 14px;
+    color: #374151;
+}
+
+.tag {
+    font-size: 12px;
+    padding: 4px 10px;
+    background-color: #4b5568;
+    color: white;
+    border-radius: 20px;
+    font-weight: 500;
+}
+
+.actionsRow {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.actionBtn {
+    background-color: #4b5568;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.actionBtn.disabled {
+    background-color: #d1d5db;
+    cursor: not-allowed;
+}
+
+.statusLegend {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 14px;
+    color: #374151;
+    margin-left: 20px;
+}
+
+.statusLegend span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.nextAppointmentsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+}
+
+.appointmentCard {
+    background-color: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.appointmentCard h4 {
+    font-size: 15px;
+    font-weight: 600;
+    color: #111827;
+}
+
+.timeRow {
+    font-size: 14px;
+    color: #4b5563;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.cardTags {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.cardTags .tag {
+    background-color: #4b5568;
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    color: white;
+}
+
+.roleIcons {
+    display: flex;
+    gap: 8px;
+}
+
+.roleIcons span {
+    background-color: #9ca3af;
+    color: white;
+    font-size: 12px;
+    border-radius: 50%;
+    width: 26px;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

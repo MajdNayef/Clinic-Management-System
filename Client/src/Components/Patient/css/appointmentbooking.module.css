@@ -1,0 +1,249 @@
+.appointmentBooking {
+    color: red;
+}
+
+.appointmentContainer {
+    max-width: 1000px;
+    /* make it wider */
+    margin: 40px auto;
+    /* keep it centered */
+    padding: 0 30px;
+    /* more horizontal breathing room */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* center inner content */
+}
+
+.appointmentHeader {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.appointmentHeader h1 {
+    font-size: 28px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.appointmentHeader p {
+    font-size: 16px;
+    color: #666;
+}
+
+.appointmentContent {
+    width: 100%;
+    /* stretch to container width */
+    background-color: #fff;
+    border-radius: 20px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+}
+
+.appointmentTypeSelector {
+    margin-bottom: 30px;
+}
+
+.appointmentTypeSelector h2 {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.typeButtons {
+    display: flex;
+    gap: 15px;
+}
+
+.typeButton {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 20px;
+    background-color: #f9f9f9;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.typeButton.active {
+    background-color: #4a5568;
+    color: white;
+    border-color: #4a5568;
+}
+
+.formSection {
+    margin-bottom: 30px;
+}
+
+.formSection h2 {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.doctorsList {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+.doctorCard {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.doctorCard.selected {
+    background-color: #e6f7ff;
+    border-color: #0072b1;
+}
+
+.doctorImage {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 15px;
+    object-fit: cover;
+}
+
+.doctorInfo h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0 0 5px 0;
+}
+
+.doctorInfo p {
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+}
+
+.dateInput {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 12px;
+    background-color: #f9f9f9;
+}
+
+.dateInput svg {
+    margin-right: 10px;
+    color: #666;
+}
+
+.dateInput input {
+    border: none;
+    outline: none;
+    width: 100%;
+    font-size: 16px;
+    background-color: transparent;
+}
+
+.timeSlots {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+.timeSlot {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.timeSlot.selected {
+    background-color: #e6f7ff;
+    border-color: #0072b1;
+}
+
+.appointmentSummary {
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    padding: 20px;
+}
+
+.summaryItem {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.summaryItem:last-child {
+    margin-bottom: 0;
+}
+
+.noSelection {
+    text-align: center;
+    color: #888;
+    font-style: italic;
+    padding: 10px 0;
+}
+
+.bookButton {
+    width: 100%;
+    padding: 15px;
+    background-color: #4a5568;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.bookButton:hover {
+    background-color: #2d3748;
+}
+
+.bookButton:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+    .doctorsList {
+        grid-template-columns: 1fr;
+    }
+
+    .timeSlots {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .typeButtons {
+        flex-direction: column;
+    }
+
+    .timeSlots {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .sectionDivider {
+        border: none;
+        border-top: 1px solid #ccc;
+        margin: 24px 0;
+        width: 100%;
+        opacity: 0.6;
+    }
+}

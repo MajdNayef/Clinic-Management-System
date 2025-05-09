@@ -1,0 +1,158 @@
+.patientDashboard {
+    color: #ffffff;
+}
+
+.dashboardBody {
+    display: flex;
+    /* you already had this */
+    flex: 1;
+    /* make .dashboard-body itself fill its container’s height/width */
+}
+
+.dashboardMain {
+    flex: 1;
+    /* <-- this tells it “grow to fill whatever space is left” */
+    min-width: 0;
+    /* <-- this prevents flex from overflowing */
+    background-color: #fff;
+    /* you can keep any padding here too */
+    padding: 60px 80px;
+    /* whatever spacing you like */
+    /* padding: 30px 40px; */
+
+}
+
+.sectionDivider {
+    border: none;
+    /* remove default <hr> border */
+    border-top: 1px solid #ccc;
+    /* light grey line */
+    margin: 24px 0;
+    /* vertical spacing: 24px top & bottom */
+    width: 100%;
+    /* full width of its container */
+    /* max-width: 800px; */
+    /* optional: cap the width if you like */
+    opacity: 0.6;
+    /* subtle / not too bold */
+}
+
+.dashboardTitle {
+    margin-bottom: 30px;
+}
+
+/* === Appointments Grid === */
+.appointmentsGrid {
+    display: grid;
+    /* create as many 300px‑wide cards per row as will fit */
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 35px;
+    /* center the whole grid in its parent */
+    justify-content: center;
+    /* optional: constrain max width so that on very wide screens they don’t stretch too far */
+    max-width: 960px;
+    margin: 20px auto 60px;
+    /* auto‑horizontal margin centers block, 20px top & 60px bottom */
+}
+
+/* === Each Card === */
+.appointmentCard {
+    display: flex;
+    background: #f3f4f6;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+/* Left column */
+.appointmentCard .appointmentContent {
+    flex: 1;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Right column: status */
+.appointmentCard .appointmentStatusContainer {
+    width: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-left: 1px dashed #bbb;
+    background: rgba(243, 244, 246, 0.8);
+}
+
+/* Dr’s name */
+.appointmentHeader {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+/* Icon + text rows */
+.appointmentDetails {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    color: #333;
+    margin: 4px 0;
+}
+
+/* Type pill */
+.appointmentType {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 12px;
+    padding: 6px 12px;
+    border-radius: 5px;
+    font-size: 13px;
+    font-weight: 500;
+    background: #4a5568;
+    color: #fff;
+}
+
+.appointmentType.live {
+    background: #718096;
+}
+
+/* Status text */
+.appointmentStatus {
+    font-size: 14px;
+    font-weight: 500;
+    color: #666;
+    text-align: center;
+}
+
+.appointmentStatus.cancelled {
+    color: #e53e3e;
+}
+
+.appointmentStatus.completed {
+    color: #2f855a;
+}
+
+.detailsButton {
+    margin-top: 12px;
+    /* space above button */
+    align-self: flex-start;
+    /* stick to the left inside flex-column */
+    background: none;
+    /* transparent background */
+    border: none;
+    /* no default border */
+    color: #777777;
+    /* link‑style color */
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: underline;
+    /* look like a link */
+    padding: 0;
+    /* strip default button padding */
+}
+
+.detailsButton:hover {
+    color: #000000;
+    /* darker on hover */
+}

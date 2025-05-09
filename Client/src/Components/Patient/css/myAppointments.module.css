@@ -1,0 +1,224 @@
+.wrapper {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 30px;
+}
+
+.heading {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.section {
+    margin-top: 30px;
+}
+
+.section h3 {
+    font-size: 18px;
+    margin-bottom: 15px;
+}
+
+.card {
+    background-color: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 15px;
+    gap: 20px;
+}
+
+.info h4 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    font-size: 14px;
+    color: #4b5563;
+    align-items: center;
+}
+
+.meta span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.action {
+    text-align: right;
+    font-size: 14px;
+    flex-shrink: 0;
+    min-width: 180px;
+}
+
+.status {
+    font-weight: 500;
+    color: #6b7280;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.link {
+    background: none;
+    border: none;
+    color: #374151;
+    cursor: pointer;
+    font-weight: 500;
+    transition: 0.2s;
+}
+
+.link:hover {
+    color: #1d4ed8;
+}
+
+.chatLinks {
+    margin-top: 10px;
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.chatBtn {
+    background-color: #1f2937;
+    color: #fff;
+    font-size: 13px;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.feedbackSubmitted {
+    font-size: 14px;
+    color: #6b7280;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.physicalTag,
+.liveTag {
+    font-size: 12px;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-weight: 500;
+    color: white;
+}
+
+.physicalTag {
+    background-color: #4b5568;
+}
+
+.liveTag {
+    background-color: #2563eb;
+}
+
+.feedbackBox {
+    background-color: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 16px;
+    margin-top: 10px;
+    margin-right: 100px;
+    margin-right: 0px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    text-align: left;
+    width: 300px;
+}
+
+.feedbackBox h4 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.feedbackBox .doctor {
+    font-size: 14px;
+    color: #6b7280;
+    margin-bottom: 10px;
+}
+
+.ratingRow {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 12px 0;
+}
+
+.ratingRow span {
+    font-weight: 600;
+    color: #374151;
+    font-size: 14px;
+}
+
+.star {
+    color: #d1d5db;
+    cursor: pointer;
+}
+
+.filledStar {
+    color: #fbbf24;
+    cursor: pointer;
+}
+
+.feedbackInput {
+    margin-bottom: 12px;
+}
+
+.feedbackInput label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 6px;
+    display: block;
+}
+
+.feedbackInput textarea {
+    width: 90%;
+    min-height: 70px;
+    font-size: 14px;
+    padding: 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    resize: vertical;
+    background-color: #f9fafb;
+    color: #111827;
+}
+
+.submitBtn {
+    width: 100%;
+    background-color: #4a5568;
+    color: white;
+    border: none;
+    padding: 10px;
+    font-size: 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.submitBtn:hover {
+    background-color: #2d3748;
+}
+
+.card {
+    /* Add this to make both columns wrap */
+    flex-wrap: wrap;
+    align-items: flex-start;
+}
