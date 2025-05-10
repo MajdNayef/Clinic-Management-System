@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { validationResult } = require('express-validator');
 const { collection } = require('../config/db');
+const { ObjectId } = require('mongodb');
 
 const users = () => collection('users');
 
@@ -81,8 +82,9 @@ exports.login = async (req, res) => {
 // keep (or add) the profile route if you use it elsewhere
 exports.me = async (req, res) => {
     const user = await users().findOne(
-        { _id: req.userId },
+        { _id: new ObjectId(req.userId) },     // convert!
         { projection: { password: 0 } }
     );
-    res.json(users);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    res.json(user);
 };
