@@ -5,7 +5,10 @@ Server/.env
 ###############################################################################
 
 # — Dependencies
-node_modules/
+/Client/node_modules
+/Server/node_modules
+
+node_statmodules/
 .pnp.*
 # Avoid accidentally committing local linked modules
 *.tgz
