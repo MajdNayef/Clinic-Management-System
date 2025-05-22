@@ -1,45 +1,73 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react';
 import {
-  FiBell,
-  FiUser,
-  FiClipboard,
-  FiCalendar,
-  FiInfo,
-  FiSettings,
-} from 'react-icons/fi'
-import MedconnectLogo from '../../Assets/MedconnectLogo.png'
-import Chatbot from '../../Chats/ChatBot'
-import styles from './dashboardLayout.module.css'
+  FiBell, FiUser, FiClipboard, FiCalendar, FiInfo, FiSettings,
+} from 'react-icons/fi';
+import { jwtDecode } from 'jwt-decode';
+import axios from 'axios';
 
+import MedconnectLogo from '../../Assets/MedconnectLogo.png';
+import Chatbot from '../../CommonPages/ChatBot';
+import styles from './dashboardLayout.module.css';
+
+axios.defaults.baseURL =
+  process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 const DashboardLayout = ({ children }) => {
-  const [showNotifications, setShowNotifications] = useState(false)
-  const [showChatbot, setShowChatbot] = useState(false)
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [showChatbot, setShowChatbot] = useState(false);
+  const [user, setUser] = useState(null);          // ← live profile
 
-  console.log(styles);
+  /* ─── Load profile once on mount ──────────────────────────────── */
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    try {
+      jwtDecode(token);   // just validates the structure
+      axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+
+      axios.get('/api/auth/me')
+        .then(res => setUser(res.data))
+        .catch(() => localStorage.removeItem('token')); // invalid / expired
+    } catch {
+      localStorage.removeItem('token');
+    }
+  }, []);
+
+  /*  Greeting based on clock  */
+  const greet = (() => {
+    const h = new Date().getHours();
+    if (h < 12) return 'Good morning';
+    if (h < 18) return 'Good afternoon';
+    return 'Good evening';
+  })();
+
+  const fullName = user ? `${user.first_name} ${user.last_name}` : 'Guest';
+  const firstName = user ? user.first_name : 'Guest';
 
   return (
     <div className={styles.dashboardWrapper}>
       {/* Header */}
       <header className={styles.navbar}>
         <div className={styles.logo}>
-          <img
-            src={MedconnectLogo}
-            alt="MedConnect Logo"
-            className={styles.logoImg}
-          />
+          <img src={MedconnectLogo} alt="MedConnect Logo" className={styles.logoImg} />
           <h1>MedConnect</h1>
         </div>
+
         <nav className={styles.navLinks}>
-          <a className={styles.active} href="#">
-            Dashboard
-          </a>
+          <a className={styles.active} href="#">Dashboard</a>
           <a href="#">Services</a>
           <a href="#">Help Center</a>
           <a href="#">Contact Us</a>
         </nav>
+
         <div className={styles.headerControls}>
-          <button className={styles.logoutButton}>Logout</button>
+          <button
+            className={styles.logoutButton}
+            onClick={() => { localStorage.removeItem('token'); window.location = '/'; }}
+          >
+            Logout
+          </button>
           <div className={styles.languageSelector}>
             <select>
               <option>English</option>
@@ -51,11 +79,11 @@ const DashboardLayout = ({ children }) => {
 
       {/* Body */}
       <div className={styles.dashboardBody}>
-        {/* Sidebar */}
         <aside className={styles.sidebar}>
           <div className={styles.sidebarProfile}>
             <div className={styles.sidebarHeaderRow}>
-              <div className={styles.greeting}>Good Morning, Dr.</div>
+              <div className={styles.greeting}>{greet}, Dr. {firstName}</div>
+
               <div style={{ position: 'relative' }}>
                 <FiBell
                   className={styles.sidebarBell}
@@ -67,9 +95,7 @@ const DashboardLayout = ({ children }) => {
                   <div className={styles.notificationPopup}>
                     <h4>🔔 Notifications</h4>
                     <ul className={styles.notificationList}>
-                      <li>💉 Your Appointment with Patient Ahmed has been rescheduled</li>
-                      {/* <li>📧 New message from support</li>
-                      <li> Annual check-up reminder</li> */}
+                      <li>💉 Your appointment was rescheduled</li>
                     </ul>
                   </div>
                 )}
@@ -81,60 +107,45 @@ const DashboardLayout = ({ children }) => {
                 <FiUser size={20} />
               </div>
               <div className={styles.profileText}>
-                <div className={styles.username}>Majd </div>
-                <div className={styles.userEmail}>MajdNayef@gmail.com</div>
+                <div className={styles.username}>{fullName}</div>
+                <div className={styles.userEmail}>{user?.email || ''}</div>
               </div>
             </div>
 
             <hr className={styles.sidebarDivider} />
           </div>
 
+          {/* Sidebar nav unchanged */}
           <nav className={styles.sidebarNav}>
-            <a className={styles.active} href="#">
-              <FiInfo size={16} /> Overview
-            </a>
-            <a href="#">
-              <FiClipboard size={16} /> View Schedule
-            </a>
-            <a href="#">
-              <FiCalendar size={16} /> Manage Appointments
-            </a>
+            <a className={styles.active} href="#"><FiInfo size={16} /> Overview</a>
+            <a href="#"><FiClipboard size={16} /> View Schedule</a>
+            <a href="#"><FiCalendar size={16} /> Manage Appointments</a>
           </nav>
 
           <div className={styles.sidebarFooter}>
-            <a href="#">
-              <FiSettings size={16} /> My profile
-            </a>
+            <a href="#"><FiSettings size={16} /> My profile</a>
             <div className={styles.notificationToggle}>
-              <div
-                style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
-              >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <FiBell size={16} /> Email Notification
               </div>
               <label className={styles.switch}>
-                <input type="checkbox" defaultChecked />
-                <span className={styles.slider}></span>
+                <input type="checkbox" defaultChecked={user?.notifications_enabled} />
+                <span className={styles.slider} />
               </label>
             </div>
           </div>
         </aside>
 
-        {/* Main Content */}
         <main className={styles.dashboardMain}>{children}</main>
       </div>
 
-      <footer
-        className={styles.dashboardFooter}
-        onClick={() => setShowChatbot(!showChatbot)}
-      >
+      <footer className={styles.dashboardFooter} onClick={() => setShowChatbot(!showChatbot)}>
         Need Help ? 💬
       </footer>
 
-      {/* Chatbot */}
-
       {showChatbot && <Chatbot onClose={() => setShowChatbot(false)} />}
     </div>
-  )
-}
+  );
+};
 
-export default DashboardLayout
+export default DashboardLayout;

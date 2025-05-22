@@ -15,7 +15,7 @@ const HomePage = () => {
                 <div className='heroContent'>
                     <h1>Welcome to MedConnect</h1>
                     <p>Your bridge to smarter, simpler healthcare.</p>
-                    <a href='/register' className='ctaButton'>Get Started</a>
+                    <a href='/signup' className='ctaButton' >Get Started</a>
                 </div>
                 <img src={userIcon} alt='Hero Icon' className='heroIcon' />
             </section>

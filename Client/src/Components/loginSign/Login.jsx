@@ -11,8 +11,8 @@ axios.defaults.baseURL =
     process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 const DASHBOARD_PATH = {
-    Doctor: '/doctor/dashboard',
-    Patient: '/patient/dashboard',
+    Doctor: '/DoctorDashboard',
+    Patient: '/PatientDashboard',
 };
 
 const Login = () => {

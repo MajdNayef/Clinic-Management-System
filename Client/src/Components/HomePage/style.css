@@ -1,7 +1,7 @@
 /* General Reset + Font */
 body {
     margin: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: "Trebuchet MS", sans-serif;
     background-color: #f5f7fa;
     color: #333;
     line-height: 1.6;
@@ -12,6 +12,8 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    font-family: "Trebuchet MS", sans-serif;
+
     padding: 15px 50px;
     background-color: #ffffff;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -83,6 +85,8 @@ body {
 
 .ctaButton:hover {
     background-color: #2d3748;
+    color: #fff;
+
 }
 
 .heroIcon {
@@ -163,3 +167,5 @@ body {
     width: 200px;
     opacity: 0.8;
 }
+
+

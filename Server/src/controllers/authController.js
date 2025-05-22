@@ -1,15 +1,19 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { validationResult } = require('express-validator');
-const { collection } = require('../config/db');
+// const { collection } = require('../config/db');
+const { client, collection } = require('../config/db');   // client = MongoClient
 const { ObjectId } = require('mongodb');
 
 const users = () => collection('users');
+const patients = () => collection('patients');
+const doctors = () => collection('doctors');
 
 // POST /api/auth/register  (full-profile version)
 exports.register = async (req, res) => {
     const errors = validationResult(req);
-    if (!errors.isEmpty()) return res.status(422).json({ errors: errors.array() });
+    if (!errors.isEmpty())
+        return res.status(422).json({ errors: errors.array() });
 
     const {
         first_name,
@@ -18,40 +22,71 @@ exports.register = async (req, res) => {
         address,
         email,
         password,
+        role = 'Patient',                 // ← default
         notifications_enabled = false,
     } = req.body;
 
-    // duplicate e-mail check
+    /* 1. duplicate-email guard */
     if (await users().findOne({ email }))
         return res.status(409).json({ message: 'Email already in use' });
 
+    /* 2. hash pw */
     const hash = await bcrypt.hash(password, 12);
-    const { insertedId } = await users().insertOne({
-        first_name,
-        last_name,
-        phone_number,
-        address,
-        email,
-        password: hash,
-        role: 'Patient',              // default role for sign-up
-        notifications_enabled,
-        createdAt: new Date(),
-    });
 
-    const token = jwt.sign({ sub: insertedId, email, role: 'Patient' },
-        process.env.JWT_SECRET,
-        { expiresIn: process.env.JWT_EXPIRES || '24h' });
+    /* 3. start transaction */
+    const session = client.startSession();
+    try {
+        await session.withTransaction(async () => {
+            /* 3a. insert user */
+            const { insertedId } = await users().insertOne({
+                first_name,
+                last_name,
+                phone_number,
+                address,
+                email,
+                password: hash,
+                role,
+                notifications_enabled,
+                createdAt: new Date(),
+            }, { session });
 
-    res.status(201).json({
-        token,
-        user: {
-            _id: insertedId,
-            first_name,
-            last_name,
-            email,
-            role: 'Patient',
-        },
-    });
+            /* 3b. insert companion doc based on role */
+            if (role === 'Patient') {
+                await patients().insertOne({
+                    user_id: insertedId,
+                    medical_history_id: null,          // or your default field values
+                }, { session });
+            } else if (role === 'Doctor') {
+                await doctors().insertOne({
+                    user_id: insertedId,
+                    specialization: '',
+                    years_of_experience: 0,
+                    bio: '',
+                    available_days: [],
+                    available_start_time: null,
+                    available_end_time: null,
+                }, { session });
+            }
+            // add more roles (pharmacist, admin) here when needed
+
+            /* 3c. sign JWT */
+            const token = jwt.sign(
+                { sub: insertedId, email, role },
+                process.env.JWT_SECRET,
+                { expiresIn: process.env.JWT_EXPIRES || '24h' }
+            );
+
+            res.status(201).json({
+                token,
+                user: { _id: insertedId, first_name, last_name, email, role },
+            });
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Registration failed' });
+    } finally {
+        await session.endSession();
+    }
 };
 
 
