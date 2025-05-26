@@ -139,5 +139,59 @@ router.post(
     }
 );
 
+// GET /api/appointments         ← list all appointments for the logged-in patient
+router.get(
+    '/appointments',
+    guard,                     // must be authenticated
+    async (req, res) => {
+        try {
+            const patientId = new ObjectId(req.userId);
+
+            // grab patient’s appointments, join in doctor → user to get name
+            const appts = await appointmentsCol().aggregate([
+                { $match: { patient_id: patientId } },
+                {
+                    $lookup: {
+                        from: 'doctors',
+                        localField: 'doctor_id',
+                        foreignField: '_id',
+                        as: 'doctor'
+                    }
+                },
+                { $unwind: '$doctor' },
+                {
+                    $lookup: {
+                        from: 'users',
+                        localField: 'doctor.user_id',
+                        foreignField: '_id',
+                        as: 'user'
+                    }
+                },
+                { $unwind: '$user' },
+                {
+                    $project: {
+                        _id: 1,
+                        date: 1,
+                        time: 1,
+                        status: 1,
+                        appointment_type: 1,
+                        doctor: {
+                            first_name: '$user.first_name',
+                            last_name: '$user.last_name',
+                            specialization: '$doctor.specialization',  // ← add this
+                            bio: '$doctor.bio'              // ← and this
+                        }
+                    }
+                }
+            ]).toArray();
+
+            res.json(appts);
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ message: 'Could not load appointments', error: err.message });
+        }
+    }
+);
+
 
 module.exports = router;

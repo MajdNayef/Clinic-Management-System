@@ -23,6 +23,12 @@ import DoctorDashboard from "./Components/Doctors/DoctorDashboard";
 import ViewAppointments from "./Components/Doctors/ViewAppointments";
 import Test from "./Components/Doctors/layout/DashboardLayout";
 
+// import axios from 'axios';
+
+// axios.defaults.baseURL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+// axios.defaults.headers.common.Authorization =
+//   `Bearer ${localStorage.getItem('token') || ''}`;
+
 
 function App() {
   return (

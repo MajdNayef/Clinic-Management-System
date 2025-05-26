@@ -1,9 +1,15 @@
+// src/Components/Patient/layout/DashboardLayout.jsx
 import React, { useState, useEffect } from 'react';
 import {
-  FiBell, FiUser, FiClipboard, FiCalendar, FiInfo, FiSettings,
+  FiBell,
+  FiUser,
+  FiClipboard,
+  FiCalendar,
+  FiInfo,
+  FiSettings,
 } from 'react-icons/fi';
-import { jwtDecode } from 'jwt-decode';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';              // ← named import
+import { NavLink } from 'react-router-dom';
 import axios from 'axios';
 import MedconnectLogo from '../../Assets/MedconnectLogo.png';
 import Chatbot from '../../CommonPages/ChatBot';
@@ -23,10 +29,12 @@ const DashboardLayout = ({ children }) => {
     if (!token) return;
 
     try {
-      jwtDecode(token);                           // just to validate
+      jwtDecode(token);                           // validate format
       axios.defaults.headers.common.Authorization = `Bearer ${token}`;
       axios.get('/api/auth/me').then(res => setUser(res.data));
-    } catch { /* invalid token → ignore */ }
+    } catch {
+      // invalid token
+    }
   }, []);
 
   useEffect(() => {
@@ -46,35 +54,47 @@ const DashboardLayout = ({ children }) => {
         </div>
 
         <nav className={styles.navLinks}>
-          <NavLink to="/PatientDashboard"
+          <NavLink
+            to="/PatientDashboard"
             className={({ isActive }) =>
-              isActive ? `${styles.link} ${styles.active}` : styles.link}>
+              isActive ? `${styles.link} ${styles.active}` : styles.link
+            }
+          >
             Dashboard
           </NavLink>
-
-          <NavLink to="/Services"
+          <NavLink
+            to="/Services"
             className={({ isActive }) =>
-              isActive ? `${styles.link} ${styles.active}` : styles.link}>
+              isActive ? `${styles.link} ${styles.active}` : styles.link
+            }
+          >
             Services
           </NavLink>
-
-          <NavLink to="/HelpCenter"
+          <NavLink
+            to="/HelpCenter"
             className={({ isActive }) =>
-              isActive ? `${styles.link} ${styles.active}` : styles.link}>
+              isActive ? `${styles.link} ${styles.active}` : styles.link
+            }
+          >
             Help Center
           </NavLink>
-
-          <NavLink to="/ContactUs"
+          <NavLink
+            to="/ContactUs"
             className={({ isActive }) =>
-              isActive ? `${styles.link} ${styles.active}` : styles.link}>
+              isActive ? `${styles.link} ${styles.active}` : styles.link
+            }
+          >
             Contact Us
-          </NavLink >
-        </nav >
+          </NavLink>
+        </nav>
 
         <div className={styles.headerControls}>
           <button
             className={styles.logoutButton}
-            onClick={() => { localStorage.removeItem('token'); window.location = '/'; }}
+            onClick={() => {
+              localStorage.removeItem('token');
+              window.location = '/';
+            }}
           >
             Logout
           </button>
@@ -85,14 +105,16 @@ const DashboardLayout = ({ children }) => {
             </select>
           </div>
         </div>
-      </header >
+      </header>
 
       {/* Body */}
-      < div className={styles.dashboardBody} >
+      <div className={styles.dashboardBody}>
         <aside className={styles.sidebar}>
           <div className={styles.sidebarProfile}>
             <div className={styles.sidebarHeaderRow}>
-              <div className={styles.greeting}>{greet}, {fullName.split(' ')[0]}</div>
+              <div className={styles.greeting}>
+                {greet}, {fullName.split(' ')[0]}
+              </div>
               <div style={{ position: 'relative' }}>
                 <FiBell
                   className={styles.sidebarBell}
@@ -112,35 +134,70 @@ const DashboardLayout = ({ children }) => {
             </div>
 
             <div className={styles.profileDetails}>
-              {/* keep the default icon avatar */}
               <div className={styles.avatarCircle}>
                 <FiUser size={20} />
               </div>
-
               <div className={styles.profileText}>
                 <div className={styles.username}>{fullName}</div>
                 <div className={styles.userEmail}>{user?.email || ''}</div>
               </div>
             </div>
-
             <hr className={styles.sidebarDivider} />
           </div>
 
-          {/* rest unchanged */}
           <nav className={styles.sidebarNav}>
-            <a className={styles.active} href="#"><FiInfo size={16} /> Overview</a>
-            <a href="/book"><FiClipboard size={16} /> Book a new appointment</a>
-            <a href="/MyAppointments"><FiCalendar size={16} /> My Appointments</a>
+            <NavLink
+              to="/PatientDashboard"
+              className={({ isActive }) =>
+                isActive
+                  ? `${styles.sidebarLink} ${styles.active}`
+                  : styles.sidebarLink
+              }
+            >
+              <FiInfo size={16} /> Overview
+            </NavLink>
+            <NavLink
+              to="/book"
+              className={({ isActive }) =>
+                isActive
+                  ? `${styles.sidebarLink} ${styles.active}`
+                  : styles.sidebarLink
+              }
+            >
+              <FiClipboard size={16} /> Book a new appointment
+            </NavLink>
+            <NavLink
+              to="/MyAppointments"
+              className={({ isActive }) =>
+                isActive
+                  ? `${styles.sidebarLink} ${styles.active}`
+                  : styles.sidebarLink
+              }
+            >
+              <FiCalendar size={16} /> My Appointments
+            </NavLink>
           </nav>
 
           <div className={styles.sidebarFooter}>
-            <a href="Profile"><FiSettings size={16} /> My profile</a>
+            <NavLink
+              to="/profile"
+              className={({ isActive }) =>
+                isActive
+                  ? `${styles.sidebarLink} ${styles.active}`
+                  : styles.sidebarLink
+              }
+            >
+              <FiSettings size={16} /> My profile
+            </NavLink>
             <div className={styles.notificationToggle}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <FiBell size={16} /> Email Notification
               </div>
               <label className={styles.switch}>
-                <input type="checkbox" defaultChecked={user?.notifications_enabled} />
+                <input
+                  type="checkbox"
+                  defaultChecked={user?.notifications_enabled}
+                />
                 <span className={styles.slider}></span>
               </label>
             </div>
@@ -148,14 +205,17 @@ const DashboardLayout = ({ children }) => {
         </aside>
 
         <main className={styles.dashboardMain}>{children}</main>
-      </div >
+      </div>
 
-      <footer className={styles.dashboardFooter} onClick={() => setShowChatbot(!showChatbot)}>
+      <footer
+        className={styles.dashboardFooter}
+        onClick={() => setShowChatbot(!showChatbot)}
+      >
         Need Help ? 💬
       </footer>
 
       {showChatbot && <Chatbot onClose={() => setShowChatbot(false)} />}
-    </div >
+    </div>
   );
 };
 

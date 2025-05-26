@@ -1,4 +1,4 @@
-// server/src/index.js (or app.js)
+// server/src/server.js (or index.js/app.js)
 
 const express = require('express');
 const cors = require('cors');
@@ -9,23 +9,21 @@ const appointmentRoutes = require('./routes/appointmentRoutes');
 
 const app = express();
 
-// 1) CORS first (so preflight works everywhere)
+// 1) CORS & body‐parser
 app.use(
-    cors({
-        origin: 'http://localhost:3000',
-        credentials: true
-    })
+    cors({ origin: 'http://localhost:3000', credentials: true })
 );
+app.use(express.json());      // <–– before your routes!
 
-// 2) Body‐parser & logging
-app.use(express.json());       // ← must come *before* appointmentRoutes
+// 2) Logger
 app.use(morgan('dev'));
 
-// 3) Your routes
+// 3) Auth first, so guard() can decode your JWT
 app.use('/api/auth', authRoutes);
+
+// 4) Then the appointment routes
 app.use('/api', appointmentRoutes);
 
-// 4) Health check
 app.get('/health', (_, res) => res.json({ status: 'OK' }));
 
 module.exports = app;
