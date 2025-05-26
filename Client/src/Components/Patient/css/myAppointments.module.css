@@ -222,3 +222,73 @@
     flex-wrap: wrap;
     align-items: flex-start;
 }
+
+/* Overlays & modals */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal {
+    background: #fff;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    max-width: 400px;
+    width: 90%;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.modalActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.modalActions button {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    font-size: 0.875rem;
+}
+
+.modalActions button:first-child {
+    background: #f5f5f5;
+    color: #333;
+}
+
+.modalActions button:last-child {
+    background: #1a73e8;
+    color: #fff;
+}
+
+/* Reschedule slots */
+.slot {
+    margin: 0.25rem;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #ccc;
+    border-radius: 0.25rem;
+    background: #fff;
+    cursor: pointer;
+    font-size: 0.875rem;
+}
+
+.selectedSlot {
+    margin: 0.25rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.25rem;
+    background: #1a73e8;
+    color: #fff;
+    border: 1px solid #1a73e8;
+    cursor: pointer;
+    font-size: 0.875rem;
+}

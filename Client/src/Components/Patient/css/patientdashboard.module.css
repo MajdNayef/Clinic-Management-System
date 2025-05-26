@@ -196,3 +196,9 @@
 .mapContainer {
     margin-top: 1rem;
 }
+
+/* at the bottom or near your other status styles */
+.canceled {
+    color: #d32f2f;
+    /* nice red tone */
+}

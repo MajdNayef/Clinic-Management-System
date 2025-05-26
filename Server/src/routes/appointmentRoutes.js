@@ -169,6 +169,7 @@ router.get(
                 },
                 { $unwind: '$user' },
                 {
+
                     $project: {
                         _id: 1,
                         date: 1,
@@ -176,12 +177,14 @@ router.get(
                         status: 1,
                         appointment_type: 1,
                         doctor: {
+                            _id: '$doctor._id',          // ← keep this!
                             first_name: '$user.first_name',
                             last_name: '$user.last_name',
-                            specialization: '$doctor.specialization',  // ← add this
-                            bio: '$doctor.bio'              // ← and this
+                            specialization: '$doctor.specialization',
+                            bio: '$doctor.bio'
                         }
                     }
+
                 }
             ]).toArray();
 
@@ -192,6 +195,80 @@ router.get(
         }
     }
 );
+
+
+router.delete(
+    '/appointments/:id',
+    guard,
+    async (req, res) => {
+        const { id } = req.params;
+        if (!ObjectId.isValid(id))
+            return res.status(400).json({ message: 'Invalid appointment ID' });
+
+        try {
+            const result = await appointmentsCol().updateOne(
+                { _id: new ObjectId(id), patient_id: new ObjectId(req.userId) },
+                { $set: { status: 'Canceled' } }
+            );
+            if (!result.matchedCount)
+                return res.status(404).json({ message: 'Appointment not found' });
+            return res.json({ message: 'Appointment canceled' });
+        } catch (err) {
+            console.error(err);
+            return res.status(500).json({ message: 'Cancel failed', error: err.message });
+        }
+    }
+);
+
+
+/**
+ * PUT /api/appointments/:id
+ * body: { date, time }
+ * –> reschedule: update the date/time (and keep status “Scheduled”)
+ */
+router.put(
+    '/appointments/:id',
+    guard,
+    body('date').isISO8601(),
+    body('time').matches(/^\d{2}:\d{2}$/),
+    async (req, res) => {
+        const { id } = req.params;
+        if (!ObjectId.isValid(id))
+            return res.status(400).json({ message: 'Invalid appointment ID' });
+
+        const errors = validationResult(req);
+        if (!errors.isEmpty())
+            return res.status(422).json({ errors: errors.array() });
+
+        const { date, time } = req.body;
+        if (time < '08:00' || time > '11:30')
+            return res.status(400).json({ message: 'Outside working hours' });
+
+        try {
+            // make sure slot isn't already booked by someone else
+            const appt = await appointmentsCol().findOne({ _id: new ObjectId(id) });
+            if (!appt) return res.status(404).json({ message: 'Appointment not found' });
+
+            const clash = await appointmentsCol().findOne({
+                doctor_id: appt.doctor_id,
+                date,
+                time,
+                _id: { $ne: appt._id }
+            });
+            if (clash) return res.status(409).json({ message: 'Slot already taken' });
+
+            const result = await appointmentsCol().updateOne(
+                { _id: appt._id, patient_id: new ObjectId(req.userId) },
+                { $set: { date, time } }
+            );
+            return res.json({ message: 'Appointment rescheduled' });
+        } catch (err) {
+            console.error(err);
+            return res.status(500).json({ message: 'Reschedule failed', error: err.message });
+        }
+    }
+);
+
 
 
 module.exports = router;

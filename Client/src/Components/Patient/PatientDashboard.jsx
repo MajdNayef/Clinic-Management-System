@@ -62,10 +62,16 @@ export default function PatientDashboard() {
                                             </button>
                                         </div>
                                         <div className={styles.appointmentStatusContainer}>
-                                            <div className={styles.appointmentStatus}>
+                                            <div
+                                                className={
+                                                    `${styles.appointmentStatus} ` +
+                                                    (appt.status === 'Canceled' ? styles.canceled : '')
+                                                }
+                                            >
                                                 {appt.status}
                                             </div>
                                         </div>
+
                                     </div>
                                 );
                             })}
@@ -107,7 +113,16 @@ export default function PatientDashboard() {
                             <strong>Type:</strong> {selectedAppt.appointment_type}
                         </p>
                         <p>
-                            <strong>Status:</strong> {selectedAppt.status}
+                            <strong>Status:</strong>{' '}
+                            <span
+                                className={
+                                    selectedAppt.status === 'Canceled'
+                                        ? styles.canceled
+                                        : ''
+                                }
+                            >
+                                {selectedAppt.status}
+                            </span>
                         </p>
 
                         {/* ← Here’s your conditional map embed */}

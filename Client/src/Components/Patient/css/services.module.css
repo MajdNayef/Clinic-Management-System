@@ -1,170 +1,164 @@
+/* services.module.css */
 
-/* Services specific styles */
-.servicesIntro {
-    font-Size: 15px;
-    line-Height: 1.6;
-    color: var(--text-secondary);
-    margin-Bottom: 30px;
+/* Container */
+.servicesSection {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 3rem 1rem;
+    font-family: "Inter", sans-serif;
+    color: #1e293b;
+    background: #f8fafc;
 }
 
-.departmentsList {
-    display: flex;
-    flex-Direction: column;
-    gap: 20px;
+/* Title & intro */
+.pageTitle {
+    font-size: 2.5rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    text-align: center;
 }
 
-.departmentItem {
-    border: 1px solid var(--border-color);
-    border-Radius: 8px;
+.pageIntro {
+    font-size: 1rem;
+    color: #475569;
+    text-align: center;
+    margin-bottom: 2.5rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Department grid */
+
+.departmentGrid {
+    display: grid;
+    /* force one column only */
+    grid-template-columns: 1fr;
+    gap: 2rem;               /* space between each card */
+    align-items: start;
+  }
+  
+
+/* Card */
+.departmentCard {
+    background: #ffffff;
+    border-radius: 1rem;
+    border: 1px solid #e2e8f0;
     overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    
 }
 
-.departmentHeader {
+.departmentCard:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+}
+
+/* Header */
+.header {
     display: flex;
-    align-Items: center;
-    padding: 15px 20px;
-    background-Color: #f9fafb;
+    align-items: center;
+    padding: 1.25rem 1.5rem;
     cursor: pointer;
 }
 
-.departmentIcon {
-    width: 40px;
-    height: 40px;
-    background-Color: #e1effe;
-    border-Radius: 50%;
-    display: flex;
-    align-Items: center;
-    justify-Content: center;
-    margin-Right: 15px;
+.icon {
+    margin-right: 0.75rem;
+    color: #3b82f6;
 }
 
-.departmentName {
+.name {
     flex: 1;
-    font-Size: 16px;
-    font-Weight: 600;
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: #1e293b;
 }
 
-.departmentToggle {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 5px;
+.chevron {
+    transition: transform 0.3s ease;
+    color: #64748b;
 }
 
-.departmentContent {
-    padding: 20px;
-    border-Top: 1px solid var(--border-color);
+.rotated {
+    transform: rotate(180deg);
 }
 
-.departmentContent.collapsed {
-    display: none;
+/* Collapsible content */
+.content {
+    padding: 1rem 1.5rem 1.5rem;
+    background: #f1f5f9;
 }
 
 .departmentDescription {
-    font-Size: 14px;
-    line-Height: 1.6;
-    color: var(--text-secondary);
-    margin-Bottom: 20px;
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #475569;
 }
 
-.doctorsList {
-    display: flex;
-    flex-Direction: column;
-    gap: 15px;
+/* Doctors grid inside each card */
+.doctorsGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
 }
 
 .doctorCard {
     display: flex;
-    padding: 15px;
-    background-Color: #f9fafb;
-    border-Radius: 8px;
+    background: #ffffff;
+    border-radius: 0.75rem;
+    padding: 0.75rem 1rem;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.04);
+    align-items: center;
+    transition: background 0.2s ease;
 }
 
-.doctorImage {
-    margin-Right: 15px;
-    flex-Shrink: 0;
+.doctorCard:hover {
+    background: #f8fafc;
 }
 
-.avatarPlaceholder {
-    width: 40px;
-    height: 40px;
-    background-Color: #e5e7eb;
-    border-Radius: 50%;
+/* Avatar circle */
+.avatar {
+    width: 3rem;
+    height: 3rem;
+    min-width: 3rem;
+    border-radius: 50%;
+    background: #e2e8f0;
     display: flex;
-    align-Items: center;
-    justify-Content: center;
-    font-Weight: 600;
-    color: #6b7280;
-    font-Size: 14px;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 1rem;
+    color: #475569;
+    margin-right: 0.75rem;
 }
 
-.doctorInfo {
-    flex: 1;
+/* Info */
+.info h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #1e293b;
 }
 
-.doctorName {
-    font-Size: 16px;
-    font-Weight: 600;
-    margin-Bottom: 5px;
+.info p {
+    margin: 0.25rem 0;
+    font-size: 0.85rem;
+    color: #64748b;
 }
 
-.doctorSpecialty {
-    font-Size: 14px;
-    color: var(--primary-color);
-    margin-Bottom: 5px;
+/* Status badge */
+.available {
+    color: #16a34a;
+    font-weight: 600;
 }
 
-.doctorCredentials {
-    font-Size: 13px;
-    color: var(--text-secondary);
-    margin-Bottom: 10px;
-    line-Height: 1.4;
+.busy {
+    color: #dc2626;
+    font-weight: 600;
 }
 
-.doctorAvailability {
-    display: flex;
-    align-Items: center;
-    gap: 10px;
-}
-
-.availabilityBadge {
-    font-Size: 12px;
-    padding: 3px 8px;
-    border-Radius: 12px;
-    font-Weight: 500;
-}
-
-.availabilityBadge.available {
-    background-Color: #d1fae5;
-    color: #10b981;
-}
-
-.availabilityBadge.busy {
-    background-Color: #fee2e2;
-    color: #ef4444;
-}
-
-.nextAvailable {
-    font-Size: 12px;
-    color: var(--text-secondary);
-}
-
-/* Animation for toggle */
-.departmentToggle svg {
-    transition: transform 0.3s ease;
-}
-
-.departmentItem.active .departmentToggle svg {
-    transform: rotate(180deg);
-}
-
-@media (maxWidth: 768px) {
-    .doctorCard {
-        flex-Direction: column;
-    }
-
-    .doctorImage {
-        margin-Right: 0;
-        margin-Bottom: 10px;
-    }
+/* Small “Next” text */
+.info small {
+    color: #94a3b8;
 }
