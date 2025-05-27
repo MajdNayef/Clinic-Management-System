@@ -363,4 +363,43 @@ router.patch(
         }
     }
 );
+
+
+
+// GET /api/appointments/calendar?year=YYYY&month=MM
+router.get(
+    '/appointments/calendar',
+    guard,
+    query('year').isInt({ min: 2000, max: 3000 }),
+    query('month').isInt({ min: 1, max: 12 }),
+    async (req, res) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) return res.status(422).json({ errors: errors.array() });
+
+        try {
+            const userId = new ObjectId(req.userId);
+            const doctor = await doctorsCol().findOne({ user_id: userId });
+            if (!doctor) return res.status(404).json({ message: 'Doctor profile not found' });
+
+            const year = Number(req.query.year);
+            const month = String(req.query.month).padStart(2, '0');
+            const start = `${year}-${month}-01`;
+            const lastDay = new Date(year, Number(month), 0).getDate();
+            const end = `${year}-${month}-${String(lastDay).padStart(2, '0')}`;
+
+            const appts = await appointmentsCol()
+                .find({
+                    doctor_id: doctor._id,
+                    date: { $gte: start, $lte: end }
+                })
+                .sort({ date: 1, time: 1 })
+                .toArray();
+
+            res.json(appts);
+        } catch (err) {
+            console.error('calendar error', err);
+            res.status(500).json({ message: 'Could not load calendar appointments', error: err.message });
+        }
+    }
+);
 module.exports = router;

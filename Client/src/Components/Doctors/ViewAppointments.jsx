@@ -1,78 +1,118 @@
-import React from 'react'
-import DashboardLayout from './layout/DashboardLayout'
-import styles from './css/viewAppointments.module.css'
-import { FaStethoscope, FaComments } from 'react-icons/fa' // Import Font Awesome icons
+// src/Components/Doctors/ViewAppointments.jsx
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import DashboardLayout from './layout/DashboardLayout';
+import styles from './css/viewAppointments.module.css';
+import { FaStethoscope, FaComments } from 'react-icons/fa';
 
-const appointments = [
-    { date: '2025-04-07', type: 'Physical' },
-    { date: '2025-04-07', type: 'Physical' },
-    { date: '2025-04-07', type: 'Physical' },
-    { date: '2025-04-07', type: 'Physical' },
-    { date: '2025-04-07', type: 'Live chat' },
-    { date: '2025-04-09', type: 'Live chat' },
-    { date: '2025-04-20', type: 'Physical' },
-    { date: '2025-04-20', type: 'Live chat' },
-    { date: '2025-04-20', type: 'Live chat' },
-    { date: '2025-04-26', type: 'Physical' }
-]
+export default function ViewAppointments() {
+    const [appts, setAppts] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-const offDays = ['2025-04-10', '2025-04-15', '2025-04-25']; // Predefined off days
+    // Example “off days” (you could also fetch these from an API)
+    const offDays = ['2025-04-10', '2025-04-15', '2025-04-25'];
 
-const getAppointmentCounts = (dateStr) => {
-    const filtered = appointments.filter(a => a.date === dateStr)
-    return {
-        physical: filtered.filter(a => a.type === 'Physical').length,
-        virtual: filtered.filter(a => a.type === 'Live chat').length
-    }
-}
-const DoctorSchedule = () => {
-    const daysInMonth = 30
-    const firstDayIndex = new Date('2025-04-01').getDay() // 2 for Tuesday
+    // use the current year/month
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth() + 1; // 1–12
+
+    useEffect(() => {
+        async function load() {
+            setLoading(true);
+            setError(null);
+            try {
+                const res = await axios.get('/api/appointments/calendar', {
+                    params: { year, month }
+                });
+                setAppts(res.data);
+            } catch (e) {
+                console.error('Calendar fetch error ▶', e);
+                setError('Could not load calendar');
+            } finally {
+                setLoading(false);
+            }
+        }
+        load();
+    }, [year, month]);
+
+    // count in-person vs virtual on a given date
+    const getCounts = dateStr => {
+        const slice = appts.filter(a => a.date === dateStr);
+        return {
+            physical: slice.filter(a => a.appointment_type === 'In-Person').length,
+            virtual: slice.filter(a => a.appointment_type === 'Virtual').length,
+        };
+    };
+
+    // calculate calendar layout
+    const firstDayIndex = new Date(year, month - 1, 1).getDay(); // 0=Sun … 6=Sat
+    const daysInMonth = new Date(year, month, 0).getDate();
 
     return (
         <DashboardLayout>
             <div className={styles.container}>
-                <h2 className={styles.title}>Doctor's Monthly Schedule</h2><hr />
-                <div className={styles.calendarHeader}>April 2025</div>
+                <h2 className={styles.title}>Doctor’s Monthly Schedule</h2>
+                <hr className={styles.divider} />
 
-                <div className={styles.grid}>
-                    {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-                        <div key={day} className={styles.dayLabel}>{day}</div>
-                    ))}
+                {loading && <p>Loading calendar…</p>}
+                {error && <p className={styles.error}>{error}</p>}
 
-                    {Array(firstDayIndex).fill(null).map((_, idx) => (
-                        <div key={'empty-' + idx} className={styles.empty}></div>
-                    ))}
+                {!loading && !error && (
+                    <>
+                        <div className={styles.calendarHeader}>
+                            {new Date(year, month - 1)
+                                .toLocaleString('default', { month: 'long', year: 'numeric' })}
+                        </div>
 
-                    {Array.from({ length: daysInMonth }, (_, i) => {
-                        const day = i + 1
-                        const dateStr = `2025-04-${day.toString().padStart(2, '0')}`
-                        const { physical, virtual } = getAppointmentCounts(dateStr)
-                        const isOffDay = offDays.includes(dateStr);
+                        <div className={styles.grid}>
+                            {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(d => (
+                                <div key={d} className={styles.dayLabel}>{d}</div>
+                            ))}
 
-                        return (
-                            <div key={day} className={`${styles.cell} ${isOffDay ? styles.offDay : ''}`}>
-                                <div className={styles.date}>{day}</div>
-                                {isOffDay && <div className={styles.offDayText}>Off Day</div>}
-                                {physical > 0 && !isOffDay && (
-                                    <div className={styles.tag}>
-                                        <FaStethoscope className={styles.physicalIcon} />
-                                        <span>{physical}</span>
-                                    </div>
-                                )}
-                                {virtual > 0 && !isOffDay && (
-                                    <div className={styles.tag}>
-                                        <FaComments className={styles.virtualIcon} />
-                                        <span>{virtual}</span>
-                                    </div>
-                                )}
-                            </div>
-                        )
-                    })}
-                </div>
+                            {/* leading blank cells */}
+                            {Array.from({ length: firstDayIndex })
+                                .map((_, i) => <div key={`e${i}`} className={styles.empty} />)}
+
+                            {/* actual days */}
+                            {Array.from({ length: daysInMonth })
+                                .map((_, i) => {
+                                    const day = i + 1;
+                                    const mm = String(month).padStart(2, '0');
+                                    const dd = String(day).padStart(2, '0');
+                                    const date = `${year}-${mm}-${dd}`;
+                                    const { physical, virtual } = getCounts(date);
+                                    const isOff = offDays.includes(date);
+
+                                    return (
+                                        <div
+                                            key={date}
+                                            className={`${styles.cell} ${isOff ? styles.offDay : ''}`}
+                                        >
+                                            <div className={styles.date}>{day}</div>
+                                            {isOff && <div className={styles.offDayText}>Off Day</div>}
+
+                                            {!isOff && physical > 0 && (
+                                                <div className={styles.tag}>
+                                                    <FaStethoscope className={styles.physicalIcon} />
+                                                    <span>{physical}</span>
+                                                </div>
+                                            )}
+                                            {!isOff && virtual > 0 && (
+                                                <div className={styles.tag}>
+                                                    <FaComments className={styles.virtualIcon} />
+                                                    <span>{virtual}</span>
+                                                </div>
+                                            )}
+                                        </div>
+                                    );
+                                })
+                            }
+                        </div>
+                    </>
+                )}
             </div>
         </DashboardLayout>
-    )
+    );
 }
-
-export default DoctorSchedule
