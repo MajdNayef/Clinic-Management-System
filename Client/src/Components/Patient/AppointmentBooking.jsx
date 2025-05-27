@@ -12,6 +12,9 @@ export default function AppointmentBooking() {
     // --- appointment type (matches API expectations) ---
     const [appointmentType, setAppointmentType] = useState("In-Person");
 
+    // compute today in YYYY-MM-DD format
+    const today = new Date().toISOString().split("T")[0];
+
     // --- fetched data & loading state ---
     const [doctors, setDoctors] = useState([]);
     const [freeSlots, setFreeSlots] = useState([]);
@@ -154,6 +157,7 @@ export default function AppointmentBooking() {
                                     value={date}
                                     onChange={e => setDate(e.target.value)}
                                     required
+                                    min={today}            // ← no earlier than today
                                 />
                             </div>
                         </div>

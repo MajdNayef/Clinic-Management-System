@@ -22,6 +22,8 @@ import LiveChat from "./Components/Patient/LiveChat";
 import DoctorDashboard from "./Components/Doctors/DoctorDashboard";
 import ViewAppointments from "./Components/Doctors/ViewAppointments";
 import Test from "./Components/Doctors/layout/DashboardLayout";
+import DoctorProfile from "./Components/Doctors/ProfilePage";
+
 
 // import axios from 'axios';
 
@@ -53,6 +55,7 @@ function App() {
         {/* Protected / Doctors routes */}
         <Route path="/DoctorDashboard" element={<DoctorDashboard />} />
         <Route path="/ViewAppointments" element={<ViewAppointments />} />
+        <Route path="/DoctorProfile" element={<DoctorProfile />} />
 
         {/* Catch‐all → redirect to home */}
         <Route path="*" element={<Navigate to="/" replace />} />

@@ -3,6 +3,8 @@ import {
   FiBell, FiUser, FiClipboard, FiCalendar, FiInfo, FiSettings,
 } from 'react-icons/fi';
 import { jwtDecode } from 'jwt-decode';
+import { NavLink } from 'react-router-dom';
+
 import axios from 'axios';
 
 import MedconnectLogo from '../../Assets/MedconnectLogo.png';
@@ -55,10 +57,38 @@ const DashboardLayout = ({ children }) => {
         </div>
 
         <nav className={styles.navLinks}>
-          <a className={styles.active} href="#">Dashboard</a>
-          <a href="#">Services</a>
-          <a href="#">Help Center</a>
-          <a href="#">Contact Us</a>
+          <NavLink
+            to="/DoctorDashboard"
+            className={({ isActive }) =>
+              isActive ? `${styles.link} ${styles.active}` : styles.link
+            }
+          >
+            Dashboard
+          </NavLink>
+          {/* <NavLink
+            to="/Services"
+            className={({ isActive }) =>
+              isActive ? `${styles.link} ${styles.active}` : styles.link
+            }
+          >
+            Services
+          </NavLink> */}
+          {/* <NavLink
+            to="/HelpCenter"
+            className={({ isActive }) =>
+              isActive ? `${styles.link} ${styles.active}` : styles.link
+            }
+          >
+            Help Center
+          </NavLink> */}
+          {/* <NavLink
+            to="/ContactUs"
+            className={({ isActive }) =>
+              isActive ? `${styles.link} ${styles.active}` : styles.link
+            }
+          >
+            Contact Us
+          </NavLink> */}
         </nav>
 
         <div className={styles.headerControls}>
@@ -104,7 +134,15 @@ const DashboardLayout = ({ children }) => {
 
             <div className={styles.profileDetails}>
               <div className={styles.avatarCircle}>
-                <FiUser size={20} />
+                {user?.profile_image ? (
+                  <img
+                    src={user.profile_image}
+                    alt={fullName}
+                    className={styles.avatarImg}
+                  />
+                ) : (
+                  <FiUser size={20} />
+                )}
               </div>
               <div className={styles.profileText}>
                 <div className={styles.username}>{fullName}</div>
@@ -117,13 +155,52 @@ const DashboardLayout = ({ children }) => {
 
           {/* Sidebar nav unchanged */}
           <nav className={styles.sidebarNav}>
-            <a className={styles.active} href="#"><FiInfo size={16} /> Overview</a>
-            <a href="#"><FiClipboard size={16} /> View Schedule</a>
-            <a href="#"><FiCalendar size={16} /> Manage Appointments</a>
+            <NavLink
+              to="/DoctorDashboard"
+              className={({ isActive }) =>
+                isActive
+                  ? `${styles.sidebarLink} ${styles.active}`
+                  : styles.sidebarLink
+              }
+            >
+              <FiInfo size={16} /> Overview
+            </NavLink>
+
+            <NavLink
+              to="/ViewAppointments"
+              className={({ isActive }) =>
+                isActive
+                  ? `${styles.sidebarLink} ${styles.active}`
+                  : styles.sidebarLink
+              }
+            >
+              <FiClipboard size={16} /> View Schedule
+            </NavLink>
+
+            <NavLink
+              to="#"
+              className={({ isActive }) =>
+                isActive
+                  ? `${styles.sidebarLink} ${styles.active}`
+                  : styles.sidebarLink
+              }
+            >
+              <FiCalendar size={16} /> Manage Appointments
+            </NavLink>
           </nav>
 
           <div className={styles.sidebarFooter}>
-            <a href="#"><FiSettings size={16} /> My profile</a>
+            <NavLink
+              to="/DoctorProfile"
+              className={({ isActive }) =>
+                isActive
+                  ? `${styles.sidebarLink} ${styles.active}`
+                  : styles.sidebarLink
+              }
+            >
+              <FiSettings size={16} /> My profile
+            </NavLink>
+
             <div className={styles.notificationToggle}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <FiBell size={16} /> Email Notification

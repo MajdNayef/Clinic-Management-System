@@ -135,8 +135,17 @@ const DashboardLayout = ({ children }) => {
 
             <div className={styles.profileDetails}>
               <div className={styles.avatarCircle}>
-                <FiUser size={20} />
+                {user?.profile_image ? (
+                  <img
+                    src={user.profile_image}
+                    alt={fullName}
+                    className={styles.avatarImg}
+                  />
+                ) : (
+                  <FiUser size={20} />
+                )}
               </div>
+
               <div className={styles.profileText}>
                 <div className={styles.username}>{fullName}</div>
                 <div className={styles.userEmail}>{user?.email || ''}</div>

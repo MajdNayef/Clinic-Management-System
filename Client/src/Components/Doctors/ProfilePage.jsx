@@ -1,4 +1,4 @@
-// src/Components/Patient/ProfilePage.jsx
+// src/Components/Doctor/ProfilePage.jsx
 import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import { Edit2, Save, X, Camera } from "react-feather";

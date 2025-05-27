@@ -18,6 +18,19 @@ export default function PatientDashboard() {
 
     const closeModal = () => setSelectedAppt(null);
 
+
+    // build a "start of today" date for comparison
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // only keep appointments on or after today
+    const upcoming = appointments.filter(appt => {
+        const apptDate = new Date(appt.date);
+        apptDate.setHours(0, 0, 0, 0);
+        return apptDate >= today;
+    });
+
+
     return (
         <DashboardLayout>
             <h2 className={styles.dashboardTitle}>DMC Patient Dashboard</h2>
@@ -30,9 +43,9 @@ export default function PatientDashboard() {
                     ? <p>Loading…</p>
                     : (
                         <div className={styles.appointmentsGrid}>
-                            {appointments.length === 0 && <p>No upcoming appointments</p>}
+                            {upcoming.length === 0 && <p>No upcoming appointments</p>}
 
-                            {appointments.map(appt => {
+                            {upcoming.map(appt => {
                                 const name = `Dr. ${appt.doctor.first_name} ${appt.doctor.last_name}`;
                                 const isVirtual = appt.appointment_type === 'Virtual';
                                 const typeCls = isVirtual ? styles.live : styles.physical;
@@ -71,7 +84,6 @@ export default function PatientDashboard() {
                                                 {appt.status}
                                             </div>
                                         </div>
-
                                     </div>
                                 );
                             })}
@@ -79,6 +91,7 @@ export default function PatientDashboard() {
                     )
                 }
             </section>
+
 
             {/* Details Modal */}
             {selectedAppt && (
