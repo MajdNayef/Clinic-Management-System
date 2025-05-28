@@ -189,7 +189,7 @@ const DashboardLayout = ({ children }) => {
 
           <div className={styles.sidebarFooter}>
             <NavLink
-              to="/profile"
+              to="/PatientProfilePage"
               className={({ isActive }) =>
                 isActive
                   ? `${styles.sidebarLink} ${styles.active}`

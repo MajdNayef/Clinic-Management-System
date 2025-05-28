@@ -13,16 +13,15 @@ import PatientDashboard from "./Components/Patient/PatientDashboard";
 import AppointmentBooking from "./Components/Patient/AppointmentBooking";
 import Services from "./Components/Patient/Services";
 import HelpCenter from "./Components/CommonPages/HelpCenter";
-import Profile from "./Components/Patient/ProfilePage";
+import PatientProfilePage from "./Components/Patient/PatientProfilePage";
 import MyAppointments from "./Components/Patient/MyAppointments";
 import ContactUs from "./Components/CommonPages/ContactUs";
 import LiveChat from "./Components/Patient/LiveChat";
-
 //For doctors
 import DoctorDashboard from "./Components/Doctors/DoctorDashboard";
 import ViewAppointments from "./Components/Doctors/ViewAppointments";
 import Test from "./Components/Doctors/layout/DashboardLayout";
-import DoctorProfile from "./Components/Doctors/ProfilePage";
+import DoctorProfilePage from "./Components/Doctors/DoctorProfilePage";
 
 
 // import axios from 'axios';
@@ -46,7 +45,7 @@ function App() {
         <Route path="/PatientDashboard" element={<PatientDashboard />} />
         <Route path="/book" element={<AppointmentBooking />} />
         <Route path="/MyAppointments" element={<MyAppointments />} />
-        <Route path="/Profile" element={<Profile />} />
+        <Route path="/PatientProfilePage" element={<PatientProfilePage />} />
         <Route path="/LiveChat" element={<LiveChat />} />
         <Route path="/Services" element={<Services />} />
         <Route path="/ContactUs" element={<ContactUs />} />
@@ -55,7 +54,7 @@ function App() {
         {/* Protected / Doctors routes */}
         <Route path="/DoctorDashboard" element={<DoctorDashboard />} />
         <Route path="/ViewAppointments" element={<ViewAppointments />} />
-        <Route path="/DoctorProfile" element={<DoctorProfile />} />
+        <Route path="/DoctorProfilePage" element={<DoctorProfilePage />} />
 
         {/* Catch‐all → redirect to home */}
         <Route path="*" element={<Navigate to="/" replace />} />

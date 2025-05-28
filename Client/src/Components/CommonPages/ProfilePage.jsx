@@ -2,7 +2,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import { Edit2, Save, X, Camera } from "react-feather";
-import DashboardLayout from "../Doctors/layout/DashboardLayout";
+// import DashboardLayout from "../Doctors/layout/DashboardLayout";
 import styles from "./css/ProfilePage.module.css";
 import toast from "react-hot-toast";
 
@@ -116,7 +116,7 @@ const ProfilePage = () => {
   };
 
   return (
-    <DashboardLayout>
+    // <DashboardLayout>
       <div className={styles.profileWrapper}>
         <div className={styles.headerRow}>
           <h2>My Profile</h2>
@@ -227,7 +227,7 @@ const ProfilePage = () => {
           </div>
         </div>
       </div>
-    </DashboardLayout>
+    // </DashboardLayout>
   );
 };
 
