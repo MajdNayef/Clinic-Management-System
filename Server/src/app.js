@@ -3,12 +3,14 @@
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
-const path = require('path');         // ← add this line
-
+const path = require('path');         
 const authRoutes = require('./routes/authRoutes');
 const appointmentRoutes = require('./routes/appointmentRoutes');
 
 const app = express();
+app.use(express.json());
+
+
 
 // 1) CORS & body‐parser
 app.use(
@@ -23,6 +25,8 @@ app.use(
     '/uploads',
     express.static(path.join(__dirname, '..', 'uploads'))
 );
+
+
 // 2) Logger
 app.use(morgan('dev'));
 
@@ -31,6 +35,7 @@ app.use('/api/auth', authRoutes);
 
 // 4) Then the appointment routes
 app.use('/api', appointmentRoutes);
+
 
 app.get('/health', (_, res) => res.json({ status: 'OK' }));
 

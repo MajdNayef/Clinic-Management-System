@@ -1,4 +1,5 @@
-// src/Components/FAQ.jsx
+// src/Components/HelpCenter.jsx
+
 import React, { useState, useEffect } from "react";
 import {
     ChevronDown,
@@ -6,113 +7,75 @@ import {
     MessageCircle,
     Mail,
     Phone,
-    Plus,
 } from "react-feather";
-import styles from "./css/helpCenter.module.css";
 import DashboardLayout from "../Patient/layout/DashboardLayout";
+import styles from "./css/helpCenter.module.css";
 
-const FAQ = () => {
+// Import the shared data module
+import { faqData, getAllFAQs } from "./data/faqData";
+
+const HelpCenter = () => {
     const [searchQuery, setSearchQuery] = useState("");
     const [activeCategory, setActiveCategory] = useState("general");
     const [expandedQuestions, setExpandedQuestions] = useState({});
     const [filteredQuestions, setFilteredQuestions] = useState([]);
 
-    const faqData = {
-        general: [
-            {
-                id: "g1",
-                question: "What is MedConnect?",
-                answer:
-                    "MedConnect is a healthcare platform that connects patients with healthcare providers for appointments, consultations, and records management.",
-            },
-            {
-                id: "g2",
-                question: "Is MedConnect free to use?",
-                answer:
-                    "Yes, MedConnect is free for patients. Certain services or consultations may have associated costs.",
-            },
-        ],
-        appointments: [
-            {
-                id: "a1",
-                question: "How do I book an appointment?",
-                answer:
-                    "Login and navigate to 'Book Appointment'. Choose doctor, time and confirm.",
-            },
-            {
-                id: "a2",
-                question: "Can I reschedule my appointment?",
-                answer:
-                    "Yes, go to 'My Appointments' and choose 'Reschedule' for the desired booking.",
-            },
-        ],
-        account: [
-            {
-                id: "ac1",
-                question: "How do I change my email address?",
-                answer:
-                    "Go to 'My Profile' > 'Account Settings', and click on 'Edit Email'. You’ll receive a verification link.",
-            },
-            {
-                id: "ac2",
-                question: "Can I delete my MedConnect account?",
-                answer:
-                    "Yes, contact support via email or chat to initiate the deletion process.",
-            },
-            {
-                id: "ac3",
-                question: "How do I enable dark mode?",
-                answer:
-                    "Click the profile icon > 'Appearance Settings' > 'Dark Mode'.",
-            },
-        ],
-    };
-
+    // On mount: initialize expandedQuestions (all false) and show “general” questions
     useEffect(() => {
-        const initial = {};
+        const initialExpansion = {};
         Object.keys(faqData).forEach((cat) => {
-            faqData[cat].forEach((q) => (initial[q.id] = false));
+            faqData[cat].forEach((q) => {
+                initialExpansion[q.id] = false;
+            });
         });
-        setExpandedQuestions(initial);
-        setFilteredQuestions(getAllQuestions());
+        setExpandedQuestions(initialExpansion);
+
+        // Initially, show all “general” questions
+        setFilteredQuestions(faqData.general);
     }, []);
 
-    const getAllQuestions = () => Object.values(faqData).flat();
-
+    // When searchQuery changes, filter across all categories
     useEffect(() => {
-        if (!searchQuery.trim()) return setFilteredQuestions(getAllQuestions());
-        setFilteredQuestions(
-            getAllQuestions().filter(
+        const trimmed = searchQuery.trim().toLowerCase();
+        if (!trimmed) {
+            // If no search text, just show whichever category is active
+            setFilteredQuestions(faqData[activeCategory]);
+        } else {
+            // Otherwise, filter every question/answer across all categories
+            const all = getAllFAQs();
+            const filtered = all.filter(
                 (q) =>
-                    q.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                    q.answer.toLowerCase().includes(searchQuery.toLowerCase())
-            )
-        );
-    }, [searchQuery]);
+                    q.question.toLowerCase().includes(trimmed) ||
+                    q.answer.toLowerCase().includes(trimmed)
+            );
+            setFilteredQuestions(filtered);
+        }
+    }, [searchQuery, activeCategory]);
 
     const toggleQuestion = (id) => {
-        setExpandedQuestions((prev) => ({ ...prev, [id]: !prev[id] }));
+        setExpandedQuestions((prev) => ({
+            ...prev,
+            [id]: !prev[id],
+        }));
     };
 
-    const getCategoryTitle = (category) => {
+    const getCategoryTitle = (categoryKey) => {
         const titles = {
             general: "General Questions",
             appointments: "Appointments",
+            account: "Account Settings",
             payments: "Payments & Billing",
             technical: "Technical Support",
-            account: "Account Settings",
         };
-        return (
-            titles[category] || category.charAt(0).toUpperCase() + category.slice(1)
-        );
+        return titles[categoryKey] || categoryKey;
     };
 
     return (
         <DashboardLayout>
             <div className={styles.faqWrapper}>
                 <div className={styles.faqHeader}>
-                    <h1>FAQs</h1>
-                    <p>Your questions answered. Browse or search for help below.</p>
+                    <h1>Frequently Asked Questions</h1>
+                    <p>Browse by category, or search for answers below.</p>
                     <hr className={styles.sectionDivider} />
 
                     <div className={styles.faqSearchBox}>
@@ -127,24 +90,32 @@ const FAQ = () => {
                 </div>
 
                 <div className={styles.faqBody}>
+                    {/* Sidebar: Categories */}
                     <div className={styles.faqSidebar}>
                         <h3>Categories</h3>
-                        {Object.keys(faqData).map((key) => (
+                        {Object.keys(faqData).map((catKey) => (
                             <button
-                                key={key}
-                                className={`${styles.categoryBtn} ${activeCategory === key ? styles.active : ""
+                                key={catKey}
+                                className={`${styles.categoryBtn} ${activeCategory === catKey ? styles.active : ""
                                     }`}
-                                onClick={() => setActiveCategory(key)}
+                                onClick={() => {
+                                    setActiveCategory(catKey);
+                                    setSearchQuery(""); // clear search when switching category
+                                }}
                             >
-                                <Plus size={14} /> {getCategoryTitle(key)}
+                                <ChevronDown size={14} />
+                                {getCategoryTitle(catKey)}
                             </button>
                         ))}
                     </div>
 
+                    {/* Main FAQ area */}
                     <div className={styles.faqMain}>
-                        <h2>{
-                            searchQuery ? "Search Results" : getCategoryTitle(activeCategory)
-                        }</h2>
+                        <h2>
+                            {searchQuery
+                                ? `Search Results`
+                                : `${getCategoryTitle(activeCategory)}`}
+                        </h2>
 
                         {filteredQuestions.length ? (
                             filteredQuestions.map((q) => (
@@ -166,24 +137,32 @@ const FAQ = () => {
                                 </div>
                             ))
                         ) : (
-                            <p className={styles.noResult}>No questions matched your search.</p>
+                            <p className={styles.noResult}>
+                                No questions matched your search.
+                            </p>
                         )}
 
                         <div className={styles.faqContactBox}>
                             <h3>Still need help?</h3>
-                            <a href=""><MessageCircle size={16} /> Open Chat Bot </a>
+                            <a href="#">
+                                <MessageCircle size={16} /> Open Chat Bot
+                            </a>
                             <hr />
                             <p>Or contact us via:</p>
                             <ul>
-                                <li><Mail size={16} /> support@medconnect.com</li>
-                                <li><Phone size={16} /> +1-800-555-1234</li>
+                                <li>
+                                    <Mail size={16} /> support@medconnect.com
+                                </li>
+                                <li>
+                                    <Phone size={16} /> +1-800-555-1234
+                                </li>
                             </ul>
                         </div>
                     </div>
                 </div>
             </div>
-        </DashboardLayout >
+        </DashboardLayout>
     );
 };
 
-export default FAQ;
+export default HelpCenter;

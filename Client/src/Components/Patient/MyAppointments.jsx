@@ -45,7 +45,9 @@ export default function MyAppointments() {
             setCancelAppt(null);
         }
     };
-
+//! state mangment 
+//!style components 
+//!hocks
     // reschedule
     const startReschedule = appt => {
         setReschedAppt(appt);
