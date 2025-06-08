@@ -96,4 +96,5 @@ turbo/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+/Server/src/config
 /Server/src/config/dialogflow-key.json

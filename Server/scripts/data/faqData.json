@@ -1,0 +1,73 @@
+{
+    "general": [
+        {
+            "id": "g1",
+            "question": "What is MedConnect?",
+            "answer": "MedConnect is a healthcare platform that connects patients with providers for appointments, consultations, and record management."
+        },
+        {
+            "id": "g2",
+            "question": "Is MedConnect free to use?",
+            "answer": "Yes, MedConnect is free for patients. Certain premium services or specialist consultations may have associated costs."
+        },
+        {
+            "id": "g3",
+            "question": "How do I create an account?",
+            "answer": "Click “Sign Up” on the homepage, fill in your personal details, verify your email, and you’re all set!"
+        },
+        {
+            "id": "g4",
+            "question": "Can I use MedConnect on my phone?",
+            "answer": "Absolutely. Our website is fully responsive, and we also have a dedicated mobile app available on both iOS and Android."
+        }
+    ],
+    "appointments": [
+        {
+            "id": "a1",
+            "question": "How do I book an appointment?",
+            "answer": "Log in to your MedConnect account, navigate to “Book Appointment,” choose your preferred doctor and time slot, then confirm."
+        },
+        {
+            "id": "a2",
+            "question": "Why don’t I see some time slots?",
+            "answer": "Time slots may be unavailable if the doctor is already booked, outside working hours, or it’s too close to the appointment date/time."
+        },
+        {
+            "id": "a3",
+            "question": "Can I reschedule my appointment?",
+            "answer": "Yes. Go to “My Appointments,” click “Reschedule” next to the appointment you wish to change, pick a new date/time, and confirm."
+        },
+        {
+            "id": "a4",
+            "question": "What happens if I cancel my appointment?",
+            "answer": "If you cancel more than 24 hours in advance, no fees apply. Cancellations within 24 hours might incur a small fee."
+        },
+        {
+            "id": "a5",
+            "question": "How do I join a virtual consultation?",
+            "answer": "At your scheduled time, go to “My Appointments” and click “Join Live Chat” next to the appointment. You’ll be connected to the doctor via our secured video link."
+        }
+    ],
+    "account": [
+        {
+            "id": "ac1",
+            "question": "How do I change my email address?",
+            "answer": "Go to “My Profile” → “Account Settings,” click “Edit Email,” enter the new email, and verify it through the link we send you."
+        },
+        {
+            "id": "ac2",
+            "question": "Can I delete my MedConnect account?",
+            "answer": "Yes, email support@medconnect.com with “Delete My Account” in the subject, and we will guide you through the process."
+        },
+        {
+            "id": "ac3",
+            "question": "How do I enable dark mode?",
+            "answer": "Click your profile avatar → “Appearance Settings,” then toggle “Dark Mode” on or off at the bottom."
+        },
+        {
+            "id": "ac4",
+            "question": "How do I reset my password?",
+            "answer": "On the login page, click “Forgot Password,” enter your email address, and follow the reset link we send you."
+        }
+    ]
+}
