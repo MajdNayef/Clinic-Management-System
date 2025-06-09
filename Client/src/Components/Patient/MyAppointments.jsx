@@ -230,16 +230,75 @@ export default function MyAppointments() {
                 </Overlay>
             )}
 
+            {/* Reschedule overlay */}
+            {reschedAppt && (
+                <Overlay onClose={() => setReschedAppt(null)}>
+                    <div className={styles.modal}>
+                        <button
+                            className={styles.closeBtn}
+                            onClick={() => setReschedAppt(null)}
+                        >
+                            <CloseIcon size={18} />
+                        </button>
+
+                        <h3>Reschedule Appointment</h3>
+                        <p>
+                            Dr. {reschedAppt.doctor.first_name}{" "}
+                            {reschedAppt.doctor.last_name}
+                        </p>
+
+                        <label>
+                            New Date:
+                            <input
+                                type="date"
+                                value={newDate}
+                                onChange={e => {
+                                    setNewDate(e.target.value);
+                                    loadSlots(e.target.value);
+                                }}
+                            />
+                        </label>
+
+                        <div>
+                            {slotsLoading ? (
+                                <p>Loading slots…</p>
+                            ) : (
+                                freeSlots.map(slot => (
+                                    <button
+                                        key={slot}
+                                        className={
+                                            slot === newTime
+                                                ? styles.selectedSlot
+                                                : styles.slot
+                                        }
+                                        onClick={() => setNewTime(slot)}
+                                    >
+                                        {slot}
+                                    </button>
+                                ))
+                            )}
+                        </div>
+
+                        <div className={styles.modalActions}>
+                            <button onClick={() => setReschedAppt(null)}>
+                                Cancel
+                            </button>
+                            <button
+                                onClick={doReschedule}
+                                disabled={!newDate || !newTime}
+                            >
+                                Confirm
+                            </button>
+                        </div>
+                    </div>
+                </Overlay>
+            )}
+
+
             {/* Feedback overlay */}
             {feedbackAppt && (
                 <Overlay onClose={() => setFeedbackAppt(null)}>
                     <div className={styles.modal}>
-                        <button
-                            className={styles.closeBtn}
-                            onClick={() => setFeedbackAppt(null)}
-                        >
-                            <CloseIcon size={18} />
-                        </button>
                         <h3>Give Feedback</h3>
 
                         <div className={styles.feedbackSection}>

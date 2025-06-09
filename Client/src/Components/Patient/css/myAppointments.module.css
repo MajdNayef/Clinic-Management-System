@@ -235,6 +235,8 @@
     align-items: center;
     justify-content: center;
     z-index: 1000;
+    opacity: 0;
+    animation: fadeIn 0.3s forwards; /* Add fade-in animation */
 }
 
 .modal {
@@ -244,6 +246,8 @@
     max-width: 400px;
     width: 90%;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: scale(0.9); /* Start slightly smaller */
+    animation: scaleUp 0.3s forwards; /* Add scale-up animation */
 }
 
 .modalActions {
@@ -355,4 +359,24 @@
     border-color: #2563eb;
     outline: none;
     background-color: #ffffff;
+}
+
+/* Fade-in animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Scale-up animation */
+@keyframes scaleUp {
+    from {
+        transform: scale(0.9);
+    }
+    to {
+        transform: scale(1);
+    }
 }
