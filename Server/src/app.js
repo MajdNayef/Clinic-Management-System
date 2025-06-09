@@ -16,6 +16,7 @@ const authRoutes = require('./routes/authRoutes');
 const appointmentRoutes = require('./routes/appointmentRoutes');
 const dialogflowRoute = require('./routes/dialogflow');
 const feedbackRoutes = require('./routes/feedbackRoutes');
+const notificationsRoutes = require('./routes/notificationsRoutes'); // Fix typo
 
 const app = express();
 app.use(express.json());
@@ -48,6 +49,8 @@ app.use('/api/appointments', feedbackRoutes);
 
 // mount at /api/dialogflow
 app.use('/api/dialogflow', dialogflowRoute);
+
+app.use('/api/notifications', notificationsRoutes); // Fix typo
 
 // after mounting all routes:
 app.use((err, req, res, next) => {

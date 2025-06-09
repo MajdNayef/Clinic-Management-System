@@ -19,6 +19,7 @@ axios.defaults.baseURL =
   process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 const DashboardLayout = ({ children }) => {
+  const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showChatbot, setShowChatbot] = useState(false);
   const [user, setUser] = useState(null);
@@ -31,7 +32,11 @@ const DashboardLayout = ({ children }) => {
     try {
       jwtDecode(token);                           // validate format
       axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+      // fetch notifications
       axios.get('/api/auth/me').then(res => setUser(res.data));
+      axios.get('/api/notifications')
+        .then(res => setNotifications(res.data))
+        .catch(console.error);
     } catch {
       // invalid token
     }
@@ -126,7 +131,20 @@ const DashboardLayout = ({ children }) => {
                   <div className={styles.notificationPopup}>
                     <h4>🔔 Notifications</h4>
                     <ul className={styles.notificationList}>
-                      <li>💉 Your appointment was rescheduled</li>
+
+                      {notifications.length
+                        ? notifications.map(n => (
+                          <li key={n._id}>
+                            <div className={styles.notificationContent}>
+                              {n.content}
+                            </div>
+                            <span className={styles.timestamp}>
+                              {new Date(n.sent_at).toLocaleString()}
+                            </span>
+                          </li>
+                        ))
+                        : <li className={styles.empty}>No notifications</li>
+                      }
                     </ul>
                   </div>
                 )}

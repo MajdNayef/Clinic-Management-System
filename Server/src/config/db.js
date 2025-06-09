@@ -1,3 +1,4 @@
+// src/config/db.js
 const { MongoClient } = require('mongodb');
 
 let db;                              // shared singleton

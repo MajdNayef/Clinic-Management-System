@@ -4,38 +4,34 @@ const { body, query, validationResult, param } = require('express-validator');
 const { ObjectId } = require('mongodb');
 const { collection } = require('../config/db');
 const guard = require('../middlewares/auth');
-
+const { sendNotificationToUser } = require('../controllers/notificationController');
 const router = express.Router();
 
 const doctorsCol = () => collection('doctors');
 const appointmentsCol = () => collection('appointments');
+
 /**
  * GET /api/doctors
  * → returns [{ _id, specialization, bio, first_name, last_name }]
  */
 router.get('/doctors', async (req, res) => {
     try {
-        const docs = await collection('doctors')
+        const docs = await doctorsCol()
             .aggregate([
                 {
                     $lookup: {
                         from: 'users',
-                        localField: 'user_id',    // doctor.user_id → users._id
+                        localField: 'user_id',
                         foreignField: '_id',
                         as: 'user'
                     }
                 },
-                {
-                    $unwind: {
-                        path: '$user',
-                        preserveNullAndEmptyArrays: false
-                    }
-                },
+                { $unwind: '$user' },
                 {
                     $project: {
                         _id: 1,
                         specialization: 1,
-                        bio: 1,               // optional
+                        bio: 1,
                         first_name: '$user.first_name',
                         last_name: '$user.last_name'
                     }
@@ -53,7 +49,6 @@ router.get('/doctors', async (req, res) => {
         });
     }
 });
-
 
 /**
  * GET /api/appointments/available?doctor_id=&date=YYYY-MM-DD
@@ -88,11 +83,10 @@ router.get(
     }
 );
 
-
 /**
  * POST /api/appointments
  * body: { doctor_id, date, time, type }
- * protected by `guard` which sets req.userId = the logged-in user's _id string
+ * protected by `guard`
  */
 router.post(
     '/appointments',
@@ -117,7 +111,8 @@ router.post(
             const clash = await appointmentsCol().findOne({ doctor_id: docId, date, time });
             if (clash) return res.status(409).json({ message: 'Slot already booked' });
 
-            const { insertedId } = await appointmentsCol().insertOne({
+            // 1) Insert the appointment
+            const apptDoc = {
                 doctor_id: docId,
                 patient_id: patientId,
                 status: 'Scheduled',
@@ -125,9 +120,17 @@ router.post(
                 time,
                 appointment_type: type,
                 createdAt: new Date()
-            });
+            };
+            const { insertedId } = await appointmentsCol().insertOne(apptDoc);
+            const appointment = { ...apptDoc, _id: insertedId };
 
-            return res.status(201).json({ _id: insertedId });
+            // 2) Notify (email + dashboard)
+            const dateStr = new Date(date).toLocaleDateString();
+            const content = `Your appointment is scheduled on ${dateStr} at ${time}.`;
+            const notification = await sendNotificationToUser(req.userId, content);
+
+            // 3) Return both
+            return res.status(201).json({ appointment, notification });
         } catch (err) {
             console.error(err);
             return res.status(500).json({ message: 'Booking failed', error: err.message });
@@ -135,54 +138,55 @@ router.post(
     }
 );
 
-// GET /api/appointments         ← list all appointments for the logged-in patient
+/**
+ * GET /api/appointments
+ * → list all appointments for the logged-in patient
+ */
 router.get(
     '/appointments',
-    guard,                     // must be authenticated
+    guard,
     async (req, res) => {
         try {
             const patientId = new ObjectId(req.userId);
-
-            // grab patient’s appointments, join in doctor → user to get name
-            const appts = await appointmentsCol().aggregate([
-                { $match: { patient_id: patientId } },
-                {
-                    $lookup: {
-                        from: 'doctors',
-                        localField: 'doctor_id',
-                        foreignField: '_id',
-                        as: 'doctor'
-                    }
-                },
-                { $unwind: '$doctor' },
-                {
-                    $lookup: {
-                        from: 'users',
-                        localField: 'doctor.user_id',
-                        foreignField: '_id',
-                        as: 'user'
-                    }
-                },
-                { $unwind: '$user' },
-                {
-
-                    $project: {
-                        _id: 1,
-                        date: 1,
-                        time: 1,
-                        status: 1,
-                        appointment_type: 1,
-                        doctor: {
-                            _id: '$doctor._id',          // ← keep this!
-                            first_name: '$user.first_name',
-                            last_name: '$user.last_name',
-                            specialization: '$doctor.specialization',
-                            bio: '$doctor.bio'
+            const appts = await appointmentsCol()
+                .aggregate([
+                    { $match: { patient_id: patientId } },
+                    {
+                        $lookup: {
+                            from: 'doctors',
+                            localField: 'doctor_id',
+                            foreignField: '_id',
+                            as: 'doctor'
+                        }
+                    },
+                    { $unwind: '$doctor' },
+                    {
+                        $lookup: {
+                            from: 'users',
+                            localField: 'doctor.user_id',
+                            foreignField: '_id',
+                            as: 'user'
+                        }
+                    },
+                    { $unwind: '$user' },
+                    {
+                        $project: {
+                            _id: 1,
+                            date: 1,
+                            time: 1,
+                            status: 1,
+                            appointment_type: 1,
+                            doctor: {
+                                _id: '$doctor._id',
+                                first_name: '$user.first_name',
+                                last_name: '$user.last_name',
+                                specialization: '$doctor.specialization',
+                                bio: '$doctor.bio'
+                            }
                         }
                     }
-
-                }
-            ]).toArray();
+                ])
+                .toArray();
 
             res.json(appts);
         } catch (err) {
@@ -197,33 +201,27 @@ router.get(
  * → list all TODAY’s appointments for the logged-in doctor
  */
 router.get(
-    "/appointments/doctor",
+    '/appointments/doctor',
     guard,
     async (req, res) => {
         try {
-            // 1) Find the doctor doc whose user_id is our logged-in user
             const userId = new ObjectId(req.userId);
             const doctor = await doctorsCol().findOne({ user_id: userId });
-            if (!doctor) {
-                return res.status(404).json({ message: "Doctor profile not found" });
-            }
+            if (!doctor) return res.status(404).json({ message: 'Doctor profile not found' });
 
-            // 2) Only today's date
             const today = new Date().toISOString().slice(0, 10);
-
-            // 3) Pull all appointments for that doctor._id
             const appts = await appointmentsCol()
                 .aggregate([
                     { $match: { doctor_id: doctor._id, date: today } },
                     {
                         $lookup: {
-                            from: "users",
-                            localField: "patient_id",
-                            foreignField: "_id",
-                            as: "patient"
+                            from: 'users',
+                            localField: 'patient_id',
+                            foreignField: '_id',
+                            as: 'patient'
                         }
                     },
-                    { $unwind: "$patient" },
+                    { $unwind: '$patient' },
                     {
                         $project: {
                             _id: 1,
@@ -231,8 +229,8 @@ router.get(
                             time: 1,
                             status: 1,
                             appointment_type: 1,
-                            patient_name: { $concat: ["$patient.first_name", " ", "$patient.last_name"] },
-                            patient_avatar: "$patient.profile_image"  // whatever field you store it in
+                            patient_name: { $concat: ['$patient.first_name', ' ', '$patient.last_name'] },
+                            patient_avatar: '$patient.profile_image'
                         }
                     }
                 ])
@@ -241,13 +239,15 @@ router.get(
             res.json(appts);
         } catch (err) {
             console.error(err);
-            res
-                .status(500)
-                .json({ message: "Could not load doctor appointments", error: err.message });
+            res.status(500).json({ message: 'Could not load doctor appointments', error: err.message });
         }
     }
 );
 
+/**
+ * DELETE /api/appointments/:id
+ * → cancel an appointment
+ */
 router.delete(
     '/appointments/:id',
     guard,
@@ -257,12 +257,23 @@ router.delete(
             return res.status(400).json({ message: 'Invalid appointment ID' });
 
         try {
-            const result = await appointmentsCol().updateOne(
-                { _id: new ObjectId(id), patient_id: new ObjectId(req.userId) },
+            // 1) fetch for email + DB content
+            const appt = await appointmentsCol().findOne({
+                _id: new ObjectId(id),
+                patient_id: new ObjectId(req.userId)
+            });
+            if (!appt) return res.status(404).json({ message: 'Appointment not found' });
+
+            // 2) update status
+            await appointmentsCol().updateOne(
+                { _id: appt._id },
                 { $set: { status: 'Canceled' } }
             );
-            if (!result.matchedCount)
-                return res.status(404).json({ message: 'Appointment not found' });
+
+            // 3) notify
+            const content = `Your appointment on ${appt.date} at ${appt.time} was canceled.`;
+            await sendNotificationToUser(req.userId, content);
+
             return res.json({ message: 'Appointment canceled' });
         } catch (err) {
             console.error(err);
@@ -271,11 +282,10 @@ router.delete(
     }
 );
 
-
 /**
  * PUT /api/appointments/:id
  * body: { date, time }
- * –> reschedule: update the date/time (and keep status “Scheduled”)
+ * → reschedule an appointment
  */
 router.put(
     '/appointments/:id',
@@ -296,7 +306,6 @@ router.put(
             return res.status(400).json({ message: 'Outside working hours' });
 
         try {
-            // make sure slot isn't already booked by someone else
             const appt = await appointmentsCol().findOne({ _id: new ObjectId(id) });
             if (!appt) return res.status(404).json({ message: 'Appointment not found' });
 
@@ -308,10 +317,16 @@ router.put(
             });
             if (clash) return res.status(409).json({ message: 'Slot already taken' });
 
-            const result = await appointmentsCol().updateOne(
+            // 1) perform the update
+            await appointmentsCol().updateOne(
                 { _id: appt._id, patient_id: new ObjectId(req.userId) },
                 { $set: { date, time } }
             );
+
+            // 2) notify
+            const content = `Your appointment has been rescheduled to ${date} at ${time}.`;
+            await sendNotificationToUser(req.userId, content);
+
             return res.json({ message: 'Appointment rescheduled' });
         } catch (err) {
             console.error(err);
@@ -323,7 +338,6 @@ router.put(
 /**
  * PATCH /api/appointments/:id/status
  * body: { status: 'Completed' | 'Canceled' }
- * Only the doctor who owns the appointment may change its status.
  */
 router.patch(
     '/appointments/:id/status',
@@ -339,13 +353,11 @@ router.patch(
         const userId = new ObjectId(req.userId);
 
         try {
-            // find the doctor's own record
             const doctor = await doctorsCol().findOne({ user_id: userId });
             if (!doctor) {
                 return res.status(404).json({ message: 'Doctor profile not found' });
             }
 
-            // now update only if appointment.doctor_id === doctor._id
             const result = await appointmentsCol().updateOne(
                 { _id: apptId, doctor_id: doctor._id },
                 { $set: { status: req.body.status } }
@@ -364,9 +376,9 @@ router.patch(
     }
 );
 
-
-
-// GET /api/appointments/calendar?year=YYYY&month=MM
+/**
+ * GET /api/appointments/calendar?year=YYYY&month=MM
+ */
 router.get(
     '/appointments/calendar',
     guard,
@@ -374,12 +386,14 @@ router.get(
     query('month').isInt({ min: 1, max: 12 }),
     async (req, res) => {
         const errors = validationResult(req);
-        if (!errors.isEmpty()) return res.status(422).json({ errors: errors.array() });
+        if (!errors.isEmpty())
+            return res.status(422).json({ errors: errors.array() });
 
         try {
             const userId = new ObjectId(req.userId);
             const doctor = await doctorsCol().findOne({ user_id: userId });
-            if (!doctor) return res.status(404).json({ message: 'Doctor profile not found' });
+            if (!doctor)
+                return res.status(404).json({ message: 'Doctor profile not found' });
 
             const year = Number(req.query.year);
             const month = String(req.query.month).padStart(2, '0');
@@ -398,8 +412,11 @@ router.get(
             res.json(appts);
         } catch (err) {
             console.error('calendar error', err);
-            res.status(500).json({ message: 'Could not load calendar appointments', error: err.message });
+            res
+                .status(500)
+                .json({ message: 'Could not load calendar appointments', error: err.message });
         }
     }
 );
+
 module.exports = router;

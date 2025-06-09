@@ -29,11 +29,8 @@ router.post(
     ctrl.register
 );
 
-
-
 router.post('/login', email, password, ctrl.login);
 router.get('/me', guard, ctrl.me);
-
 
 // in authRoutes.js
 router.post(
@@ -49,7 +46,6 @@ router.post(
         res.json({ url });
     }
 );
-
 
 /**
  * PUT /api/auth/me
@@ -94,8 +90,6 @@ router.put(
         }
     }
 );
-
-
 
 module.exports = router;
 
