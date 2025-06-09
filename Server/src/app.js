@@ -15,12 +15,10 @@ const morgan = require('morgan');
 const authRoutes = require('./routes/authRoutes');
 const appointmentRoutes = require('./routes/appointmentRoutes');
 const dialogflowRoute = require('./routes/dialogflow');
-
+const feedbackRoutes = require('./routes/feedbackRoutes');
 
 const app = express();
 app.use(express.json());
-
-
 
 // 1) CORS & body‐parser
 app.use(
@@ -36,7 +34,6 @@ app.use(
     express.static(path.join(__dirname, '..', 'uploads'))
 );
 
-
 // 2) Logger
 app.use(morgan('dev'));
 
@@ -45,15 +42,18 @@ app.use('/api/auth', authRoutes);
 
 // 4) Then the appointment routes
 app.use('/api', appointmentRoutes);
+// Mount feedback routes
+
+app.use('/api/appointments', feedbackRoutes);
 
 // mount at /api/dialogflow
 app.use('/api/dialogflow', dialogflowRoute);
+
 // after mounting all routes:
 app.use((err, req, res, next) => {
     console.error('💥 Uncaught server error:', err);
     res.status(500).json({ error: err.message });
 });
-
 
 app.get('/health', (_, res) => res.json({ status: 'OK' }));
 
