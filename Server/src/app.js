@@ -14,7 +14,7 @@ const cors = require('cors');
 const morgan = require('morgan');
 const authRoutes = require('./routes/authRoutes');
 const appointmentRoutes = require('./routes/appointmentRoutes');
-const dialogflowRoute = require('./routes/dialogflow');
+const dialogflowRoute = require('./routes/dialogFlow');
 const feedbackRoutes = require('./routes/feedbackRoutes');
 const notificationsRoutes = require('./routes/notificationsRoutes'); // Fix typo
 

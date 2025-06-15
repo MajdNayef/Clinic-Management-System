@@ -1,12 +1,18 @@
-// src/config/db.js
 const { MongoClient } = require('mongodb');
 
-let db;                              // shared singleton
+let db;
+let client;
 
 async function connect() {
-    const client = await MongoClient.connect(process.env.MONGO_URI);
-    db = client.db();                 // defaults to DB name in the URI
-    console.log('🗄️  Mongo connected');
+    client = new MongoClient(process.env.MONGO_URI, {
+        // Optional: you can remove these since they're deprecated
+        useNewUrlParser: true,
+        useUnifiedTopology: true
+    });
+
+    await client.connect();
+    db = client.db(); // uses DB name from URI
+    console.log('🗄️  Mongo connected to database:', db.databaseName);
 }
 
 function collection(name) {
@@ -14,4 +20,14 @@ function collection(name) {
     return db.collection(name);
 }
 
-module.exports = { connect, collection };
+// ✅ Export client through a getter (so it's always fresh)
+function getClient() {
+    if (!client) throw new Error('MongoClient not initialized. Call connect() first.');
+    return client;
+}
+
+module.exports = {
+    connect,
+    collection,
+    getClient // ✅ export a function, not the variable
+};
