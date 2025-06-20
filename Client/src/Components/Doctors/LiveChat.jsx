@@ -2,12 +2,12 @@ import React from "react";
 import LiveChatTemplate from "../CommonPages/LiveChat";
 import DashboardLayout from "./layout/DashboardLayout";
 
-const PatientLiveChat = ({ doctorId, patientId }) => {
+const DoctorLiveChat = ({ doctorId, patientId }) => {
     return (
         <DashboardLayout>
             <LiveChatTemplate
-                userType="patient"
-                chatWith="Dr. Ruhidah"
+                userType="doctor"
+                chatWith="Patient"
                 doctorId={doctorId}
                 patientId={patientId}
             />
@@ -15,4 +15,4 @@ const PatientLiveChat = ({ doctorId, patientId }) => {
     );
 };
 
-export default PatientLiveChat;
+export default DoctorLiveChat;

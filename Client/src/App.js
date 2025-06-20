@@ -1,4 +1,3 @@
-
 //! state mangment 
 //!style components 
 //!hocks
@@ -20,12 +19,12 @@ import HelpCenter from "./Components/CommonPages/HelpCenter";
 import PatientProfilePage from "./Components/Patient/PatientProfilePage";
 import MyAppointments from "./Components/Patient/MyAppointments";
 import ContactUs from "./Components/CommonPages/ContactUs";
-import LiveChat from "./Components/Patient/LiveChat";
+import PatientLiveChat from "./Components/Patient/LiveChat";
 //For doctors
 import DoctorDashboard from "./Components/Doctors/DoctorDashboard";
 import ViewAppointments from "./Components/Doctors/ViewAppointments";
-import Test from "./Components/Doctors/layout/DashboardLayout";
 import DoctorProfilePage from "./Components/Doctors/DoctorProfilePage";
+import DoctorLiveChat from "./Components/Doctors/LiveChat";
 
 
 // import axios from 'axios';
@@ -50,7 +49,7 @@ function App() {
         <Route path="/book" element={<AppointmentBooking />} />
         <Route path="/MyAppointments" element={<MyAppointments />} />
         <Route path="/PatientProfilePage" element={<PatientProfilePage />} />
-        <Route path="/LiveChat" element={<LiveChat />} />
+        <Route path="/patient/live-chat" element={<PatientLiveChat doctorId="123" patientId="456" />} />
         <Route path="/Services" element={<Services />} />
         <Route path="/ContactUs" element={<ContactUs />} />
         <Route path="/HelpCenter" element={<HelpCenter />} />
@@ -59,6 +58,7 @@ function App() {
         <Route path="/DoctorDashboard" element={<DoctorDashboard />} />
         <Route path="/ViewAppointments" element={<ViewAppointments />} />
         <Route path="/DoctorProfilePage" element={<DoctorProfilePage />} />
+        <Route path="/doctor/live-chat" element={<DoctorLiveChat doctorId="123" patientId="456" />} />
 
         {/* Catch‐all → redirect to home */}
         <Route path="*" element={<Navigate to="/" replace />} />

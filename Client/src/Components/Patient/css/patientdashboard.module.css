@@ -202,3 +202,36 @@
     color: #d32f2f;
     /* nice red tone */
 }
+
+.actionButtons {
+    display: flex;
+    /* margin-: 5px; */
+    gap: 170px; /* Space between buttons */
+    align-items: center; /* Align buttons vertically */
+}
+
+/* Style for the live chat link */
+.liveChatLink {
+    /* color: #007bff; Blue color for link */
+    text-decoration: underline;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.liveChatLink:hover {
+    color: #0056b3; /* Darker blue on hover */
+}
+
+.liveChatButton {
+    background-color: #007bff; /* Blue background */
+    color: #fff; /* White text */
+    border: none; /* Remove border */
+    padding: 8px 12px; /* Button padding */
+    border-radius: 5px; /* Rounded corners */
+    font-size: 14px; /* Font size */
+    cursor: pointer; /* Pointer cursor */
+}
+
+.liveChatButton:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}

@@ -1,5 +1,8 @@
+// src/components/Patient/PatientDashboard.jsx
+
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import { FiClock, FiCalendar, FiUser } from 'react-icons/fi';
 import DashboardLayout from './layout/DashboardLayout';
 import styles from './css/patientdashboard.module.css';
@@ -9,6 +12,9 @@ export default function PatientDashboard() {
     const [loading, setLoading] = useState(true);
     const [selectedAppt, setSelectedAppt] = useState(null);
 
+    const navigate = useNavigate();
+
+    // Fetch appointments on mount
     useEffect(() => {
         axios.get('/api/appointments')
             .then(res => setAppointments(res.data))
@@ -16,20 +22,38 @@ export default function PatientDashboard() {
             .finally(() => setLoading(false));
     }, []);
 
+    // Close details modal
     const closeModal = () => setSelectedAppt(null);
 
+    // Start/join live chat by appointmentId only
+    const handleLiveChat = async (appt) => {
+        try {
+            const { data } = await axios.post('/api/chat-sessions', {
+                appointmentId: appt._id
+            });
 
-    // build a "start of today" date for comparison
+            const chatWith = `Dr. ${appt.doctor.first_name} ${appt.doctor.last_name}`;
+
+            navigate(
+                `/patient/live-chat?` +
+                `sessionId=${data.sessionId}` +
+                `&chatWith=${encodeURIComponent(chatWith)}`,
+                { replace: false }
+            );
+        } catch (err) {
+            console.error('Error starting live chat:', err);
+            alert('Could not start live chat. Please try again.');
+        }
+    };
+
+    // Show today or future appointments
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-
-    // only keep appointments on or after today
     const upcoming = appointments.filter(appt => {
-        const apptDate = new Date(appt.date);
-        apptDate.setHours(0, 0, 0, 0);
-        return apptDate >= today;
+        const d = new Date(appt.date);
+        d.setHours(0, 0, 0, 0);
+        return d >= today;
     });
-
 
     return (
         <DashboardLayout>
@@ -39,59 +63,64 @@ export default function PatientDashboard() {
             <section className={styles.appointmentsSection}>
                 <h3 className={styles.sectionHeading}>📌 Upcoming Appointments</h3>
 
-                {loading
-                    ? <p>Loading…</p>
-                    : (
-                        <div className={styles.appointmentsGrid}>
-                            {upcoming.length === 0 && <p>No upcoming appointments</p>}
+                {loading ? (
+                    <p>Loading…</p>
+                ) : (
+                    <div className={styles.appointmentsGrid}>
+                        {upcoming.length === 0 && <p>No upcoming appointments</p>}
 
-                            {upcoming.map(appt => {
-                                const name = `Dr. ${appt.doctor.first_name} ${appt.doctor.last_name}`;
-                                const isVirtual = appt.appointment_type === 'Virtual';
-                                const typeCls = isVirtual ? styles.live : styles.physical;
-                                const typeLabel = isVirtual ? 'Live chat' : 'Physical';
+                        {upcoming.map(appt => {
+                            const name = `Dr. ${appt.doctor.first_name} ${appt.doctor.last_name}`;
+                            const isVirtual = appt.appointment_type === 'Virtual';
+                            const typeCls = isVirtual ? styles.live : styles.physical;
+                            const typeLabel = isVirtual ? 'Live chat' : 'Physical';
+                            const dt = new Date(appt.date);
+                            const dateStr = `${dt.getDate()} / ${dt.getMonth() + 1} / ${dt.getFullYear()}`;
 
-                                const dt = new Date(appt.date);
-                                const dateStr = `${dt.getDate()} / ${dt.getMonth() + 1} / ${dt.getFullYear()}`;
-
-                                return (
-                                    <div key={appt._id} className={styles.appointmentCard}>
-                                        <div className={styles.appointmentContent}>
-                                            <div className={styles.appointmentHeader}>{name}</div>
-                                            <div className={styles.appointmentDetails}>
-                                                <FiClock /> {appt.time}
-                                            </div>
-                                            <div className={styles.appointmentDetails}>
-                                                <FiCalendar /> {dateStr}
-                                            </div>
-                                            <div className={`${styles.appointmentType} ${typeCls}`}>
-                                                <FiUser /> {typeLabel}
-                                            </div>
+                            return (
+                                <div key={appt._id} className={styles.appointmentCard}>
+                                    <div className={styles.appointmentContent}>
+                                        <div className={styles.appointmentHeader}>{name}</div>
+                                        <div className={styles.appointmentDetails}>
+                                            <FiClock /> {appt.time}
+                                        </div>
+                                        <div className={styles.appointmentDetails}>
+                                            <FiCalendar /> {dateStr}
+                                        </div>
+                                        <div className={`${styles.appointmentType} ${typeCls}`}>
+                                            <FiUser /> {typeLabel}
+                                        </div>
+                                        <div className={styles.actionButtons}>
                                             <button
                                                 className={styles.detailsButton}
                                                 onClick={() => setSelectedAppt(appt)}
                                             >
                                                 Details
                                             </button>
-                                        </div>
-                                        <div className={styles.appointmentStatusContainer}>
-                                            <div
-                                                className={
-                                                    `${styles.appointmentStatus} ` +
-                                                    (appt.status === 'Canceled' ? styles.canceled : '')
-                                                }
-                                            >
-                                                {appt.status}
-                                            </div>
+                                            {isVirtual && (
+                                                <button
+                                                    className={styles.detailsButton}
+                                                    onClick={() => handleLiveChat(appt)}
+                                                >
+                                                    Join Live Chat
+                                                </button>
+                                            )}
                                         </div>
                                     </div>
-                                );
-                            })}
-                        </div>
-                    )
-                }
+                                    <div className={styles.appointmentStatusContainer}>
+                                        <div
+                                            className={`${styles.appointmentStatus} ${appt.status === 'Canceled' ? styles.canceled : ''
+                                                }`}
+                                        >
+                                            {appt.status}
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                )}
             </section>
-
 
             {/* Details Modal */}
             {selectedAppt && (
@@ -103,15 +132,18 @@ export default function PatientDashboard() {
                         <button
                             className={styles.closeButton}
                             onClick={closeModal}
-                        >×</button>
+                        >
+                            ×
+                        </button>
 
                         <h2>Appointment Details</h2>
                         <p>
-                            <strong>Doctor:</strong>{" "}
+                            <strong>Doctor:</strong>{' '}
                             Dr. {selectedAppt.doctor.first_name} {selectedAppt.doctor.last_name}
                         </p>
                         <p>
-                            <strong>Specialization:</strong> {selectedAppt.doctor.specialization}
+                            <strong>Specialization:</strong>{' '}
+                            {selectedAppt.doctor.specialization}
                         </p>
                         <p>
                             <strong>Bio:</strong> {selectedAppt.doctor.bio}
@@ -129,17 +161,14 @@ export default function PatientDashboard() {
                             <strong>Status:</strong>{' '}
                             <span
                                 className={
-                                    selectedAppt.status === 'Canceled'
-                                        ? styles.canceled
-                                        : ''
+                                    selectedAppt.status === 'Canceled' ? styles.canceled : ''
                                 }
                             >
                                 {selectedAppt.status}
                             </span>
                         </p>
 
-                        {/* ← Here’s your conditional map embed */}
-                        {selectedAppt.appointment_type === "In-Person" && (
+                        {selectedAppt.appointment_type === 'In-Person' && (
                             <div className={styles.mapContainer}>
                                 <h3>Clinic Location</h3>
                                 <iframe
@@ -147,8 +176,8 @@ export default function PatientDashboard() {
                                     src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3630.8143522730757!2d39.62500285933744!3d24.491888478262545!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x15bdbf99191c3081%3A0x9c4a2e5b638155ec!2z2YXYrNmF2Lkg2KfZhNi32Kgg2KfZhNmF2KrZhdmK2LIg2KfZhNi32KjZig!5e0!3m2!1sar!2smy!4v1748242571068!5m2!1sar!2smy"
                                     width="100%"
                                     height="250"
-                                    style={{ border: 0, borderRadius: "8px", marginTop: "1rem" }}
-                                    allowFullScreen=""
+                                    style={{ border: 0, borderRadius: '8px', marginTop: '1rem' }}
+                                    allowFullScreen
                                     loading="lazy"
                                 />
                             </div>
@@ -156,7 +185,6 @@ export default function PatientDashboard() {
                     </div>
                 </div>
             )}
-
         </DashboardLayout>
     );
 }
