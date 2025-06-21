@@ -12,40 +12,38 @@ router.post('/', async (req, res, next) => {
   try {
     const { appointmentId } = req.body;
 
-    // — 1) Validate appointmentId —
+    // 1) Validate
     if (!appointmentId || !ObjectId.isValid(appointmentId)) {
       return res.status(400).json({ error: 'Must provide a valid appointmentId' });
     }
     const apptOid = new ObjectId(appointmentId);
 
-    // — 2) Look up the appointment —
+    // 2) Load appointment
     const appt = await Appointments().findOne({ _id: apptOid });
     if (!appt) {
       return res.status(404).json({ error: 'Appointment not found' });
     }
 
-    // — 3) Extract doctorId & patientId (flat or nested) —
-    const rawDocId = appt.doctorId || appt.doctor_id || appt.doctor?.['_id'];
-    const rawPatId = appt.patientId || appt.patient_id || appt.patient?.['_id'];
-
+    // 3) Pull doctor/patient IDs (flat or snake_case)
+    const rawDocId = appt.doctorId || appt.doctor_id;
+    const rawPatId = appt.patientId || appt.patient_id;
     if (!rawDocId || !rawPatId) {
       return res.status(400).json({
         error: 'Appointment is missing doctorId or patientId'
       });
     }
 
-    // — 4) Coerce into ObjectId instances —
+    // 4) Convert to ObjectId
     const doctorOid = typeof rawDocId === 'string' ? new ObjectId(rawDocId) : rawDocId;
     const patientOid = typeof rawPatId === 'string' ? new ObjectId(rawPatId) : rawPatId;
 
-    // — 5) Find existing session by appointmentId —
+    // 5) Find or create *one* session per appointment
     let session = await Sessions().findOne({ appointmentId: apptOid });
 
-    // — 6) Or create a new one —
     if (!session) {
       const now = new Date();
       const { insertedId } = await Sessions().insertOne({
-        appointmentId: apptOid,
+        appointmentId: apptOid,       // <–– link back to your appointment
         doctorId: doctorOid,
         patientId: patientOid,
         createdAt: now,
@@ -55,7 +53,7 @@ router.post('/', async (req, res, next) => {
       session = { _id: insertedId };
     }
 
-    // — 7) Return the sessionId as a simple hex string —
+    // 6) Return the sessionId
     res.json({ sessionId: session._id.toHexString() });
 
   } catch (err) {

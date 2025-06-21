@@ -52,29 +52,44 @@ export default function DoctorDashboard() {
         setConfirmAction({ show: false, id: null, status: "" });
     }
 
-    // start/join live chat by appointmentId only
-    async function handleLiveChat(appt) {
+    const handleLiveChat = async (appt) => {
+        console.log('👉 starting live chat for appt', appt);
+
+        const appointmentId = appt._id;
+        const doctorId =
+            appt.doctor?._id ||
+            appt.doctorId ||
+            appt.doctor_id;
+        const patientId =
+            appt.patient?._id ||
+            appt.patientId ||
+            appt.patient_id;
+
+        if (!appointmentId || !doctorId || !patientId) {
+            console.warn('missing IDs', { appointmentId, doctorId, patientId });
+            return alert('Could not start chat: missing IDs');
+        }
+
         try {
-            // send only appointmentId
-            const { data } = await axios.post("/api/chat-sessions", {
-                appointmentId: appt._id
-            });
+            const { data } = await axios.post('/api/chat-sessions', { appointmentId });
+            console.log('✅ got sessionId', data.sessionId);
 
-            // build display name from appointment
-            const chatWith = appt.patient_name;
-
-            // navigate into chat route with sessionId & chatWith
+            const chatWith = appt.patient_name; // or build from appt.patient
             navigate(
                 `/doctor/live-chat?` +
                 `sessionId=${data.sessionId}` +
+                `&doctorId=${doctorId}` +
+                `&patientId=${patientId}` +
+                `&userType=doctor` +
                 `&chatWith=${encodeURIComponent(chatWith)}`,
                 { replace: false }
             );
         } catch (err) {
-            console.error("Error starting live chat:", err);
-            alert("Could not start live chat");
+            console.error('❌ error starting live chat:', err);
+            alert('Could not start live chat. See console.');
         }
-    }
+    };
+
 
     // filter & sort today's appointments
     const todayStr = new Date().toISOString().slice(0, 10);

@@ -176,6 +176,7 @@ router.get(
                             time: 1,
                             status: 1,
                             appointment_type: 1,
+                            patient_id: 1,
                             doctor: {
                                 _id: '$doctor._id',
                                 first_name: '$user.first_name',
@@ -228,6 +229,8 @@ router.get(
                             date: 1,
                             time: 1,
                             status: 1,
+                            patient_id: 1,
+                            doctor_id: 1,
                             appointment_type: 1,
                             patient_name: { $concat: ['$patient.first_name', ' ', '$patient.last_name'] },
                             patient_avatar: '$patient.profile_image'

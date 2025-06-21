@@ -7,7 +7,7 @@ const PatientLiveChat = ({ doctorId, patientId }) => {
         <DashboardLayout>
             <LiveChatTemplate
                 userType="patient"
-                chatWith="Dr. Ruhidah"
+                chatWith="doctor"
                 doctorId={doctorId}
                 patientId={patientId}
             />

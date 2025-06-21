@@ -27,22 +27,45 @@ export default function PatientDashboard() {
 
     // Start/join live chat by appointmentId only
     const handleLiveChat = async (appt) => {
+        console.log('👉 starting live chat for appt', appt);
+
+        // 1) Grab _all_ three IDs
+        const appointmentId = appt._id;
+        const doctorId =
+            appt.doctor?._id;  // if your API nested a doctor object
+
+        const patientId =
+            appt.patient?._id ||   // if your API nested a patient object
+            appt.patientId ||   // or if it camelCased
+            appt.patient_id ||   // or snake_cased in the raw DB
+            localStorage.getItem('patientId'); // fallback to current patient id
+        // console.log('👉 patient id ]', appt.patient_id);
+
+        // 2) Guard
+        if (!appointmentId || !doctorId || !patientId) {
+            console.warn('missing IDs', { appointmentId, doctorId, patientId });
+            return alert('Could not start chat: missing IDs');
+        }
+
         try {
-            const { data } = await axios.post('/api/chat-sessions', {
-                appointmentId: appt._id
-            });
+            // 3) POST to get-or-create the session
+            const { data } = await axios.post('/api/chat-sessions', { appointmentId });
+            console.log('✅ got sessionId', data.sessionId);
 
+            // 4) Redirect, carrying all the things
             const chatWith = `Dr. ${appt.doctor.first_name} ${appt.doctor.last_name}`;
-
             navigate(
                 `/patient/live-chat?` +
                 `sessionId=${data.sessionId}` +
+                `&doctorId=${doctorId}` +
+                `&patientId=${patientId}` +
+                `&userType=patient` +
                 `&chatWith=${encodeURIComponent(chatWith)}`,
                 { replace: false }
             );
         } catch (err) {
-            console.error('Error starting live chat:', err);
-            alert('Could not start live chat. Please try again.');
+            console.error('❌ error starting live chat:', err);
+            alert('Could not start live chat. See console.');
         }
     };
 
