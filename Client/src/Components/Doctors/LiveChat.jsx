@@ -1,5 +1,5 @@
 import React from "react";
-import LiveChatTemplate from "../CommonPages/LiveChat";
+import LiveChatTemplate from "../CommonPages/LiveChatTemplate";
 import DashboardLayout from "./layout/DashboardLayout";
 
 const DoctorLiveChat = ({ doctorId, patientId }) => {

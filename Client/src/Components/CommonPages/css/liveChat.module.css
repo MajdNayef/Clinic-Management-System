@@ -18,6 +18,12 @@
     font-size: 16px;
 }
 
+
+.chatContainer {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
 .chatMessages {
     padding: 20px;
     flex-grow: 1;
@@ -93,7 +99,8 @@
     gap: 15px;
     font-size: 14px;
     color: #4b5563;
-    margin-top: 8px;
+    margin-top: -20px;
+    margin-left: 100px;
 }
 
 .liveTag {
@@ -101,7 +108,7 @@
     color: white;
     padding: 4px 10px;
     border-radius: 999px;
-    font-size: 12px;
+    font-size: 10px;
     font-weight: bold;
 }
 
@@ -109,4 +116,24 @@
     font-size: 11px;
     color: #9ca3af;
     margin-left: auto;
+}
+
+.chatAvatars {
+    display: flex;
+    gap: 10px;
+    /* margin-top: 10px; */
+}
+
+.avatar {
+    width: 70px; /* Increase size */
+    height: 70px; /* Increase size */
+    border-radius: 50%;
+    /* vertical-align: middle;  */
+    /* margin: 0;  */
+}
+
+.chatHeader h2 {
+    display: flex;
+    /* align-items: center; */
+    gap: 10px; /* Add spacing between avatar and username */
 }

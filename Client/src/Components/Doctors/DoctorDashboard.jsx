@@ -81,7 +81,10 @@ export default function DoctorDashboard() {
                 `&doctorId=${doctorId}` +
                 `&patientId=${patientId}` +
                 `&userType=doctor` +
-                `&chatWith=${encodeURIComponent(chatWith)}`,
+                `&chatWith=${encodeURIComponent(chatWith)}` +
+                `&patientAvatar=${encodeURIComponent(data.patientAvatar)}` +
+                `&appointmentTime=${encodeURIComponent(data.appointmentTime)}` +
+                `&appointmentDate=${encodeURIComponent(data.appointmentDate)}`,
                 { replace: false }
             );
         } catch (err) {

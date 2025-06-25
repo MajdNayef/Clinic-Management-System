@@ -18,7 +18,12 @@ export default function LiveChat() {
     const userType = query.get('userType') || 'patient';
     const patientId = query.get('patientId');
     const doctorId = query.get('doctorId');
+    const doctorAvatar = query.get('doctorAvatar'); // Fetch doctor avatar from query
+    const patientAvatar = query.get('patientAvatar'); // Fetch patient avatar from query
     const userId = userType === 'doctor' ? doctorId : patientId;
+    const appointmentTime = query.get('appointmentTime') || 'Unknown Time';
+    const appointmentDate = query.get('appointmentDate') || 'Unknown Time';
+
 
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
@@ -82,10 +87,14 @@ export default function LiveChat() {
     return (
         <div className={styles.chatBox}>
             <div className={styles.chatHeader}>
-                <h2>Chat with {chatWith}</h2>
+                <div className={styles.chatAvatars}>
+                    {doctorAvatar && <img src={doctorAvatar} alt="Doctor Avatar" className={styles.avatar} />}
+                    {patientAvatar && <img src={patientAvatar} alt="Patient Avatar" className={styles.avatar} />}
+                <h2>Chat with {chatWith}</h2> 
+                </div>
                 <div className={styles.chatMeta}>
-                    <span className={styles.chatTime}><Clock size={14} /> Live</span>
-                    <span className={styles.chatDate}><Calendar size={14} /> Today</span>
+                    <span className={styles.chatTime}><Clock size={14} /> {appointmentTime}</span>
+                    <span className={styles.chatDate}><Calendar size={14} /> {appointmentDate}</span>
                     <span className={styles.liveTag}>Live Chat</span>
                 </div>
             </div>
