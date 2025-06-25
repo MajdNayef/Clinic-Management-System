@@ -26,6 +26,11 @@ import ViewAppointments from "./Components/Doctors/ViewAppointments";
 import DoctorProfilePage from "./Components/Doctors/DoctorProfilePage";
 import DoctorLiveChat from "./Components/Doctors/LiveChat";
 
+// For Admin
+import AdminDashboard from "./Components/Admin/AdminDashboard";
+import AdminProfilePage from "./Components/Admin/AdminProfilePage";
+
+
 
 // import axios from 'axios';
 
@@ -59,6 +64,11 @@ function App() {
         <Route path="/ViewAppointments" element={<ViewAppointments />} />
         <Route path="/DoctorProfilePage" element={<DoctorProfilePage />} />
         <Route path="/doctor/live-chat" element={<DoctorLiveChat doctorId="123" patientId="456" />} />
+
+        {/* Protected / Admin routes */}
+        <Route path="/AdminDashboard" element={<AdminDashboard />} />
+        <Route path="/AdminProfilePage" element={<AdminProfilePage />} />
+
 
         {/* Catch‐all → redirect to home */}
         <Route path="*" element={<Navigate to="/" replace />} />

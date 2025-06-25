@@ -1,0 +1,59 @@
+.adminDashboardContainer {
+    padding: 2rem;
+}
+
+.sectionTitle {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+.sectionSubtitle {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin: 1.5rem 0 0.5rem 0;
+}
+
+.divider {
+    border: none;
+    height: 1px;
+    background-color: #ccc;
+    margin-bottom: 1rem;
+}
+
+.statBox {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 1rem;
+    background-color: #f9f9f9;
+    margin-bottom: 1rem;
+}
+
+.statItem {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+    font-size: 1rem;
+    margin-bottom: 0.8rem;
+}
+
+.statRow {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.statMini {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background-color: white;
+    padding: 0.5rem 1rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    min-width: 140px;
+    justify-content: center;
+}

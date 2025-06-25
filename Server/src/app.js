@@ -14,6 +14,7 @@ const feedbackRoutes = require('./routes/feedbackRoutes');
 const dialogflowRoute = require('./routes/dialogFlow');
 const notificationsRoutes = require('./routes/notificationsRoutes');
 const chatSessionsRoute = require('./routes/chatSessions');
+const adminRoutes = require('./routes/adminRoutes');
 
 const app = express();
 
@@ -32,12 +33,15 @@ app.use(morgan('dev'));
 // Be sure each of these route-files does: 
 //   const express = require('express');
 //   const router  = express.Router();
+
+
 app.use('/api/auth', authRoutes);
 app.use('/api', appointmentRoutes);
 app.use('/api/appointments', feedbackRoutes);
 app.use('/api/dialogflow', dialogflowRoute);
 app.use('/api/notifications', notificationsRoutes);
 app.use('/api/chat-sessions', chatSessionsRoute);
+app.use('/api/admin', adminRoutes);
 
 // — Health check endpoint —
 app.get('/health', (_req, res) => res.json({ status: 'OK' }));

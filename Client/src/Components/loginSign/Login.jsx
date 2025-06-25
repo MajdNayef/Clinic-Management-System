@@ -13,6 +13,8 @@ axios.defaults.baseURL =
 const DASHBOARD_PATH = {
     Doctor: '/DoctorDashboard',
     Patient: '/PatientDashboard',
+    Admin: '/AdminDashboard',
+    Pharmacist: '/PharmacistDashboard',
 };
 
 const Login = () => {
