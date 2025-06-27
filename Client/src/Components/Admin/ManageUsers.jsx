@@ -92,35 +92,35 @@ export default function ManageUsers() {
     try {
       // Prepare cleanDoctorData inside the function
       const { user_id, ...cleanDoctorData } = doctorData;
-  
+
       if (editData.role === "Doctor") {
         cleanDoctorData.available_days = Array.isArray(cleanDoctorData.available_days)
           ? cleanDoctorData.available_days
           : (typeof cleanDoctorData.available_days === "string"
-              ? cleanDoctorData.available_days.split(",").map((d) => d.trim())
-              : []);
+            ? cleanDoctorData.available_days.split(",").map((d) => d.trim())
+            : []);
       }
-  
+
       // First update the user base info (and optionally doctorData inside it)
       const payload = {
         ...editData,
         doctorData: editData.role === "Doctor" ? cleanDoctorData : undefined,
       };
-  
+
       const updatedUser = await axios.put(`/api/admin/users/${editingId}`, payload);
-  
+
       // Update local state with the updated user info
       setUsers((prevUsers) =>
         prevUsers.map((user) => (user._id === editingId ? updatedUser.data : user))
       );
-  
+
       handleCancel(); // Exit edit mode
     } catch (err) {
       alert("Failed to update user");
       console.error(err);
     }
   };
-  
+
   const handleDelete = (userId) => {
     setConfirmDelete({ show: true, userId });
   };

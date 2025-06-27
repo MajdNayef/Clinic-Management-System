@@ -58,7 +58,7 @@ const DashboardLayout = ({ children }) => {
 
         <nav className={styles.navLinks}>
           <NavLink
-            to="/DoctorDashboard"
+            to="#"
             className={({ isActive }) =>
               isActive ? `${styles.link} ${styles.active}` : styles.link
             }

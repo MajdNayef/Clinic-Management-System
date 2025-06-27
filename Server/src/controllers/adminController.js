@@ -5,6 +5,7 @@ const appointments = () => collection('appointments');
 const doctors = () => collection('doctors'); // Add missing definition
 const patients = () => collection('patients'); // Add missing definition
 
+
 exports.getAllUsers = async (req, res) => {
     try {
         const allUsers = await users()
@@ -157,3 +158,113 @@ exports.updateDoctorById = async (req, res) => {
 };
 
 
+
+
+// GET all appointments
+exports.getAllAppointments = async (req, res) => {
+    try {
+        let { dateFilter } = req.query;
+        let matchStage = {};
+
+        if (dateFilter) {
+            const today = new Date();
+            let targetDate;
+
+            if (dateFilter === "today") {
+                targetDate = today.toISOString().split("T")[0];
+            } else if (dateFilter === "tomorrow") {
+                const tomorrow = new Date(today);
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                targetDate = tomorrow.toISOString().split("T")[0];
+            } else if (/^\d{4}-\d{2}-\d{2}$/.test(dateFilter)) {
+                // If format is YYYY-MM-DD
+                targetDate = dateFilter;
+            }
+
+            if (targetDate) {
+                matchStage.date = targetDate;
+            }
+        }
+
+        const all = await appointments().aggregate([
+            { $match: matchStage },
+            {
+                $lookup: {
+                    from: "doctors",
+                    localField: "doctor_id",
+                    foreignField: "_id",
+                    as: "doctor"
+                }
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "doctor.user_id",
+                    foreignField: "_id",
+                    as: "doctor_user"
+                }
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "patient_id",
+                    foreignField: "_id",
+                    as: "patient"
+                }
+            },
+            {
+                $addFields: {
+                    doctor: { $arrayElemAt: ["$doctor_user", 0] },
+                    patient: { $arrayElemAt: ["$patient", 0] }
+                }
+            },
+            {
+                $project: {
+                    date: 1,
+                    time: 1,
+                    status: 1,
+                    appointment_type: 1,
+                    createdAt: 1,
+                    doctor: { _id: 1, first_name: 1, last_name: 1 },
+                    patient: { _id: 1, first_name: 1, last_name: 1 }
+                }
+            },
+            { $sort: { createdAt: -1 } }
+        ]).toArray();
+
+        res.json(all);
+    } catch (err) {
+        console.error("Error fetching appointments:", err);
+        res.status(500).json({ message: "Failed to fetch appointments" });
+    }
+};
+
+
+// PUT update appointment status
+exports.updateAppointmentStatus = async (req, res) => {
+    try {
+        const id = new ObjectId(req.params.id);
+        const { status } = req.body;
+        if (!["Scheduled", "Completed", "Cancelled"].includes(status)) {
+            return res.status(400).json({ message: "Invalid status value" });
+        }
+
+        await appointments().updateOne({ _id: id }, { $set: { status } });
+        res.json({ message: "Appointment status updated" });
+    } catch (err) {
+        console.error("Error updating appointment:", err);
+        res.status(500).json({ message: "Update failed" });
+    }
+};
+
+// DELETE appointment
+exports.deleteAppointment = async (req, res) => {
+    try {
+        const id = new ObjectId(req.params.id);
+        await appointments().deleteOne({ _id: id });
+        res.json({ message: "Appointment deleted" });
+    } catch (err) {
+        console.error("Error deleting appointment:", err);
+        res.status(500).json({ message: "Delete failed" });
+    }
+};
