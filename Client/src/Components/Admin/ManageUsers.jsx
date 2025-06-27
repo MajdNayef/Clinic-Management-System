@@ -13,6 +13,8 @@ export default function ManageUsers() {
   const [doctorData, setDoctorData] = useState({});
   const [loading, setLoading] = useState(true);
   const [confirmDelete, setConfirmDelete] = useState({ show: false, userId: null });
+  const { user_id, ...cleanDoctorData } = doctorData;
+
 
   useEffect(() => {
     fetchUsers();
@@ -88,32 +90,37 @@ export default function ManageUsers() {
 
   const handleSave = async () => {
     try {
-        // Combine user and doctor data into one request
-        const payload = {
-            ...editData,
-            doctorData: editData.role === "Doctor" ? {
-                ...doctorData,
-                available_days:
-                    typeof doctorData.available_days === "string"
-                        ? doctorData.available_days.split(",").map((d) => d.trim())
-                        : doctorData.available_days,
-            } : undefined,
-        };
-
-        const updatedUser = await axios.put(`/api/admin/users/${editingId}`, payload);
-
-        // Update the local state instead of fetching all users again
-        setUsers((prevUsers) =>
-            prevUsers.map((user) => (user._id === editingId ? updatedUser.data : user))
-        );
-
-        handleCancel(); // Exit edit mode
+      // Prepare cleanDoctorData inside the function
+      const { user_id, ...cleanDoctorData } = doctorData;
+  
+      if (editData.role === "Doctor") {
+        cleanDoctorData.available_days = Array.isArray(cleanDoctorData.available_days)
+          ? cleanDoctorData.available_days
+          : (typeof cleanDoctorData.available_days === "string"
+              ? cleanDoctorData.available_days.split(",").map((d) => d.trim())
+              : []);
+      }
+  
+      // First update the user base info (and optionally doctorData inside it)
+      const payload = {
+        ...editData,
+        doctorData: editData.role === "Doctor" ? cleanDoctorData : undefined,
+      };
+  
+      const updatedUser = await axios.put(`/api/admin/users/${editingId}`, payload);
+  
+      // Update local state with the updated user info
+      setUsers((prevUsers) =>
+        prevUsers.map((user) => (user._id === editingId ? updatedUser.data : user))
+      );
+  
+      handleCancel(); // Exit edit mode
     } catch (err) {
-        alert("Failed to update user");
-        console.error(err);
+      alert("Failed to update user");
+      console.error(err);
     }
-};
-
+  };
+  
   const handleDelete = (userId) => {
     setConfirmDelete({ show: true, userId });
   };

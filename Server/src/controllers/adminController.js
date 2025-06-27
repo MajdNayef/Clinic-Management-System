@@ -25,7 +25,7 @@ exports.updateUserById = async (req, res) => {
     try {
         const userId = new ObjectId(req.params.id);
         const updates = { ...req.body };
-        delete updates._id; // avoid conflict
+        delete updates._id; // Remove `_id` to prevent immutable field error
 
         // Detect role change
         const oldUser = await users().findOne({ _id: userId });
@@ -45,12 +45,14 @@ exports.updateUserById = async (req, res) => {
         // Handle doctor-specific updates if the role is "Doctor"
         if (updates.role === "Doctor") {
             const doctorUpdates = req.body.doctorData || {};
+            delete doctorUpdates._id; // Remove `_id` to prevent immutable field error
+
             if (doctorUpdates.available_days && Array.isArray(doctorUpdates.available_days)) {
                 doctorUpdates.available_days = doctorUpdates.available_days.map(d => d.trim());
             }
 
             await doctors().updateOne(
-                { user_id: userId },
+                { user_id: userId }, // Ensure the query matches the correct document
                 { $set: doctorUpdates },
                 { upsert: true }
             );
@@ -128,9 +130,10 @@ exports.updateDoctorById = async (req, res) => {
     try {
         const userId = new ObjectId(req.params.userId);
         const updates = { ...req.body };
-        delete updates._id; // Prevent updating immutable field
 
-        // Clean fields if needed
+        delete updates._id;
+        updates.user_id = userId; // Force ObjectId consistently
+
         if (updates.available_days && Array.isArray(updates.available_days)) {
             updates.available_days = updates.available_days.map(d => d.trim());
         }
@@ -142,17 +145,15 @@ exports.updateDoctorById = async (req, res) => {
         );
 
         if (result.modifiedCount === 0 && !result.upsertedCount) {
-            return res.status(400).json({ message: 'Nothing was updated' });
+            return res.status(400).json({ message: "Nothing was updated" });
         }
 
         const updated = await doctors().findOne({ user_id: userId });
         res.json(updated);
     } catch (err) {
-        console.error('UPDATE doctor failed:', err);
-        res.status(500).json({ message: 'Server error' });
+        console.error("UPDATE doctor failed:", err);
+        res.status(500).json({ message: "Server error" });
     }
 };
-
-
 
 
