@@ -11,7 +11,7 @@ import Login from "./Components/loginSign/Login";
 import HomePage from "./Components/HomePage/HomePage";
 import GuestContactUs from "./Components/HomePage/GuestContactUs";
 
-// for patient
+// for Patient
 import PatientDashboard from "./Components/Patient/PatientDashboard";
 import AppointmentBooking from "./Components/Patient/AppointmentBooking";
 import Services from "./Components/Patient/Services";
@@ -29,6 +29,7 @@ import DoctorLiveChat from "./Components/Doctors/LiveChat";
 // For Admin
 import AdminDashboard from "./Components/Admin/AdminDashboard";
 import AdminProfilePage from "./Components/Admin/AdminProfilePage";
+import ManageUsers from "./Components/Admin/ManageUsers";
 
 
 
@@ -68,6 +69,7 @@ function App() {
         {/* Protected / Admin routes */}
         <Route path="/AdminDashboard" element={<AdminDashboard />} />
         <Route path="/AdminProfilePage" element={<AdminProfilePage />} />
+        <Route path="/ManageUsers" element={<ManageUsers />} />
 
 
         {/* Catch‐all → redirect to home */}

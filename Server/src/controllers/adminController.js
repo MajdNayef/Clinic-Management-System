@@ -1,7 +1,69 @@
 const { collection } = require('../config/db');
-
+const { ObjectId } = require('mongodb');
 const users = () => collection('users');
 const appointments = () => collection('appointments');
+const doctors = () => collection('doctors'); // Add missing definition
+const patients = () => collection('patients'); // Add missing definition
+
+exports.getAllUsers = async (req, res) => {
+    try {
+        const allUsers = await users()
+            .find({}, {
+                projection: {
+                    password: 0 // exclude password only
+                }
+            })
+            .toArray();
+        res.json(allUsers);
+    } catch (err) {
+        res.status(500).json({ message: 'Failed to fetch users' });
+    }
+};
+
+
+exports.updateUserById = async (req, res) => {
+    try {
+        const userId = new ObjectId(req.params.id);
+        const updates = { ...req.body };
+        delete updates._id; // avoid conflict
+
+        // Detect role change
+        const oldUser = await users().findOne({ _id: userId });
+        let roleChanged = false;
+
+        if (!oldUser.role) {
+            // Add role if not found in the database
+            await users().updateOne({ _id: userId }, { $set: { role: updates.role } });
+            roleChanged = true;
+        } else {
+            roleChanged = oldUser.role !== updates.role;
+        }
+
+        // Update user info
+        await users().updateOne({ _id: userId }, { $set: updates });
+
+        // Handle doctor-specific updates if the role is "Doctor"
+        if (updates.role === "Doctor") {
+            const doctorUpdates = req.body.doctorData || {};
+            if (doctorUpdates.available_days && Array.isArray(doctorUpdates.available_days)) {
+                doctorUpdates.available_days = doctorUpdates.available_days.map(d => d.trim());
+            }
+
+            await doctors().updateOne(
+                { user_id: userId },
+                { $set: doctorUpdates },
+                { upsert: true }
+            );
+        }
+
+        const updated = await users().findOne({ _id: userId }, { projection: { password: 0 } });
+        res.json(updated);
+    } catch (err) {
+        console.error("Update user failed:", err);
+        res.status(500).json({ message: "User update failed" });
+    }
+};
+
 
 exports.getDashboardStats = async (req, res) => {
     try {
@@ -33,4 +95,64 @@ exports.getDashboardStats = async (req, res) => {
         console.error("Dashboard error:", err);
         res.status(500).json({ message: "Failed to load dashboard stats" });
     }
+
 };
+
+
+exports.deleteUserById = async (req, res) => {
+    try {
+        const id = new ObjectId(req.params.id);
+        await users().deleteOne({ _id: id });
+        res.json({ message: "User deleted" });
+    } catch (err) {
+        res.status(500).json({ message: "Delete failed" });
+    }
+};
+
+
+exports.getDoctorById = async (req, res) => {
+    try {
+        const userId = new ObjectId(req.params.userId); // Correct parameter name
+        const doctor = await doctors().findOne({ user_id: userId }); // Query by user_id
+        if (!doctor) return res.status(404).json({ message: 'Doctor not found' });
+        res.json(doctor);
+    } catch (err) {
+        console.error('GET doctor failed:', err);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+
+// UPDATE doctor fields
+exports.updateDoctorById = async (req, res) => {
+    try {
+        const userId = new ObjectId(req.params.userId);
+        const updates = { ...req.body };
+        delete updates._id; // Prevent updating immutable field
+
+        // Clean fields if needed
+        if (updates.available_days && Array.isArray(updates.available_days)) {
+            updates.available_days = updates.available_days.map(d => d.trim());
+        }
+
+        const result = await doctors().updateOne(
+            { user_id: userId },
+            { $set: updates },
+            { upsert: true }
+        );
+
+        if (result.modifiedCount === 0 && !result.upsertedCount) {
+            return res.status(400).json({ message: 'Nothing was updated' });
+        }
+
+        const updated = await doctors().findOne({ user_id: userId });
+        res.json(updated);
+    } catch (err) {
+        console.error('UPDATE doctor failed:', err);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+
+
+
