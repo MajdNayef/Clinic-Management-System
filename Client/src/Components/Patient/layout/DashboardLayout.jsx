@@ -47,7 +47,7 @@ const DashboardLayout = ({ children }) => {
     setGreet(hr < 12 ? 'Good morning' : hr < 18 ? 'Good afternoon' : 'Good evening');
   }, []);
 
-  const fullName = user ? `${user.first_name} ${user.last_name}` : 'Guest';
+  const fullName = user ? `${user.first_name} ${user.last_name}` : 'Unknown';
 
   return (
     <div className={styles.dashboardWrapper}>

@@ -9,6 +9,12 @@ const users = () => collection('users');
 const patients = () => collection('patients');
 const doctors = () => collection('doctors');
 
+// Add the hashPassword function
+exports.hashPassword = async (password) => {
+    const salt = 12; // Adjust salt value as needed
+    return await bcrypt.hash(password, salt);
+};
+
 // POST /api/auth/register  (full-profile version)
 exports.register = async (req, res) => {
     console.log("🔥 client =", getClient()); // ✅ actually call the function

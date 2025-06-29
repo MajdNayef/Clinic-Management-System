@@ -144,8 +144,8 @@ const DashboardLayout = ({ children }) => {
                 )}
               </div>
               <div className={styles.profileText}>
-                <div className={styles.username}>{user?.first_name || 'Ahmed'}</div>
-                <div className={styles.userEmail}>{user?.email || 'example@gmail.com'}</div>
+                <div className={styles.username}>{user?.first_name || 'Unknown'}</div>
+                <div className={styles.userEmail}>{user?.email || 'Unkownen@gmail.com'}</div>
               </div>
             </div>
 

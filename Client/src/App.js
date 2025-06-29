@@ -10,6 +10,8 @@ import Signup from "./Components/loginSign/Signup";
 import Login from "./Components/loginSign/Login";
 import HomePage from "./Components/HomePage/HomePage";
 import GuestContactUs from "./Components/HomePage/GuestContactUs";
+import ResetPassword from './Components/loginSign/ResetPassword';
+
 
 // for Patient
 import PatientDashboard from "./Components/Patient/PatientDashboard";
@@ -50,6 +52,7 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
         <Route path="/GuestContactUs" element={<GuestContactUs />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
 
         {/* Protected / patient routes */}
         <Route path="/PatientDashboard" element={<PatientDashboard />} />

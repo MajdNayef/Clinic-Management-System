@@ -44,8 +44,8 @@ const DashboardLayout = ({ children }) => {
     return 'Good evening';
   })();
 
-  const fullName = user ? `${user.first_name} ${user.last_name}` : 'Guest';
-  const firstName = user ? user.first_name : 'Guest';
+  const fullName = user ? `${user.first_name} ${user.last_name}` : 'Unknown';
+  const firstName = user ? user.first_name : 'Unknown';
 
   return (
     <div className={styles.dashboardWrapper}>
