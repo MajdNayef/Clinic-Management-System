@@ -4,6 +4,9 @@ const users = () => collection('users');
 const appointments = () => collection('appointments');
 const doctors = () => collection('doctors'); // Add missing definition
 const patients = () => collection('patients'); // Add missing definition
+const { validationResult } = require('express-validator');
+const { sendNotificationToUser } = require('./notificationController');
+
 
 
 exports.getAllUsers = async (req, res) => {
@@ -266,5 +269,52 @@ exports.deleteAppointment = async (req, res) => {
     } catch (err) {
         console.error("Error deleting appointment:", err);
         res.status(500).json({ message: "Delete failed" });
+    }
+};
+
+
+// POST create appointment
+exports.createAppointment = async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+
+    try {
+        const { doctor_id, patient_id, date, time, type } = req.body;
+        const docId = new ObjectId(doctor_id);
+        const patId = new ObjectId(patient_id);
+
+        if (time < "08:00" || time > "11:30")
+            return res.status(400).json({ message: "Outside working hours" });
+
+        const clash = await collection("appointments").findOne({
+            doctor_id: docId,
+            date,
+            time,
+        });
+        if (clash)
+            return res.status(409).json({ message: "Slot already booked" });
+
+        const apptDoc = {
+            doctor_id: docId,
+            patient_id: patId,
+            status: "Scheduled",
+            date,
+            time,
+            appointment_type: type,
+            createdAt: new Date(),
+        };
+
+        const { insertedId } = await collection("appointments").insertOne(apptDoc);
+
+        // Notify the patient
+        const content = `Your appointment is scheduled on ${date} at ${time}.`;
+        await sendNotificationToUser(patId, content);
+
+        res.status(201).json({ message: "Appointment created", appointmentId: insertedId });
+    } catch (err) {
+        console.error("Admin create appointment failed:", err);
+        res.status(500).json({ message: "Server error", error: err.message });
     }
 };

@@ -138,6 +138,8 @@ router.post(
     }
 );
 
+
+
 /**
  * GET /api/appointments
  * → list all appointments for the logged-in patient
