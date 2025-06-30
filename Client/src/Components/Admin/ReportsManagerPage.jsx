@@ -4,8 +4,8 @@ import DashboardLayout from './layout/DashboardLayout';
 import styles from './ReportsPages/reports.module.css';
 
 import AppointmentReportsPage from './ReportsPages/AppointmentReports';
-// import DoctorPerformancePage from '../reportsPages/DoctorPerformancePage';
-// import AppointmentStatisticsPage from '../reportsPages/AppointmentStatisticsPage';
+import DoctorPerformancePage from './ReportsPages/DoctorPerformancePage';
+// import AppointmentStatisticsPage from './reportsPages/AppointmentStatisticsPage';
 
 export default function ReportsManagerPage() {
     const [activeTab, setActiveTab] = useState('appointment');
@@ -14,8 +14,8 @@ export default function ReportsManagerPage() {
         switch (activeTab) {
             case 'appointment':
                 return <AppointmentReportsPage />;
-                // case 'performance':
-                //     return <DoctorPerformancePage />;
+            case 'performance':
+                return <DoctorPerformancePage />;
                 // case 'statistics':
                 //     return <AppointmentStatisticsPage />;
                 // default:

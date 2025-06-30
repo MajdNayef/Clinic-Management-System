@@ -96,7 +96,11 @@ export default function MyAppointments() {
     const submitFeedback = async () => {
         setFeedbackLoading(true);
         try {
-            await axios.post(`/api/appointments/${feedbackAppt._id}/feedback`, feedback);
+            await axios.post(`/api/appointments/${feedbackAppt._id}/feedback`, {
+                rating: feedback.rating,
+                note: feedback.note
+            });
+
             alert("Feedback submitted successfully!");
             // clear & close
             setFeedbackAppt(null);

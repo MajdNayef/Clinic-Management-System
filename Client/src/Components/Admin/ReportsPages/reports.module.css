@@ -97,4 +97,45 @@
 
 .actionBtn:hover {
     background-color: #059669;
-}   
+}
+
+.generateBtn {
+    background-color: #0077cc;
+    color: white;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.generateBtn:hover {
+    background-color: #005fa3;
+}
+
+.reportTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    font-size: 0.95rem;
+}
+
+.reportTable th,
+.reportTable td {
+    border: 1px solid #ddd;
+    padding: 0.6rem 0.8rem;
+    text-align: left;
+}
+
+.reportTable th {
+    background-color: #f3f4f6;
+    font-weight: 600;
+}
+
+.reportTable tr:nth-child(even) {
+    background-color: #f9fafb;
+}
+
+.tableWrapper {
+    overflow-x: auto;
+}

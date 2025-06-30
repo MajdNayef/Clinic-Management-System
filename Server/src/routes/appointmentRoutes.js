@@ -423,5 +423,54 @@ router.get(
         }
     }
 );
+const feedbacksCol = () => collection("feedbacks");
+
+/**
+ * POST /api/appointments/:id/feedback
+ * body: { rating, note }
+ * Auto-attaches doctor_id from the appointment
+ */
+router.post(
+    "/appointments/:id/feedback",
+    guard,
+    body("rating").isInt({ min: 1, max: 5 }),
+    body("note").isString().trim().notEmpty(),
+    async (req, res) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty())
+            return res.status(422).json({ errors: errors.array() });
+
+        const appointmentId = new ObjectId(req.params.id);
+        const patientId = new ObjectId(req.userId);
+
+        try {
+            // 1. Get the appointment to fetch doctor_id
+            const appointment = await appointmentsCol().findOne({
+                _id: appointmentId,
+                patient_id: patientId
+            });
+
+            if (!appointment)
+                return res.status(404).json({ message: "Appointment not found or not yours" });
+
+            // 2. Insert feedback with doctor_id from appointment
+            const feedbackDoc = {
+                appointment_id: appointmentId,
+                patient_id: patientId,
+                doctor_id: appointment.doctor_id, // ✅ pulled automatically
+                rating: req.body.rating,
+                note: req.body.note,
+                createdAt: new Date()
+            };
+
+            await feedbacksCol().insertOne(feedbackDoc);
+
+            res.status(201).json({ message: "Feedback submitted" });
+        } catch (err) {
+            console.error("❌ Feedback submission error:", err);
+            res.status(500).json({ message: "Failed to submit feedback", error: err.message });
+        }
+    }
+);
 
 module.exports = router;

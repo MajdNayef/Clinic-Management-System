@@ -40,7 +40,6 @@ router.get('/patients/on-site', AdminController.getOnSitePatients);
 router.get('/appointments/calendar', AdminController.getCalendarAppointments);
 
 
-
 // Appointments Report Routes 
 
 
@@ -50,6 +49,9 @@ router.get('/reports/appointments/details/:id', Reportscontroller.getAppointment
 router.post('/reports/appointments/generate/:id', Reportscontroller.generateAppointmentPDF);
 router.get('/reports/appointments/history', Reportscontroller.getGeneratedAppointmentReports);
 router.post('/appointments/generate/:id', Reportscontroller.generateAppointmentPDF);
+
+router.get("/reports/doctors/summary", Reportscontroller.getDoctorPerformanceSummary);
+router.post("/reports/doctors/generate/:doctorId", Reportscontroller.generateDoctorPerformancePDF);
 
 
 module.exports = router;
