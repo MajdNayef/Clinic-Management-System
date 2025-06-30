@@ -110,30 +110,29 @@ export default function AdminDashboard() {
                         </div>
                     </div>
                 </section>
+                {/* Slot Limits + Appointments in One Row */}
+                <div className={styles.sectionRow}>
 
-                {/* Slot Limits Section */}
-                <section>
-                    <h3 className={styles.sectionSubtitle}>Today's Slot Limits</h3>
-                    <div className={styles.statBox}>
-                        <div className={styles.statRow}>
-                            <div className={styles.statMini}><FaStethoscope /> Max Physical Slots: {todaySlotLimits.physical}</div>
-                            <div className={styles.statMini}><FaComments /> Max Virtual Slots: {todaySlotLimits.virtual}</div>
+                    <section className={styles.halfWidth}>
+                        <h3 className={styles.sectionSubtitle}>DMC Today Appointments</h3>
+                        <div className={styles.statBox}>
+                            <div className={styles.statRow}>
+                            <div className={styles.statMini}><Users size={18} /> Total : {stats.totalAppointments}</div>
+                                <div className={styles.statMini}><User size={16} /> Virtual: {stats.virtualAppointments}</div>
+                                <div className={styles.statMini}><UserCheck size={16} /> Physical: {stats.physicalAppointments}</div>
+                            </div>
                         </div>
-                    </div>
-                </section>
-
-                {/* Appointments Section */}
-                <section>
-                    <h3 className={styles.sectionSubtitle}>DMC Appointments</h3>
-                    <div className={styles.statBox}>
-                        <div className={styles.statItem}><Users size={18} /> Today Total Appointments: {stats.totalAppointments}</div>
-                        <div className={styles.statRow}>
-                            <div className={styles.statMini}><User size={16} /> Virtual: {stats.virtualAppointments}</div>
-                            <div className={styles.statMini}><UserCheck size={16} /> Physical: {stats.physicalAppointments}</div>
+                    </section>
+                    <section className={styles.halfWidth}>
+                        <h3 className={styles.sectionSubtitle}>Today's Slot Limits</h3>
+                        <div className={styles.statBox}>
+                            <div className={styles.statRow}>
+                                <div className={styles.statMini}><FaStethoscope /> Max Physical Slots: {todaySlotLimits.physical}</div>
+                                <div className={styles.statMini}><FaComments /> Max Virtual Slots: {todaySlotLimits.virtual}</div>
+                            </div>
                         </div>
-                    </div>
-                </section>
-
+                    </section>
+                </div>
                 {/* On-Site Tracking */}
                 <section>
                     <h3 className={styles.sectionSubtitle}>Real-Time On-Site Patients</h3>
