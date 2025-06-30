@@ -57,3 +57,60 @@
     min-width: 140px;
     justify-content: center;
 }
+
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.dayLabel {
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #374151;
+}
+
+.empty {
+    height: 60px;
+    background-color: transparent;
+}
+
+.cell {
+    background-color: #ffffff;
+    border: 1px solid #e5e7eb;
+    padding: 0.5rem;
+    border-radius: 6px;
+    min-height: 60px;
+    font-size: 0.85rem;
+    text-align: center;
+    color: #1f2937;
+}
+
+.date {
+    font-weight: 600;
+    margin-bottom: 0.2rem;
+}
+
+.tag {
+    font-size: 0.75rem;
+    color: #4b5563;
+    margin-top: 0.2rem;
+}
+
+.physicalIcon,
+.virtualIcon {
+    font-size: 0.8rem;
+    margin-right: 0.25rem;
+    vertical-align: middle;
+}
+
+.slotLimitHighlight {
+    background-color: #eef2ff;
+    border-left: 4px solid #3b82f6;
+    padding: 1rem;
+    border-radius: 0.75rem;
+    margin-top: 1rem;
+}   

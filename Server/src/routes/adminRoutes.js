@@ -9,13 +9,20 @@ router.get('/dashboard', AdminController.getDashboardStats);
 router.get('/users', AdminController.getAllUsers);
 router.put('/users/:id', AdminController.updateUserById);
 router.delete('/users/:id', AdminController.deleteUserById);
+router.get('/doctors', AdminController.getAllDoctors);
 router.get('/doctor/:userId', AdminController.getDoctorById);
 router.put('/doctor/:userId', AdminController.updateDoctorById); // Ensure this is correctly defined as a PUT route
 
 router.get('/appointments/', AdminController.getAllAppointments);
 router.put('/appointments/:id', AdminController.updateAppointmentStatus);
 router.delete('/appointments/:id', AdminController.deleteAppointment);
+router.put('/working-hours', AdminController.updateWorkingHours);
+router.put('/working-hours/bulk', AdminController.updateBulkWorkingHours);
 
+router.get('/working-hours', AdminController.getWorkingHours);
+router.post('/clinic-capacities', AdminController.setClinicCapacity);
+router.get('/clinic-capacities', AdminController.getClinicCapacities);
+router.put('/clinic-capacities/global', AdminController.updateGlobalClinicCapacity);
 router.post(
     '/appointments',
     [
@@ -27,6 +34,10 @@ router.post(
     ],
     AdminController.createAppointment
 );
+
+router.get('/patients/on-site', AdminController.getOnSitePatients);
+router.get('/appointments/calendar',AdminController.getCalendarAppointments);
+
 
 
 module.exports = router;

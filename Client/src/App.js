@@ -33,6 +33,7 @@ import AdminDashboard from "./Components/Admin/AdminDashboard";
 import AdminProfilePage from "./Components/Admin/AdminProfilePage";
 import ManageUsers from "./Components/Admin/ManageUsers";
 import ManageAppointments from "./Components/Admin/ManageAppointments";
+import ClinicCapacityManager from "./Components/Admin/ClinicCapacity";
 
 
 
@@ -74,7 +75,8 @@ function App() {
         <Route path="/AdminDashboard" element={<AdminDashboard />} />
         <Route path="/AdminProfilePage" element={<AdminProfilePage />} />
         <Route path="/ManageUsers" element={<ManageUsers />} />
-        <Route path="/ManageAppointments" element={<ManageAppointments />} />
+        <Route path="/ManageAppointments" element={<ManageAppointments />} /> 
+        <Route path="/ClinicCapacityManager" element={<ClinicCapacityManager />} />
 
 
 

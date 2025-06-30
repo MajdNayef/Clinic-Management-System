@@ -123,6 +123,7 @@
 
 .statusBtn:hover {
     background-color: #e5e7eb;
+    color: #374151;
 }
 
 .statusBtn:disabled {
@@ -339,4 +340,3 @@
 .select {
     margin-bottom: 1rem;
   }
-  
