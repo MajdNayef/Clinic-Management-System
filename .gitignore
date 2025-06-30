@@ -98,3 +98,4 @@ yarn-debug.log*
 yarn-error.log*
 /Server/src/config
 /Server/src/config/dialogflow-key.json
+/Server/src/uploads

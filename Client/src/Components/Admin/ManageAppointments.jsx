@@ -245,11 +245,12 @@ export default function ManageAppointments() {
                         {filtered.map((a) => (
                             <div key={a._id} className={styles.card}>
                                 <div className={styles.info}>
+                                    <p><strong>Appointment ID :</strong> {a._id}</p>
+                                    <p><strong>Doctor:</strong> {a?.doctor?.first_name} {a?.doctor?.last_name}</p>
+                                    <p><strong>Patient:</strong> {a?.patient?.first_name} {a?.patient?.last_name}</p>
                                     <p><strong>Date:</strong> {a.date}</p>
                                     <p><strong>Time:</strong> {a.time}</p>
                                     <p><strong>Type:</strong> {a.appointment_type}</p>
-                                    <p><strong>Doctor:</strong> {a?.doctor?.first_name} {a?.doctor?.last_name}</p>
-                                    <p><strong>Patient:</strong> {a?.patient?.first_name} {a?.patient?.last_name}</p>
                                     <p><strong>Created:</strong> {new Date(a.createdAt).toLocaleString()}</p>
                                     <hr />
                                     <p><strong>Status:</strong>

@@ -3,6 +3,7 @@ const { body } = require('express-validator');
 const router = express.Router();
 const AdminController = require('../controllers/adminController');
 const { validationResult } = require('express-validator');
+const Reportscontroller = require('../controllers/appointmentsReportController');
 
 
 router.get('/dashboard', AdminController.getDashboardStats);
@@ -36,8 +37,19 @@ router.post(
 );
 
 router.get('/patients/on-site', AdminController.getOnSitePatients);
-router.get('/appointments/calendar',AdminController.getCalendarAppointments);
+router.get('/appointments/calendar', AdminController.getCalendarAppointments);
 
+
+
+// Appointments Report Routes 
+
+
+
+
+router.get('/reports/appointments/details/:id', Reportscontroller.getAppointmentDetails); // optional
+router.post('/reports/appointments/generate/:id', Reportscontroller.generateAppointmentPDF);
+router.get('/reports/appointments/history', Reportscontroller.getGeneratedAppointmentReports);
+router.post('/appointments/generate/:id', Reportscontroller.generateAppointmentPDF);
 
 
 module.exports = router;
