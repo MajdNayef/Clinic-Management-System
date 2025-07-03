@@ -178,7 +178,7 @@ const DashboardLayout = ({ children }) => {
             </NavLink>
 
             <NavLink
-              to="#"
+              to="/DoctorManageAppointments"
               className={({ isActive }) =>
                 isActive
                   ? `${styles.sidebarLink} ${styles.active}`

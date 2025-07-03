@@ -25,6 +25,7 @@ export default function AppointmentBooking() {
     const [selectedDoctor, setSelectedDoctor] = useState("");
     const [date, setDate] = useState("");
     const [time, setTime] = useState("");
+    const [confirmationMessage, setConfirmationMessage] = useState(""); // Add state for confirmation message
 
     // 1️⃣ load doctor list
     useEffect(() => {
@@ -71,6 +72,7 @@ export default function AppointmentBooking() {
             setFreeSlots(slots => slots.filter(t => t !== time));
             setTime('');
             toast.success('Appointment booked 🎉');
+            setConfirmationMessage("Your appointment has been successfully booked!"); // Set confirmation message
         } catch (err) {
             console.error('❌ booking error:', err.response || err);
             toast.error(err.response?.data?.message || 'Booking failed');
@@ -231,6 +233,13 @@ export default function AppointmentBooking() {
                             Book Appointment
                         </button>
                     </form>
+
+                    {/* Confirmation Message */}
+                    {confirmationMessage && (
+                        <div className={styles.confirmationMessage}>
+                            <p>{confirmationMessage}</p>
+                        </div>
+                    )}
                 </div>
             </div>
         </DashboardLayout>

@@ -1,3 +1,6 @@
+/* ------------------------------------------------------------------
+   PAGE WRAPPER
+------------------------------------------------------------------ */
 .container {
     max-width: 1200px;
     margin: auto;
@@ -12,6 +15,9 @@
     margin-bottom: 1rem;
 }
 
+/* ------------------------------------------------------------------
+   CONTROLS (search + role tabs)
+------------------------------------------------------------------ */
 .controls {
     display: flex;
     flex-direction: column;
@@ -22,6 +28,7 @@
 .searchInput {
     padding: 0.6rem 1rem;
     font-size: 1rem;
+    width: 65%;
     border-radius: 0.5rem;
     border: 1px solid #ccc;
     outline: none;
@@ -55,15 +62,19 @@
     color: white;
 }
 
-
+/* ------------------------------------------------------------------
+   CARD GRID
+------------------------------------------------------------------ */
 .cardGrid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
     gap: 1.25rem;
     justify-content: center;
-
 }
 
+/* ------------------------------------------------------------------
+   USER CARD
+------------------------------------------------------------------ */
 .userCard {
     background: #f9fafb;
     border: 1px solid #e5e7eb;
@@ -77,12 +88,12 @@
     width: 80%;
 }
 
-
 .userCard:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
 }
 
+/* avatar + name/email row */
 .userDetails {
     display: flex;
     align-items: center;
@@ -106,7 +117,7 @@
     flex-shrink: 0;
 }
 
-
+/* meta grid */
 .meta {
     font-size: 0.875rem;
     color: #6b7280;
@@ -127,8 +138,12 @@
     gap: 0.5rem;
 }
 
-input,
-select {
+/* ------------------------------------------------------------------
+   FORM FIELDS –  **scoped to .userCard**  (no more global bleed)
+------------------------------------------------------------------ */
+.userCard input:not([type="checkbox"]),
+.userCard select,
+.userCard textarea {
     padding: 0.45rem 0.65rem;
     font-size: 0.95rem;
     width: 65%;
@@ -140,24 +155,28 @@ select {
     transition: border-color 0.2s ease;
 }
 
-input:focus,
-select:focus {
+.userCard input:not([type="checkbox"]):focus,
+.userCard select:focus,
+.userCard textarea:focus {
     border-color: #4b5568;
     background: #ffffff;
 }
 
-input:hover,
-select:hover,
-textarea:hover {
+.userCard input:not([type="checkbox"]):hover,
+.userCard select:hover,
+.userCard textarea:hover {
     border-color: #9ca3af;
 }
 
-input[type="checkbox"] {
+.userCard input[type="checkbox"] {
     width: 18px;
     height: 18px;
     accent-color: #4b5568;
 }
 
+/* ------------------------------------------------------------------
+   ACTION BUTTONS
+------------------------------------------------------------------ */
 .actions {
     display: flex;
     justify-content: flex-end;
@@ -201,12 +220,12 @@ input[type="checkbox"] {
     background: #b91c1c;
 }
 
+/* ------------------------------------------------------------------
+   DELETE CONFIRM OVERLAY
+------------------------------------------------------------------ */
 .overlay {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    inset: 0;
     background: rgba(17, 24, 39, 0.5);
     display: flex;
     justify-content: center;
@@ -242,6 +261,9 @@ input[type="checkbox"] {
     background: #1f2937;
 }
 
+/* ------------------------------------------------------------------
+   DOCTOR-ONLY SECTION (inside edit mode)
+------------------------------------------------------------------ */
 .doctorSection {
     margin-top: 1rem;
     padding-top: 1rem;

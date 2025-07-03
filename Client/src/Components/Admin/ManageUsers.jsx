@@ -12,10 +12,14 @@ export default function ManageUsers() {
   const [editData, setEditData] = useState({});
   const [doctorData, setDoctorData] = useState({});
   const [loading, setLoading] = useState(true);
-  const [confirmDelete, setConfirmDelete] = useState({ show: false, userId: null });
-  const { user_id, ...cleanDoctorData } = doctorData;
+  const [confirmDelete, setConfirmDelete] = useState({
+    show: false,
+    userId: null,
+  });
 
-
+  /* ------------------------------------------------------------------
+     LOAD + FILTER
+  ------------------------------------------------------------------ */
   useEffect(() => {
     fetchUsers();
   }, []);
@@ -38,18 +42,22 @@ export default function ManageUsers() {
   }
 
   function filterUsers() {
-    const query = search.toLowerCase();
-    const result = users.filter((u) => {
-      const matchesSearch =
-        u.first_name.toLowerCase().includes(query) ||
-        u.last_name.toLowerCase().includes(query) ||
-        u.email.toLowerCase().includes(query);
-      const matchesRole = roleFilter === "All" || u.role === roleFilter;
-      return matchesSearch && matchesRole;
-    });
-    setFilteredUsers(result);
+    const q = search.toLowerCase();
+    setFilteredUsers(
+      users.filter((u) => {
+        const matchesSearch =
+          u.first_name.toLowerCase().includes(q) ||
+          u.last_name.toLowerCase().includes(q) ||
+          u.email.toLowerCase().includes(q);
+        const matchesRole = roleFilter === "All" || u.role === roleFilter;
+        return matchesSearch && matchesRole;
+      })
+    );
   }
 
+  /* ------------------------------------------------------------------
+     EDIT / SAVE
+  ------------------------------------------------------------------ */
   const handleEdit = async (user) => {
     setEditingId(user._id);
     setEditData({ ...user });
@@ -68,18 +76,12 @@ export default function ManageUsers() {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setEditData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
+    setEditData((p) => ({ ...p, [name]: type === "checkbox" ? checked : value }));
   };
 
   const handleDoctorChange = (e) => {
     const { name, value } = e.target;
-    setDoctorData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setDoctorData((p) => ({ ...p, [name]: value }));
   };
 
   const handleCancel = () => {
@@ -90,40 +92,35 @@ export default function ManageUsers() {
 
   const handleSave = async () => {
     try {
-      // Prepare cleanDoctorData inside the function
       const { user_id, ...cleanDoctorData } = doctorData;
-
       if (editData.role === "Doctor") {
-        cleanDoctorData.available_days = Array.isArray(cleanDoctorData.available_days)
+        cleanDoctorData.available_days = Array.isArray(
+          cleanDoctorData.available_days
+        )
           ? cleanDoctorData.available_days
-          : (typeof cleanDoctorData.available_days === "string"
+          : typeof cleanDoctorData.available_days === "string"
             ? cleanDoctorData.available_days.split(",").map((d) => d.trim())
-            : []);
+            : [];
       }
-
-      // First update the user base info (and optionally doctorData inside it)
       const payload = {
         ...editData,
         doctorData: editData.role === "Doctor" ? cleanDoctorData : undefined,
       };
-
-      const updatedUser = await axios.put(`/api/admin/users/${editingId}`, payload);
-
-      // Update local state with the updated user info
-      setUsers((prevUsers) =>
-        prevUsers.map((user) => (user._id === editingId ? updatedUser.data : user))
+      const updated = await axios.put(`/api/admin/users/${editingId}`, payload);
+      setUsers((u) =>
+        u.map((usr) => (usr._id === editingId ? updated.data : usr))
       );
-
-      handleCancel(); // Exit edit mode
+      handleCancel();
     } catch (err) {
       alert("Failed to update user");
       console.error(err);
     }
   };
 
-  const handleDelete = (userId) => {
-    setConfirmDelete({ show: true, userId });
-  };
+  /* ------------------------------------------------------------------
+     DELETE
+  ------------------------------------------------------------------ */
+  const handleDelete = (id) => setConfirmDelete({ show: true, userId: id });
 
   const confirmDeleteUser = async () => {
     try {
@@ -136,19 +133,21 @@ export default function ManageUsers() {
     }
   };
 
-  const cancelDelete = () => {
-    setConfirmDelete({ show: false, userId: null });
-  };
+  const cancelDelete = () => setConfirmDelete({ show: false, userId: null });
 
+  /* ------------------------------------------------------------------
+     RENDER
+  ------------------------------------------------------------------ */
   return (
     <DashboardLayout>
       <h2 className={styles.sectionTitle}>Manage MedConnect Users</h2>
       <hr />
       <div className={styles.container}>
+        {/* Search & role filter */}
         <div className={styles.controls}>
           <input
             type="text"
-            placeholder="Search by name or email..."
+            placeholder="Search by name or email…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className={styles.searchInput}
@@ -167,52 +166,104 @@ export default function ManageUsers() {
           </div>
         </div>
 
+        {/* Card grid */}
         {loading ? (
           <p>Loading users…</p>
         ) : (
           <div className={styles.cardGrid}>
             {filteredUsers.map((u) => (
               <div key={u._id} className={styles.userCard}>
+                {/* header */}
                 <div className={styles.userDetails}>
                   <div className={styles.avatarCircle}>
-                    {u.first_name?.[0]}{u.last_name?.[0]}
+                    {u.first_name?.[0]}
+                    {u.last_name?.[0]}
                   </div>
                   <div>
                     {editingId === u._id ? (
                       <>
-                        <input name="first_name" value={editData.first_name} onChange={handleChange} />
-                        <input name="last_name" value={editData.last_name} onChange={handleChange} />
+                        <input
+                          name="first_name"
+                          value={editData.first_name}
+                          onChange={handleChange}
+                        />
+                        <input
+                          name="last_name"
+                          value={editData.last_name}
+                          onChange={handleChange}
+                        />
                       </>
                     ) : (
-                      <h4>{u.first_name} {u.last_name}</h4>
+                      <h4>
+                        {u.first_name} {u.last_name}
+                      </h4>
                     )}
                     {editingId === u._id ? (
-                      <input name="email" value={editData.email} onChange={handleChange} />
+                      <input
+                        name="email"
+                        value={editData.email}
+                        onChange={handleChange}
+                      />
                     ) : (
                       <p className={styles.meta}>{u.email}</p>
                     )}
-                    <p className={styles.meta}>Role: {editingId === u._id ? (
-                      <select name="role" value={editData.role} onChange={handleChange}>
-                        <option value="Patient">Patient</option>
-                        <option value="Doctor">Doctor</option>
-                        <option value="Admin">Admin</option>
-                        <option value="Pharmacist">Pharmacist</option>
-                      </select>
-                    ) : (u.role || "-")}</p>
+                    <p className={styles.meta}>
+                      Role:{" "}
+                      {editingId === u._id ? (
+                        <select
+                          name="role"
+                          value={editData.role}
+                          onChange={handleChange}
+                        >
+                          <option value="Patient">Patient</option>
+                          <option value="Doctor">Doctor</option>
+                          <option value="Admin">Admin</option>
+                          <option value="Pharmacist">Pharmacist</option>
+                        </select>
+                      ) : (
+                        u.role || "-"
+                      )}
+                    </p>
                   </div>
                 </div>
 
+                {/* meta / editable fields */}
                 <div className={styles.metaBlock}>
-                  <div><strong>Phone:</strong> {editingId === u._id ? (
-                    <input name="phone_number" value={editData.phone_number} onChange={handleChange} />
-                  ) : u.phone_number}</div>
-                  <div><strong>Address:</strong> {editingId === u._id ? (
-                    <input name="address" value={editData.address} onChange={handleChange} />
-                  ) : u.address}</div>
-                  <div><strong>Joined:</strong> {new Date(u.createdAt).toLocaleDateString()}</div>
+                  <div>
+                    <strong>Phone:</strong>{" "}
+                    {editingId === u._id ? (
+                      <input
+                        name="phone_number"
+                        value={editData.phone_number}
+                        onChange={handleChange}
+                      />
+                    ) : (
+                      u.phone_number
+                    )}
+                  </div>
+
+                  <div>
+                    <strong>Address:</strong>{" "}
+                    {editingId === u._id ? (
+                      <input
+                        name="address"
+                        value={editData.address}
+                        onChange={handleChange}
+                      />
+                    ) : (
+                      u.address
+                    )}
+                  </div>
+
+                  <div>
+                    <strong>Joined:</strong>{" "}
+                    {new Date(u.createdAt).toLocaleDateString()}
+                  </div>
+
                   {editingId === u._id ? (
                     <div>
-                      <label><strong>Notifications:</strong>
+                      <label>
+                        <strong>Notifications:</strong>{" "}
                         <input
                           type="checkbox"
                           name="notifications_enabled"
@@ -222,20 +273,26 @@ export default function ManageUsers() {
                       </label>
                     </div>
                   ) : (
-                    <div><strong>Notifications:</strong> {u.notifications_enabled ? "✅" : "❌"}</div>
+                    <div>
+                      <strong>Notifications:</strong>{" "}
+                      {u.notifications_enabled ? "✅" : "❌"}
+                    </div>
                   )}
 
+                  {/* doctor-only extra fields */}
                   {u.role === "Doctor" && editingId === u._id && (
-                    <>
-                      <hr />
-                      <label>Specialization:
+                    <div className={styles.doctorSection}>
+                      <label>
+                        Specialization:
                         <input
                           name="specialization"
                           value={doctorData.specialization || ""}
                           onChange={handleDoctorChange}
                         />
                       </label>
-                      <label>Years of Experience:
+
+                      <label>
+                        Years of Experience:
                         <input
                           type="number"
                           name="years_of_experience"
@@ -243,26 +300,34 @@ export default function ManageUsers() {
                           onChange={handleDoctorChange}
                         />
                       </label>
-                      <label>Bio:
+
+                      <label>
+                        Bio:
                         <textarea
                           name="bio"
                           value={doctorData.bio || ""}
                           onChange={handleDoctorChange}
                         />
                       </label>
-                      <label>Available Days:
+
+                      <label>
+                        Available Days:
                         <input
                           name="available_days"
                           value={(doctorData.available_days || []).join(", ")}
                           onChange={(e) =>
-                            setDoctorData((prev) => ({
-                              ...prev,
-                              available_days: e.target.value.split(",").map((d) => d.trim()),
+                            setDoctorData((p) => ({
+                              ...p,
+                              available_days: e.target.value
+                                .split(",")
+                                .map((d) => d.trim()),
                             }))
                           }
                         />
                       </label>
-                      <label>Start Time:
+
+                      <label>
+                        Start Time:
                         <input
                           type="time"
                           name="available_start_time"
@@ -270,7 +335,9 @@ export default function ManageUsers() {
                           onChange={handleDoctorChange}
                         />
                       </label>
-                      <label>End Time:
+
+                      <label>
+                        End Time:
                         <input
                           type="time"
                           name="available_end_time"
@@ -278,20 +345,41 @@ export default function ManageUsers() {
                           onChange={handleDoctorChange}
                         />
                       </label>
-                    </>
+                    </div>
                   )}
                 </div>
 
+                {/* buttons */}
                 <div className={styles.actions}>
                   {editingId === u._id ? (
                     <>
-                      <button onClick={handleSave} className={styles.saveBtn}>Save</button>
-                      <button onClick={handleCancel} className={styles.cancelBtn}>Cancel</button>
+                      <button
+                        onClick={handleSave}
+                        className={styles.saveBtn}
+                      >
+                        Save
+                      </button>
+                      <button
+                        onClick={handleCancel}
+                        className={styles.cancelBtn}
+                      >
+                        Cancel
+                      </button>
                     </>
                   ) : (
                     <>
-                      <button onClick={() => handleEdit(u)} className={styles.editBtn}>Edit</button>
-                      <button onClick={() => handleDelete(u._id)} className={styles.deleteBtn}>Delete</button>
+                      <button
+                        onClick={() => handleEdit(u)}
+                        className={styles.editBtn}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(u._id)}
+                        className={styles.deleteBtn}
+                      >
+                        Delete
+                      </button>
                     </>
                   )}
                 </div>
@@ -300,13 +388,24 @@ export default function ManageUsers() {
           </div>
         )}
 
+        {/* delete confirm */}
         {confirmDelete.show && (
           <div className={styles.overlay}>
             <div className={styles.confirmDialog}>
               <p>Are you sure you want to delete this user?</p>
               <div className={styles.confirmActions}>
-                <button onClick={confirmDeleteUser} className={styles.confirmBtn}>Yes, Delete</button>
-                <button onClick={cancelDelete} className={styles.cancelBtn}>Cancel</button>
+                <button
+                  onClick={confirmDeleteUser}
+                  className={styles.confirmBtn}
+                >
+                  Yes, Delete
+                </button>
+                <button
+                  onClick={cancelDelete}
+                  className={styles.cancelBtn}
+                >
+                  Cancel
+                </button>
               </div>
             </div>
           </div>

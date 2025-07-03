@@ -38,7 +38,7 @@ const GuestContactUs = () => {
                         <MapPin size={18} className={styles.icon} />
                         <div>
                             <h4>Clinic Address</h4>
-                            <p>123 Health Street, Al Nakheel District, Riyadh, Saudi Arabia</p>
+                            <p>123 Health Street, Al Nakheel District, Medinah, Saudi Arabia</p>
                         </div>
                     </div>
                     <div className={styles.mapContainer}>

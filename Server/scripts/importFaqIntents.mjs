@@ -20,6 +20,21 @@ async function importFaqs() {
         console.log(`Creating intent ${faq.id}: "${faq.question}"`);
         await client.createIntent({ parent: agentPath, intent });
     }
+    const safeInsertMany = async (col, docs, label) => {
+        for (const doc of docs) {
+            const exists = await col.findOne({ _id: doc._id });
+            if (exists) {
+                console.log(`↺  ${label}: ${doc._id} already present – skipped`);
+            } else {
+                await col.insertOne(doc);
+                console.log(`➕  ${label}: inserted ${doc._id}`);
+            }
+        }
+    };
+
+    await safeInsertMany(usersCol, userDocs, 'user');
+    await safeInsertMany(doctorsCol, doctorDocs, 'doctor');
+    await safeInsertMany(patientsCol, patientDocs, 'patient');
 
     console.log('✅ All FAQ intents created!');
 }

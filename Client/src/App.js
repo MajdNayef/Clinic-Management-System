@@ -27,6 +27,7 @@ import DoctorDashboard from "./Components/Doctors/DoctorDashboard";
 import ViewAppointments from "./Components/Doctors/ViewAppointments";
 import DoctorProfilePage from "./Components/Doctors/DoctorProfilePage";
 import DoctorLiveChat from "./Components/Doctors/LiveChat";
+import DoctorManageAppointments from "./Components/Doctors/DoctorManageAppointments";
 
 // For Admin
 import AdminDashboard from "./Components/Admin/AdminDashboard";
@@ -71,6 +72,7 @@ function App() {
         <Route path="/ViewAppointments" element={<ViewAppointments />} />
         <Route path="/DoctorProfilePage" element={<DoctorProfilePage />} />
         <Route path="/doctor/live-chat" element={<DoctorLiveChat doctorId="123" patientId="456" />} />
+        <Route path="/DoctorManageAppointments" element={<DoctorManageAppointments />} />
 
         {/* Protected / Admin routes */}
         <Route path="/AdminDashboard" element={<AdminDashboard />} />
