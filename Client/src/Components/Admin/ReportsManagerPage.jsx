@@ -5,7 +5,7 @@ import styles from './ReportsPages/reports.module.css';
 
 import AppointmentReportsPage from './ReportsPages/AppointmentReports';
 import DoctorPerformancePage from './ReportsPages/DoctorPerformancePage';
-// import AppointmentStatisticsPage from './reportsPages/AppointmentStatisticsPage';
+import AppointmentStatisticsPage from './ReportsPages/AppointmentStatisticsPage';
 
 export default function ReportsManagerPage() {
     const [activeTab, setActiveTab] = useState('appointment');
@@ -16,9 +16,9 @@ export default function ReportsManagerPage() {
                 return <AppointmentReportsPage />;
             case 'performance':
                 return <DoctorPerformancePage />;
-                // case 'statistics':
-                //     return <AppointmentStatisticsPage />;
-                // default:
+                case 'statistics':
+                    return <AppointmentStatisticsPage />;
+                default:
                 return null;
         }
     };

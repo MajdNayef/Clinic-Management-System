@@ -14,6 +14,8 @@ const feedbackRoutes = require('./routes/feedbackRoutes');
 const dialogflowRoute = require('./routes/dialogFlow');
 const notificationsRoutes = require('./routes/notificationsRoutes');
 const chatSessionsRoute = require('./routes/chatSessions');
+const { authenticate, protectAdminOnly } = require("./middlewares/auth");
+
 const adminRoutes = require('./routes/adminRoutes');
 
 const app = express();
@@ -41,7 +43,18 @@ app.use('/api/appointments', feedbackRoutes);
 app.use('/api/dialogflow', dialogflowRoute);
 app.use('/api/notifications', notificationsRoutes);
 app.use('/api/chat-sessions', chatSessionsRoute);
-app.use('/api/admin', adminRoutes);
+// app.use('/api/admin', adminRoutes);
+// Protect admin routes with middleware
+// 🔒 Admin routes — authenticate first, then authorise
+// - app.use("/api/admin", protectAdminOnly, adminRoutes);
+app.use(
+    "/api/admin",
+    authenticate,        // ① verifies JWT, sets req.userRole
+    protectAdminOnly,    // ② allows only role === "admin"
+    adminRoutes          // ③ your existing admin endpoints
+);
+
+// app.use('/api/admin', adminRoutes);
 
 // — Health check endpoint —
 app.get('/health', (_req, res) => res.json({ status: 'OK' }));

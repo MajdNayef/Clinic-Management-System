@@ -11,7 +11,7 @@ const ChatSessions = () => collection('chat_sessions');
 const ChatMessages = () => collection('chat_messages');
 const Feedbacks = () => collection('feedbacks');
 const AppointmentReports = () => collection('appointment_reports');
-
+const AppointmentStats = () => collection("appointment_statistics_reports");
 // Helper to fetch detailed appointment info
 async function getAppointmentDetails(appointmentId) {
     const appointment = await Appointments().findOne({ _id: new ObjectId(appointmentId) });
@@ -253,54 +253,62 @@ exports.generateAppointmentPDF = async (req, res) => {
     }
 };
 
-
 exports.getDoctorPerformanceSummary = async (req, res) => {
     try {
-        const summary = await Appointments().aggregate([
-            // Group appointments by doctor_id
-            {
-                $group: {
-                    _id: "$doctor_id",
-                    totalAppointments: { $sum: 1 },
-                    virtualCount: {
-                        $sum: { $cond: [{ $eq: ["$appointment_type", "Virtual"] }, 1, 0] }
-                    },
-                    physicalCount: {
-                        $sum: { $cond: [{ $eq: ["$appointment_type", "In-Person"] }, 1, 0] }
-                    }
-                }
-            },
-            // Lookup doctor record (by _id)
-            {
-                $lookup: {
-                    from: "doctors",
-                    localField: "_id",         // doctor_id in appointments
-                    foreignField: "_id",       // _id in doctors
-                    as: "doctor"
-                }
-            },
-            { $unwind: "$doctor" },
-            // Lookup doctor user (for name/email)
+        const summary = await Doctors().aggregate([
+            /* 1️⃣ join user profile so we have the name */
             {
                 $lookup: {
                     from: "users",
-                    localField: "doctor.user_id",
+                    localField: "user_id",
                     foreignField: "_id",
                     as: "user"
                 }
             },
             { $unwind: "$user" },
-            // Lookup feedbacks for this doctor
+
+            /* 2️⃣ pull in all appointments for this doctor */
+            {
+                $lookup: {
+                    from: "appointments",
+                    localField: "_id",
+                    foreignField: "doctor_id",
+                    as: "appointments"
+                }
+            },
+
+            /* 3️⃣ pull in feedbacks by doctor_id (optional) */
             {
                 $lookup: {
                     from: "feedbacks",
-                    localField: "_id",           // doctor_id from appointments
-                    foreignField: "doctor_id",   // doctor_id in feedbacks
+                    localField: "_id",
+                    foreignField: "doctor_id",
                     as: "feedbacks"
                 }
             },
+
+            /* 4️⃣ compute counts directly in $addFields */
             {
                 $addFields: {
+                    totalAppointments: { $size: "$appointments" },
+                    virtualCount: {
+                        $size: {
+                            $filter: {
+                                input: "$appointments",
+                                as: "a",
+                                cond: { $eq: ["$$a.appointment_type", "Virtual"] }
+                            }
+                        }
+                    },
+                    physicalCount: {
+                        $size: {
+                            $filter: {
+                                input: "$appointments",
+                                as: "a",
+                                cond: { $eq: ["$$a.appointment_type", "In-Person"] }
+                            }
+                        }
+                    },
                     averageRating: {
                         $cond: [
                             { $gt: [{ $size: "$feedbacks" }, 0] },
@@ -310,6 +318,8 @@ exports.getDoctorPerformanceSummary = async (req, res) => {
                     }
                 }
             },
+
+            /* 5️⃣ final projection so the shape matches your table */
             {
                 $project: {
                     _id: 0,
@@ -317,7 +327,7 @@ exports.getDoctorPerformanceSummary = async (req, res) => {
                     name: {
                         $concat: ["$user.first_name", " ", "$user.last_name"]
                     },
-                    specialization: "$doctor.specialization",
+                    specialization: 1,
                     totalAppointments: 1,
                     virtualCount: 1,
                     physicalCount: 1,
@@ -332,6 +342,7 @@ exports.getDoctorPerformanceSummary = async (req, res) => {
         res.status(500).json({ error: "Failed to get doctor performance summary." });
     }
 };
+
 
 
 // Generate PDF report per doctor
@@ -507,5 +518,312 @@ exports.generateDoctorPerformancePDF = async (req, res) => {
     } catch (error) {
         console.error("PDF generation failed:", error);
         res.status(500).json({ error: "Failed to generate doctor performance report." });
+    }
+};
+
+
+
+/* appointments staticts section */
+
+/**
+ * POST /api/admin/reports/appointments/statistics/range
+ * Body: { start: "YYYY-MM-DD", end: "YYYY-MM-DD" }
+ */
+exports.generateStatsForRange = async (req, res) => {
+    const { start, end } = req.body;
+
+    // basic validation
+    const isoRegex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!isoRegex.test(start) || !isoRegex.test(end) || start > end)
+        return res
+            .status(400)
+            .json({ message: "start and end must be YYYY-MM-DD and start ≤ end" });
+
+    try {
+        /* ------------------------------------------------------------
+           Aggregate counts from appointments within the requested span
+           - your 'date' field is stored as ISO string "YYYY-MM-DD"
+           - string range comparison works because the format is lexicographic
+           ------------------------------------------------------------ */
+        const [{ total = 0, f2f = 0, virtual = 0 } = {}] =
+            await Appointments().aggregate([
+                {
+                    $match: {
+                        date: { $gte: start, $lte: end }
+                    }
+                },
+                {
+                    $group: {
+                        _id: null,
+                        total: { $sum: 1 },
+                        f2f: { $sum: { $cond: [{ $eq: ["$appointment_type", "In-Person"] }, 1, 0] } },
+                        virtual: { $sum: { $cond: [{ $eq: ["$appointment_type", "Virtual"] }, 1, 0] } }
+                    }
+                }
+            ]).toArray();
+
+        /* ------------------------------------------------------------
+           Prepare the stats doc
+           ------------------------------------------------------------ */
+        const statsDoc = {
+            report_date_range: `${start}_to_${end}`,
+            range_start: start,
+            range_end: end,
+            total_appointments: total,
+            f2f_appointments: f2f,
+            virtual_appointments: virtual,
+            created_at: new Date()
+        };
+
+        /* ------------------------------------------------------------
+           Upsert so there is only ONE document per exact date range
+           (range key keeps things unique; adjust if you prefer ObjectId every time)
+           ------------------------------------------------------------ */
+        const { value: saved } = await AppointmentStats().findOneAndUpdate(
+            { report_date_range: statsDoc.report_date_range },
+            { $set: statsDoc },
+            { upsert: true, returnDocument: "after" }
+        );
+
+        res.json(saved);   // return the stored/updated document
+    } catch (err) {
+        console.error("Date-range stats generation error:", err);
+        res.status(500).json({ message: "Failed to generate statistics." });
+    }
+};
+
+
+// controllers/AppointmentReportController.js
+
+
+/** Utility: turn YYYY-MM -> first/last ISO dates */
+function monthBounds(yyyyMm) {
+    const [yr, mo] = yyyyMm.split("-").map(Number);                // e.g. 2025-05
+    const start = new Date(Date.UTC(yr, mo - 1, 1));               // 1st 00:00Z
+    const end = new Date(Date.UTC(yr, mo, 0, 23, 59, 59, 999));  // last 23:59Z
+    return { start, end };
+}
+
+/* ============================================================
+   POST /api/admin/reports/appointments/statistics
+   Body: { month: "YYYY-MM" }   –-generate or refresh that month’s stats
+   ============================================================ */
+exports.createAppointmentStatistics = async (req, res) => {
+    const { month } = req.body;
+    if (!month || !/^\d{4}-\d{2}$/.test(month))
+        return res.status(400).json({ message: "month must be YYYY-MM" });
+
+    try {
+        const { start, end } = monthBounds(month);
+
+        // Aggregate counts for the month
+        const [{ total = 0, f2f = 0, virtual = 0 } = {}] =
+            await Appointments().aggregate([
+                { $match: { date: { $gte: start.toISOString().slice(0, 10), $lte: end.toISOString().slice(0, 10) } } },
+                {
+                    $group: {
+                        _id: null,
+                        total: { $sum: 1 },
+                        f2f: { $sum: { $cond: [{ $eq: ["$appointment_type", "In-Person"] }, 1, 0] } },
+                        virtual: { $sum: { $cond: [{ $eq: ["$appointment_type", "Virtual"] }, 1, 0] } }
+                    }
+                }
+            ]).toArray();
+
+        // Upsert into statistics collection
+        const statsDoc = {
+            report_date_range: month,
+            total_appointments: total,
+            f2f_appointments: f2f,
+            virtual_appointments: virtual,
+            created_at: new Date()
+        };
+
+        const { value: saved } = await AppointmentStats().findOneAndUpdate(
+            { report_date_range: month },
+            { $set: statsDoc },
+            { upsert: true, returnDocument: "after" }
+        );
+
+        res.json(saved);          // return the stored document (incl. _id)
+    } catch (err) {
+        console.error("Stats generation error:", err);
+        res.status(500).json({ message: "Failed to generate statistics." });
+    }
+};/**
+* GET /api/admin/reports/appointments/statistics?start=YYYY-MM&end=YYYY-MM
+* Returns one stats doc per month in the inclusive range.  Any month that
+* isn’t present in appointment_statistics_reports is calculated directly
+* from appointments, saved, and then included in the response.
+*/
+exports.getAppointmentStatistics = async (req, res) => {
+    const { start, end } = req.query;
+    const yyyyMm = /^\d{4}-\d{2}$/;
+
+    if (!start || !end || !yyyyMm.test(start) || !yyyyMm.test(end) || start > end) {
+        return res
+            .status(400)
+            .json({ message: "query params start and end (YYYY-MM) are required, and start ≤ end." });
+    }
+
+    try {
+        /* -------------------------------------------
+           1️⃣  Pull whatever is already stored
+           ------------------------------------------- */
+        const existing = await AppointmentStats()
+            .find({ report_date_range: { $gte: start, $lte: end } })
+            .toArray();
+
+        // quick lookup set: { "2025-05": true, "2025-06": true, … }
+        const have = new Set(existing.map((s) => s.report_date_range));
+
+        /* -------------------------------------------
+           2️⃣  Aggregate missing months directly from
+               appointments (date stored as "YYYY-MM-DD")
+           ------------------------------------------- */
+        const missingAgg = await Appointments()
+            .aggregate([
+                // project year-month
+                {
+                    $project: {
+                        ym: { $substr: ["$date", 0, 7] },          // "2025-06"
+                        appointment_type: 1
+                    }
+                },
+                // only months in requested window AND not yet in stats
+                {
+                    $match: {
+                        ym: { $gte: start, $lte: end, $nin: Array.from(have) }
+                    }
+                },
+                // group per-month
+                {
+                    $group: {
+                        _id: "$ym",
+                        total: { $sum: 1 },
+                        f2f: { $sum: { $cond: [{ $eq: ["$appointment_type", "In-Person"] }, 1, 0] } },
+                        virtual: { $sum: { $cond: [{ $eq: ["$appointment_type", "Virtual"] }, 1, 0] } }
+                    }
+                }
+            ])
+            .toArray();
+
+        /* -------------------------------------------
+           3️⃣  Upsert each newly-calculated month
+           ------------------------------------------- */
+        if (missingAgg.length) {
+            const bulk = missingAgg.map((m) => ({
+                updateOne: {
+                    filter: { report_date_range: m._id },
+                    update: {
+                        $set: {
+                            report_date_range: m._id,
+                            total_appointments: m.total,
+                            f2f_appointments: m.f2f,
+                            virtual_appointments: m.virtual,
+                            created_at: new Date()
+                        }
+                    },
+                    upsert: true
+                }
+            }));
+            await AppointmentStats().bulkWrite(bulk);
+        }
+
+        /* -------------------------------------------
+           4️⃣  Return the **complete** set for the range
+           ------------------------------------------- */
+        const stats = await AppointmentStats()
+            .find({ report_date_range: { $gte: start, $lte: end } })
+            .sort({ report_date_range: 1 })
+            .toArray();
+
+        res.json(stats);
+    } catch (err) {
+        console.error("Appointment statistics fetch error:", err);
+        res.status(500).json({ message: "Failed to load appointment statistics." });
+    }
+};
+
+exports.generateAppointmentStatisticsPDF = async (req, res) => {
+    const { id } = req.params;
+
+    // Accept either an ObjectId *or* the custom range key (e.g. 2025-05-01_to_2025-07-04)
+    let stat;
+    if (ObjectId.isValid(id)) {
+        stat = await AppointmentStats().findOne({ _id: new ObjectId(id) });
+    } else {
+        stat = await AppointmentStats().findOne({ report_date_range: id });
+    }
+
+    if (!stat) return res.status(404).json({ message: "Statistics report not found." });
+
+    try {
+        /* ---------- PDF BUILD ---------- */
+        const pdfDoc = await PDFDocument.create();
+        const page = pdfDoc.addPage([600, 800]);
+        const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+        const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+        let y = 760;
+
+        // ── Logo ────────────────────────────────────────────────────────────────
+        const logoBytes = fs.readFileSync(path.join(__dirname, "../assets/dmc.png"));
+        const logoImg = await pdfDoc.embedPng(logoBytes);
+        page.drawImage(logoImg, { x: 400, y: y - 20, width: 100, height: 40 });
+
+        // ── Helpers ────────────────────────────────────────────────────────────
+        const hdr = (txt, size, dy, c = rgb(0, 0, 0)) => {
+            page.drawText(txt, { x: 50, y, size, font: size > 12 ? boldFont : font, color: c }); y -= dy;
+        };
+        const divider = (label) => {
+            y -= 15;
+            hdr("————————————————————————————————————————————————————————————————————————————————————", 10, 5, rgb(0.6, 0.6, 0.6));
+            hdr(label, 13, 20, rgb(0.15, 0.15, 0.15));
+        };
+        const field = (label, value, spacing = 18) => {
+            page.drawText(label, { x: 50, y, size: 12, font: boldFont, color: rgb(0.15, 0.3, 0.45) });
+            page.drawText(String(value), { x: 200, y, size: 12, font });
+            y -= spacing;
+        };
+
+        // ── Header ─────────────────────────────────────────────────────────────
+        hdr("DMC HEALTHCARE", 18, 25, rgb(0, 0.2, 0.6));
+        hdr("Appointment Statistics Report", 14, 20);
+        hdr(`Date of Issue: ${new Date().toLocaleString()}`, 10, 15, rgb(0.3, 0.3, 0.3));
+        hdr("Distinct Medicine Complex | www.dmc.com | info@dmc.com", 10, 30, rgb(0.3, 0.3, 0.3));
+
+        // ── Statistics Summary ────────────────────────────────────────────────
+        divider("Statistics Summary");
+
+        const rangeLabel =
+            stat.range_start && stat.range_end
+                ? `${stat.range_start}  →  ${stat.range_end}`
+                : stat.report_date_range;
+
+        field("Date Range:", rangeLabel);
+        field("Total Appointments:", stat.total_appointments);
+        field("Physical:", stat.f2f_appointments);
+        field("Virtual:", stat.virtual_appointments);
+        field("Record Created:", new Date(stat.created_at).toLocaleDateString());
+
+        // ── Footer ─────────────────────────────────────────────────────────────
+        page.drawText("Thank you for choosing DMC Healthcare.",
+            { x: 50, y: 30, size: 10, font, color: rgb(0.3, 0.3, 0.3) });
+        page.drawText("For inquiries, contact us at info@dmc.com.",
+            { x: 50, y: 15, size: 10, font, color: rgb(0.3, 0.3, 0.3) });
+
+        /* ---------- Save & stream ---------- */
+        const pdfBytes = await pdfDoc.save();
+        const filename = `appointment_stats_${stat.report_date_range}_${Date.now()}.pdf`;
+        const uploads = path.join(__dirname, "../uploads");
+        if (!fs.existsSync(uploads)) fs.mkdirSync(uploads);
+
+        fs.writeFileSync(path.join(uploads, filename), pdfBytes); // optional archive
+        res.setHeader("Content-Type", "application/pdf");
+        res.setHeader("Content-Disposition", `inline; filename=${filename}`);
+        res.send(pdfBytes);
+    } catch (err) {
+        console.error("Statistics PDF generation error:", err);
+        res.status(500).json({ message: "Failed to generate statistics report." });
     }
 };

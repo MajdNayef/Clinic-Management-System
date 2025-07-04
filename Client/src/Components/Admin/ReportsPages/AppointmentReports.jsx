@@ -21,7 +21,7 @@ const AppointmentReports = () => {
 
     const generateReport = async (appointmentId) => {
         try {
-            const res = await axios.post(`/api/admin/reports/appointments/generate/${appointmentId}`, {}, {
+            const res = await axios.post(`/api/admin/reports/appointment/generate/${appointmentId}`, {}, {
                 responseType: 'blob'
             });
             const url = window.URL.createObjectURL(new Blob([res.data], { type: 'application/pdf' }));

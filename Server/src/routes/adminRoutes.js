@@ -48,10 +48,12 @@ router.get('/appointments/calendar', AdminController.getCalendarAppointments);
 router.get('/reports/appointments/details/:id', Reportscontroller.getAppointmentDetails); // optional
 router.post('/reports/appointments/generate/:id', Reportscontroller.generateAppointmentPDF);
 router.get('/reports/appointments/history', Reportscontroller.getGeneratedAppointmentReports);
-router.post('/appointments/generate/:id', Reportscontroller.generateAppointmentPDF);
+router.post('/appointment/generate/:id', Reportscontroller.generateAppointmentPDF);
 
 router.get("/reports/doctors/summary", Reportscontroller.getDoctorPerformanceSummary);
 router.post("/reports/doctors/generate/:doctorId", Reportscontroller.generateDoctorPerformancePDF);
 
+router.get("/reports/appointments/statistics", Reportscontroller.getAppointmentStatistics);
+router.post("/reports/appointments/statistics/generate/:id", Reportscontroller.generateAppointmentStatisticsPDF);
 
 module.exports = router;
