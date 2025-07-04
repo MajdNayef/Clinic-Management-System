@@ -1,3 +1,4 @@
+// pages/ManageAppointments.jsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import DashboardLayout from "./layout/DashboardLayout";
@@ -6,17 +7,20 @@ import Select from "react-select";
 
 export default function ManageAppointments() {
     const [appointments, setAppointments] = useState([]);
-    const [search, setSearch] = useState("");
-    const [typeFilter, setTypeFilter] = useState("All");
-    const [timeFilter, setTimeFilter] = useState("all");
-    const [customDate, setCustomDate] = useState("");
     const [loading, setLoading] = useState(true);
-    const [patientSearch, setPatientSearch] = useState("");
 
+    /* filters & search */
+    const [search, setSearch] = useState("");
+    const [typeFilter, setTypeFilter] = useState("All");       // All | Virtual | Physical
+    const [timeFilter, setTimeFilter] = useState("all");       // all | today | tomorrow | custom
+    const [customDate, setCustomDate] = useState("");
+
+    /* modal state */
     const [showModal, setShowModal] = useState(false);
     const [doctors, setDoctors] = useState([]);
     const [patients, setPatients] = useState([]);
     const [slots, setSlots] = useState([]);
+
     const [form, setForm] = useState({
         doctor_id: "",
         patient_id: "",
@@ -25,32 +29,36 @@ export default function ManageAppointments() {
         type: "In-Person"
     });
 
+    /* ───────────────────────────────────────── fetch data ── */
     useEffect(() => {
         fetchAppointments();
     }, [timeFilter, customDate]);
 
     useEffect(() => {
         if (form.doctor_id && form.date) {
-            axios.get("/api/appointments/available", {
-                params: { doctor_id: form.doctor_id, date: form.date }
-            }).then(res => setSlots(res.data)).catch(() => setSlots([]));
+            axios
+                .get("/api/appointments/available", {
+                    params: { doctor_id: form.doctor_id, date: form.date }
+                })
+                .then((res) => setSlots(res.data))
+                .catch(() => setSlots([]));
         }
     }, [form.doctor_id, form.date]);
 
     useEffect(() => {
-        axios.get("/api/doctors").then(res => setDoctors(res.data));
-        axios.get("/api/admin/users?role=Patient").then(res => setPatients(res.data));
+        axios.get("/api/doctors").then((res) => setDoctors(res.data));
+        axios.get("/api/admin/users?role=Patient").then((res) => setPatients(res.data));
     }, []);
 
     async function fetchAppointments() {
         setLoading(true);
         try {
             let query = "";
-            if (timeFilter === "today" || timeFilter === "tomorrow") {
+            if (timeFilter === "today" || timeFilter === "tomorrow")
                 query = `?dateFilter=${timeFilter}`;
-            } else if (timeFilter === "custom" && customDate) {
+            else if (timeFilter === "custom" && customDate)
                 query = `?dateFilter=${customDate}`;
-            }
+
             const { data } = await axios.get(`/api/admin/appointments${query}`);
             setAppointments(data);
         } catch (err) {
@@ -61,14 +69,22 @@ export default function ManageAppointments() {
         }
     }
 
+    /* ───────────────────────────────────────── filtering ── */
+    const matchesType = (appt) => {
+        if (typeFilter === "All") return true;
+        if (typeFilter === "Physical") return appt.appointment_type === "In-Person";
+        return appt.appointment_type === typeFilter; // Virtual
+    };
+
     const filtered = appointments.filter((a) => {
         const q = search.toLowerCase();
         const doctorName = `${a?.doctor?.first_name || ""} ${a?.doctor?.last_name || ""}`.toLowerCase();
         const patientName = `${a?.patient?.first_name || ""} ${a?.patient?.last_name || ""}`.toLowerCase();
-        return (doctorName.includes(q) || patientName.includes(q)) &&
-            (typeFilter === "All" || a.appointment_type === typeFilter);
+
+        return (doctorName.includes(q) || patientName.includes(q)) && matchesType(a);
     });
 
+    /* ───────────────────────────────────── status handlers ─ */
     const handleStatusChange = async (id, newStatus, userId) => {
         try {
             await axios.put(`/api/admin/appointments/${id}`, { status: newStatus });
@@ -92,100 +108,29 @@ export default function ManageAppointments() {
         }
     };
 
+    /* ───────────────────────────────────────── modal save ─ */
     const handleSubmit = async () => {
         try {
-            const res = await axios.post("/api/admin/appointments", form);
+            await axios.post("/api/admin/appointments", form);
             alert("Appointment created");
             fetchAppointments();
             setShowModal(false);
         } catch (err) {
             console.error("Create failed", err);
-            alert("Failed to create appointment"); {
-                showModal && (
-                    <div className={styles.overlay}>
-                        <div className={styles.modalBox}>
-                            <h3>Create Appointment</h3>
-
-                            <label>Patient:</label>
-                            <Select
-                                options={patients.map((p) => ({
-                                    value: p._id,
-                                    label: `${p.first_name} ${p.last_name}`,
-                                }))}
-                                onChange={(opt) => setForm({ ...form, patient_id: opt?.value })}
-                                className={styles.select}
-                                placeholder="Select a patient..."
-                                isSearchable
-                            />
-
-                            <label>Doctor:</label>
-                            <Select
-                                options={doctors.map((d) => ({
-                                    value: d._id,
-                                    label: `Dr. ${d.first_name} ${d.last_name}`,
-                                }))}
-                                onChange={(opt) => setForm({ ...form, doctor_id: opt?.value })}
-                                className={styles.select}
-                                placeholder="Select a doctor..."
-                                isSearchable
-                            />
-
-                            <label>Type:</label>
-                            <select
-                                value={form.type}
-                                onChange={(e) => setForm({ ...form, type: e.target.value })}
-                            >
-                                <option>In-Person</option>
-                                <option>Virtual</option>
-                            </select>
-
-                            <label>Date:</label>
-                            <input
-                                type="date"
-                                value={form.date}
-                                onChange={(e) => setForm({ ...form, date: e.target.value })}
-                            />
-
-                            <label>Time:</label>
-                            <select
-                                value={form.time}
-                                onChange={(e) => setForm({ ...form, time: e.target.value })}
-                            >
-                                <option value="">-- Select Slot --</option>
-                                {slots.map((t) => (
-                                    <option key={t}>{t}</option>
-                                ))}
-                            </select>
-
-                            <div className={styles.modalActions}>
-                                <button
-                                    onClick={handleSubmit}
-                                    disabled={
-                                        !form.patient_id || !form.doctor_id || !form.date || !form.time
-                                    }
-                                >
-                                    Create
-                                </button>
-                                <button
-                                    onClick={() => setShowModal(false)}
-                                    className={styles.cancelBtn}
-                                >
-                                    Cancel
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                )
-            }
+            alert("Failed to create appointment");
         }
     };
 
+    /* ─────────────────────────────────────────── render ─── */
     return (
         <DashboardLayout>
             <h2 className={styles.sectionTitle}>Manage Appointments</h2>
             <hr />
+
+            {/* ------------- Controls ------------- */}
             <div className={styles.container}>
                 <div className={styles.controls}>
+                    {/* search + type tabs */}
                     <div style={{ flexGrow: 1 }}>
                         <input
                             type="text"
@@ -207,6 +152,7 @@ export default function ManageAppointments() {
                         </div>
                     </div>
 
+                    {/* date filter + new appointment */}
                     <div className={styles.headerBar}>
                         <div className={styles.timeTabs}>
                             <input
@@ -238,6 +184,7 @@ export default function ManageAppointments() {
                     </div>
                 </div>
 
+                {/* ------------- Appointment cards ------------- */}
                 {loading ? (
                     <p>Loading appointments…</p>
                 ) : (
@@ -257,6 +204,7 @@ export default function ManageAppointments() {
                                         <span className={a.status}> {a.status}</span>
                                     </p>
                                 </div>
+
                                 <div className={styles.actions}>
                                     {["Scheduled", "Completed", "Cancelled"].map((s) => (
                                         <button
@@ -278,6 +226,7 @@ export default function ManageAppointments() {
                 )}
             </div>
 
+            {/* ------------- Modal ------------- */}
             {showModal && (
                 <div className={styles.overlay}>
                     <div className={styles.modalBox}>
@@ -343,10 +292,7 @@ export default function ManageAppointments() {
                             >
                                 Create
                             </button>
-                            <button
-                                onClick={() => setShowModal(false)}
-                                className={styles.cancelBtn}
-                            >
+                            <button onClick={() => setShowModal(false)} className={styles.cancelBtn}>
                                 Cancel
                             </button>
                         </div>

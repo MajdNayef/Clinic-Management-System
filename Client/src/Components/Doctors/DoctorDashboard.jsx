@@ -60,6 +60,7 @@ export default function DoctorDashboard() {
             appt.doctor?._id ||
             appt.doctorId ||
             appt.doctor_id;
+
         const patientId =
             appt.patient?._id ||
             appt.patientId ||

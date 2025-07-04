@@ -241,6 +241,7 @@ router.get("/appointments/doctor", guard, async (req, res) => {
                         status: 1,
                         appointment_type: 1,
                         doctor_id: 1,
+                        patient_id: 1,
                         patient_name: {
                             $concat: ["$patient.first_name", " ", "$patient.last_name"],
                         },
