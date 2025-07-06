@@ -102,7 +102,7 @@ const Login = () => {
                         />
                     </div>
 
-                    <a href="#" title="Forget your password?" onClick={() => setShowOverlay(true)}>
+                    <a title="Forget your password?" onClick={() => setShowOverlay(true)}>
                         Forgot password?
                     </a>
                     <br />
