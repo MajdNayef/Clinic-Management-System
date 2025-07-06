@@ -12,24 +12,23 @@ async function sendNotificationToUser(userId, content) {
     const user = await collection('users').findOne({ _id: uid });
     if (!user) throw new Error('User not found');
 
-    // 1) send email
+    const sentAt = new Date().toLocaleString();
+
+    // 1) Send templated HTML email
     await transporter.sendMail({
         from: `"MedConnect" <${process.env.SMTP_USER}>`,
         to: user.email,
         subject: '🔔 MedConnect Notification',
-        text: content,
+        template: 'notification',       // matches `notification.hbs`
+        context: { user, content, sentAt }
     });
 
-    // 2) persist to notifications
-    const note = {
-        user_id: uid,
-        content,
-        sent_at: new Date(),
-        status: 'Sent',
-    };
+    // 2) Persist to notifications
+    const note = { user_id: uid, content, sent_at: new Date(), status: 'Sent' };
     const { insertedId } = await collection('notifications').insertOne(note);
     return { ...note, _id: insertedId };
 }
+
 
 /**
  * Express handler for POST /api/notifications

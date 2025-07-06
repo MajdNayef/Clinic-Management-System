@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+        /* Reset & basic styles */
+        body,
+        table,
+        td {
+            margin: 0;
+            padding: 0;
+        }
+
+        img {
+            border: 0;
+            display: block;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        body {
+            font-family: 'Helvetica', Arial, sans-serif;
+            background: #f4f4f5;
+            color: #333;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            background: #ffffff;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #007bff;
+            color: #ffffff;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- PREHEADER (hidden text shown in inbox preview) -->
+    <div style="display: none; max-height: 0; overflow: hidden; font-size: 1px; line-height:1px; color:#f4f4f5;">
+        {{preheader}}
+    </div>
+
+    <table class="container" cellpadding="0" cellspacing="0">
+        <tr>
+            <td style="padding: 20px; text-align: center; background: #007bff;">
+            </td>
+        </tr>
+
+        <!-- BODY -->
+        <tr>
+            <td style="padding: 30px;">
+                {{{body}}}
+            </td>
+        </tr>
+
+        <!-- FOOTER -->
+        <tr>
+            <td style="padding: 20px; text-align: center; font-size:12px; color:#888;">
+                &copy; {{year}} MedConnect. All rights reserved.<br />
+                <a href="https://medconnect.example.com">Visit our site</a> •
+                <a href="mailto:support@medconnect.example.com">Contact support</a>
+        <tr>
+            <td style="padding: 20px; text-align: center; background: #007bff;">
+            </td>
+        </tr>
+        </td>
+        </tr>
+    </table>
+</body>
+
+</html>

@@ -1,0 +1,22 @@
+{{!-- notification.hbs --}}
+<h2 style="color:#007bff; margin-bottom: 16px;">
+    🔔 You’ve got a new MedConnect notification
+</h2>
+
+<p style="font-size:16px; line-height:1.5;">
+    Hi {{user.firstName}} {{user.lastName}},<br /><br />
+    {{content}}
+</p>
+
+<table role="presentation" cellspacing="0" cellpadding="0" style="margin: 24px 0;">
+    <tr>
+        <td align="center">
+            <a href="{{actionUrl}}" class="btn">View Your Dashboard</a>
+        </td>
+    </tr>
+</table>
+
+<p style="font-size:14px; color:#555;">
+    If you have any questions, just reply to this email or visit our
+    <a href="https://medconnect.example.com/help">Help Center</a>.
+</p>
