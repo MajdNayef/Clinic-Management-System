@@ -3,8 +3,7 @@
     "concurrently": "^9.1.2"
   },
   "scripts": {
-    "start": "concurrently \"npm run server\" \"npm run client\"",
-    "client": "npm start --prefix Client",
-    "server": "npm run dev --prefix Server"
+    "build": "npm run build --prefix Client",
+    "start": "node Server/src/server.js"
   }
 }
