@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import DashboardLayout from "./layout/DashboardLayout";
-import { FiClock, FiCalendar, FiUser } from "react-icons/fi";
+import { FiX, FiClock, FiCalendar, FiUser } from "react-icons/fi";
 import styles from "./css/appointmentbooking.module.css";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+
 
 axios.defaults.baseURL =
     process.env.REACT_APP_API_URL || "http://localhost:5000";
@@ -26,6 +28,7 @@ export default function AppointmentBooking() {
     const [date, setDate] = useState("");
     const [time, setTime] = useState("");
     const [confirmationMessage, setConfirmationMessage] = useState(""); // Add state for confirmation message
+    const navigate = useNavigate();                       // ← hook
 
     // 1️⃣ load doctor list
     useEffect(() => {
@@ -236,12 +239,28 @@ export default function AppointmentBooking() {
 
                     {/* Confirmation Message */}
                     {confirmationMessage && (
-                        <div className={styles.confirmationMessage}>
-                            <p>{confirmationMessage}</p>
+                        <div
+                            className={styles.overlay}
+                            onClick={() => navigate("/PatientDashboard")}
+                        >
+                            <div
+                                className={styles.confirmationModal}
+                                onClick={e => e.stopPropagation()}
+                            >
+                                <button
+                                    className={styles.closeBtn}
+                                    onClick={() => navigate("/PatientDashboard")} // ← navigate on X
+                                >
+                                    <FiX />
+                                </button>
+                                <p>{confirmationMessage}</p>
+                            </div>
                         </div>
-                    )}
-                </div>
-            </div>
-        </DashboardLayout>
+                    )
+                    }
+
+                </div >
+            </div >
+        </DashboardLayout >
     );
 }
