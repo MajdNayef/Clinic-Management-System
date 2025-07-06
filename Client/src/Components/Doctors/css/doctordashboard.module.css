@@ -245,3 +245,169 @@
 .cancelBtn:hover {
     background: #c82333;
 }
+
+
+/* ───────────────────────────────────────────────
+   New-Medical-Record form (inside .reportModal)
+   ─────────────────────────────────────────────── */
+
+.modalForm {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 0.5rem;
+}
+
+/* label wraps the element + caption */
+.modalLabel {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #374151;
+    /* slate-700 */
+}
+
+
+/* ───────────────────────────────────────────────
+   Patient-Report overlay
+   (triggered by the “Patient Medical Report” button)
+   ─────────────────────────────────────────────── */
+
+.reportOverlay {
+    position: fixed;
+    inset: 0;
+    /* top-right-bottom-left = 0 */
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(2px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1100;
+    /* above .overlay (1000) */
+}
+
+/* white card */
+.reportModal {
+    width: 420px;
+    background: #ffffff;
+    border-radius: 0.75rem;
+    box-shadow: 0 20px 48px rgba(0, 0, 0, 0.15);
+    padding: 2rem 1.75rem;
+    text-align: center;
+    animation: growIn 0.25s ease-out;
+}
+
+@keyframes growIn {
+    from {
+        transform: scale(0.85);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* heading & sub-text */
+.modalTitle {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: #1f2937;
+}
+
+.modalSubtitle {
+    margin-bottom: 1.25rem;
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+/* big choice buttons */
+.optionBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    /* spacing between icon + text */
+    width: 100%;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.75rem;
+    background: #f3f4f6;
+    color: #374151;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s;
+}
+
+.optionBtn svg {
+    margin-right: 0.25rem;
+}
+
+.optionBtn:hover,
+.optionBtn:focus-visible {
+    background: #e7e8ea;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.07);
+    outline: none;
+}
+
+/* close / cancel button */
+.modalCloseBtn {
+    margin-top: 0.5rem;
+    background: #b9656e;
+    color: #ffffff;
+    border: none;
+    padding: 0.55rem 1.25rem;
+    border-radius: 0.375rem;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.modalCloseBtn:hover {
+    background: #a34f57;
+}
+
+
+/* shared input styles */
+.modalTextarea,
+.modalSelect {
+    margin-top: 0.35rem;
+    background: #f9fafb;
+    /* gray-50 */
+    border: 1px solid #d1d5db;
+    /* gray-300 */
+    border-radius: 0.5rem;
+    padding: 0.6rem 0.75rem;
+    font-size: 0.875rem;
+    font-family: inherit;
+    color: #1f2937;
+    /* gray-800 */
+    transition: border 0.2s, box-shadow 0.2s;
+}
+
+.modalTextarea {
+    min-height: 80px;
+    resize: vertical;
+}
+
+.modalTextarea:focus,
+.modalSelect:focus {
+    outline: none;
+    border-color: #4b5563;
+    /* gray-600 */
+    box-shadow: 0 0 0 3px rgba(75, 85, 99, 0.25);
+}
+
+/* bottom row with Save / Cancel */
+.modalBtnRow {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 0.25rem;
+}

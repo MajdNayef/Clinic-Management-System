@@ -5,8 +5,8 @@ const { ObjectId } = require('mongodb');
 const { collection } = require('../config/db');
 const guard = require('../middlewares/auth');
 const { sendNotificationToUser } = require('../controllers/notificationController');
+const { generatePatientMedicalReportPDF } = require('../controllers/patientReportController');
 const router = express.Router();
-
 const doctorsCol = () => collection('doctors');
 const appointmentsCol = () => collection('appointments');
 
@@ -208,9 +208,19 @@ router.get("/appointments/doctor", guard, async (req, res) => {
         if (!doctor)
             return res.status(404).json({ message: "Doctor profile not found" });
 
-        const today = new Date().toISOString().slice(0, 10);
-        const isPast = req.query.past === "true";
+        const { utcToZonedTime, format } = require('date-fns-tz');
+        const CLINIC_TZ = process.env.CLINIC_TZ || 'Asia/Riyadh';
+
+        const today = format(
+            utcToZonedTime(new Date(), CLINIC_TZ), // convert UTC → clinic zone
+            'yyyy-MM-dd',                          // keep YYYY-MM-DD string format
+            { timeZone: CLINIC_TZ }
+        ); const isPast = req.query.past === "true";
         const specificDate = req.query.date;
+        console.log('[doctor route] userId', userId);
+        console.log('[doctor route] doctor id ', doctor);
+        console.log('[doctor route] today', today, 'specificDate', specificDate, 'isPast', isPast);
+
 
         const matchCondition = {
             doctor_id: doctor._id,

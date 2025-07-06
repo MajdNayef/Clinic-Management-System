@@ -6,7 +6,8 @@ import {
     MessageCircle,
     Star,
     Info as InfoIcon,
-    X as CloseIcon
+    X as CloseIcon,
+    FileText
 } from "react-feather";
 import axios from "axios";
 import DashboardLayout from "./layout/DashboardLayout";
@@ -113,6 +114,35 @@ export default function MyAppointments() {
         }
     };
 
+
+    // open SINGLE medical‐record PDF for this appointment
+    const openMedicalRecord = async (appt) => {
+        try {
+            // 1) fetch all raw reports for this patient
+            const { data: reports } = await axios.get(
+                `/api/medical-reports/reports/patient/${appt.patient_id}`
+            );
+
+            // 2) find the one matching this appointment
+            const report = reports.find(r => r.appointment_id === appt._id);
+            if (!report) {
+                return alert("No medical record found for this appointment");
+            }
+
+            // 3) stream back single-report PDF
+            const { data: pdfBlob } = await axios.get(
+                `/api/medical-reports/reports/patient/${report._id}/pdf`,
+                { responseType: "blob" }
+            );
+            const url = URL.createObjectURL(new Blob([pdfBlob], { type: "application/pdf" }));
+            window.open(url, "_blank");
+            setTimeout(() => URL.revokeObjectURL(url), 60_000);
+
+        } catch (err) {
+            console.error(err);
+            alert("Could not open medical record");
+        }
+    };
     // split upcoming vs previous
     const upcoming = appointments.filter((a) => a.status === "Scheduled");
     const previous = appointments.filter((a) => a.status !== "Scheduled");
@@ -162,12 +192,21 @@ export default function MyAppointments() {
                                     setDetailsAppt={setDetailsAppt} // Pass as prop
                                 >
                                     {appt.status === "Completed" && (
-                                        <button
-                                            className={styles.link}
-                                            onClick={() => setFeedbackAppt(appt)}
-                                        >
-                                            <MessageCircle size={14} /> Give Feedback
-                                        </button>
+                                        <>
+                                            <button
+                                                className={styles.link}
+                                                onClick={() => setFeedbackAppt(appt)}
+                                            >
+                                                <MessageCircle size={14} /> Give Feedback
+                                            </button>
+
+                                            <button
+                                                className={styles.link}
+                                                onClick={() => openMedicalRecord(appt)}
+                                            >
+                                                <FileText size={14} /> Open Medical Record
+                                            </button>
+                                        </>
                                     )}
                                 </Card>
                             ))}

@@ -650,7 +650,9 @@ exports.createAppointmentStatistics = async (req, res) => {
         console.error("Stats generation error:", err);
         res.status(500).json({ message: "Failed to generate statistics." });
     }
-};/**
+};
+
+/**
 * GET /api/admin/reports/appointments/statistics?start=YYYY-MM&end=YYYY-MM
 * Returns one stats doc per month in the inclusive range.  Any month that
 * isn’t present in appointment_statistics_reports is calculated directly

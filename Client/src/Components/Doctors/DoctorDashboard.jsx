@@ -1,46 +1,68 @@
 // src/components/Doctors/DoctorDashboard.jsx
-
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { Clock, Calendar, Check, X as Cancel, Users } from "react-feather";
+import {
+    Clock,
+    Calendar,
+    Check,
+    X as Cancel,
+    Users,
+    FileText,
+    PlusSquare,
+    Download,
+} from "react-feather";
 import DashboardLayout from "./layout/DashboardLayout";
 import styles from "./css/doctordashboard.module.css";
 
 export default function DoctorDashboard() {
+    /* ─────────────────── state ─────────────────── */
     const [allAppts, setAllAppts] = useState([]);
     const [loading, setLoading] = useState(true);
+
     const [confirmAction, setConfirmAction] = useState({
         show: false,
         id: null,
-        status: ""
+        status: "",
     });
+
+    const [reportModal, setReportModal] = useState({
+        show: false,
+        mode: "menu", // menu | list | form
+        appt: null,
+    });
+
+    const [newReport, setNewReport] = useState({
+        diagnosis: "",
+        treatment: "",
+        prescription_state: "Pending",
+    });
+
+    const [previousReports, setPreviousReports] = useState([]);
+    const [prevLoading, setPrevLoading] = useState(false);
+
     const navigate = useNavigate();
 
-    // fetch today's appointments
-    useEffect(() => {
-        fetchData();
-    }, []);
-
+    /* ───────────────── fetch today’s appointments ───────────────── */
+    useEffect(fetchData, []);
     function fetchData() {
         setLoading(true);
         axios
             .get("/api/appointments/doctor")
-            .then(res => setAllAppts(res.data))
+            .then((res) => setAllAppts(res.data))
             .catch(console.error)
             .finally(() => setLoading(false));
     }
 
-    // mark complete / canceled
+    /* ───────────────── status update confirm ───────────────── */
     function handleActionClick(id, status) {
         setConfirmAction({ show: true, id, status });
     }
     async function confirmUpdateStatus() {
         try {
-            await axios.patch(
-                `/api/appointments/${confirmAction.id}/status`,
-                { status: confirmAction.status }
-            );
+            await axios.patch(`/api/appointments/${confirmAction.id}/status`, {
+                status: confirmAction.status,
+            });
             fetchData();
         } catch {
             alert("Could not update status");
@@ -48,71 +70,132 @@ export default function DoctorDashboard() {
             setConfirmAction({ show: false, id: null, status: "" });
         }
     }
-    function cancelUpdateStatus() {
-        setConfirmAction({ show: false, id: null, status: "" });
-    }
 
-    const handleLiveChat = async (appt) => {
-        console.log('👉 starting live chat for appt', appt);
-
+    /* ───────────────── live chat ───────────────── */
+    async function handleLiveChat(appt) {
         const appointmentId = appt._id;
-        const doctorId =
-            appt.doctor?._id ||
-            appt.doctorId ||
-            appt.doctor_id;
-
-        const patientId =
-            appt.patient?._id ||
-            appt.patientId ||
-            appt.patient_id;
-
+        const doctorId = appt.doctor_id;
+        const patientId = appt.patient_id;
         if (!appointmentId || !doctorId || !patientId) {
-            console.warn('missing IDs', { appointmentId, doctorId, patientId });
-            return alert('Could not start chat: missing IDs');
+            return alert("Missing IDs; cannot start chat");
         }
-
         try {
-            const { data } = await axios.post('/api/chat-sessions', { appointmentId });
-            console.log('✅ got sessionId', data.sessionId);
-
-            const chatWith = appt.patient_name; // or build from appt.patient
+            const { data } = await axios.post("/api/chat-sessions", { appointmentId });
             navigate(
                 `/doctor/live-chat?` +
                 `sessionId=${data.sessionId}` +
                 `&doctorId=${doctorId}` +
                 `&patientId=${patientId}` +
                 `&userType=doctor` +
-                `&chatWith=${encodeURIComponent(chatWith)}` +
-                `&patientAvatar=${encodeURIComponent(data.patientAvatar)}` +
-                `&appointmentTime=${encodeURIComponent(data.appointmentTime)}` +
-                `&appointmentDate=${encodeURIComponent(data.appointmentDate)}`,
-                { replace: false }
+                `&chatWith=${encodeURIComponent(appt.patient_name)}`
             );
         } catch (err) {
-            console.error('❌ error starting live chat:', err);
-            alert('Could not start live chat. See console.');
+            console.error("live chat error", err);
+            alert("Could not start live chat");
         }
-    };
+    }
 
+    /* ───────────────── patient-report overlay ───────────────── */
+    async function openReportMenu(appt) {
+        setReportModal({ show: true, mode: "menu", appt });
+        setPrevLoading(true);
+        try {
+            // ← updated path here
+            const { data } = await axios.get(
+                `/api/medical-reports/reports/patient/${appt.patient_id}`
+            );
+            setPreviousReports(data);
+        } catch {
+            setPreviousReports([]);
+        } finally {
+            setPrevLoading(false);
+        }
+    }
+    function closeReportModal() {
+        setReportModal({ show: false, mode: "menu", appt: null });
+        setPreviousReports([]);
+        setNewReport({ diagnosis: "", treatment: "", prescription_state: "Pending" });
+    }
+    function startNewRecord() {
+        setReportModal((p) => ({ ...p, mode: "form" }));
+    }
+    function viewList() {
+        setReportModal((p) => ({ ...p, mode: "list" }));
+    }
 
-    // filter & sort today's appointments
-    const todayStr = new Date().toISOString().slice(0, 10);
+    async function submitNewReport(e) {
+        e.preventDefault();
+        const appt = reportModal.appt;
+        if (!appt) return;
+        const payload = {
+            diagnosis: newReport.diagnosis,
+            treatment: newReport.treatment,
+            prescription_state: newReport.prescription_state,
+            patient_id: appt.patient_id,
+            doctor_id: appt.doctor_id,
+            appointment_id: appt._id,
+        };
+        try {
+            // ← updated path here
+            await axios.post(`/api/medical-reports/reports/patient`, payload);
+            alert("Medical report saved ✔");
+            closeReportModal();
+        } catch {
+            alert("Could not save report");
+        }
+    }
+
+    async function downloadReport(id) {
+        try {
+            const { data } = await axios.get(
+                `/api/medical-reports/reports/patient/${id}/pdf`,
+                { responseType: "blob" }
+            );
+            const pdfBlob = new Blob([data], { type: "application/pdf" });
+            const url = URL.createObjectURL(pdfBlob);
+            // open in a new tab
+            window.open(url, "_blank");
+            // optional: revoke the URL after a bit
+            setTimeout(() => URL.revokeObjectURL(url), 1000 * 60);
+        } catch (err) {
+            console.error("Could not open report in new tab:", err);
+            alert("Could not open report");
+        }
+    }
+
+    async function downloadAllReports() {
+        const pid = reportModal.appt.patient_id;
+        try {
+            const { data } = await axios.get(
+                `/api/medical-reports/reports/patient/${pid}/all/pdf`,
+                { responseType: "blob" }
+            );
+            const pdfBlob = new Blob([data], { type: "application/pdf" });
+            const url = URL.createObjectURL(pdfBlob);
+            window.open(url, "_blank");
+            setTimeout(() => URL.revokeObjectURL(url), 1000 * 60);
+        } catch (err) {
+            console.error("Could not open combined report:", err);
+            alert("Could not open all reports");
+        }
+    }
+
+    /* ───────────────── helpers ───────────────── */
+    const todayStr = new Date().toLocaleDateString("en-CA");
     const todayAppts = allAppts.filter(
-        a =>
-            a.date === todayStr &&
-            a.status !== "Completed" &&
-            a.status !== "Canceled"
+        (a) => a.date === todayStr && !["Completed", "Canceled"].includes(a.status)
     );
     const sorted = todayAppts
-        .map(a => ({
+        .map((a) => ({
             ...a,
-            startDt: new Date(`${a.date}T${a.time.split(" - ")[0]}`)
+            startDt: new Date(`${a.date}T${a.time.split(" - ")[0]}`),
         }))
         .sort((a, b) => a.startDt - b.startDt);
 
     const current = sorted[0] || null;
     const next = sorted.slice(1);
 
+    /* ───────────────── render ───────────────── */
     return (
         <DashboardLayout>
             <div className={styles.doctorDashboardContainer}>
@@ -126,7 +209,6 @@ export default function DoctorDashboard() {
                         <p>Loading…</p>
                     ) : current ? (
                         <div className={styles.currentAppointmentCard}>
-                            {/* avatar */}
                             {current.patient_avatar ? (
                                 <img
                                     src={
@@ -141,13 +223,12 @@ export default function DoctorDashboard() {
                                 <div className={styles.avatarCircle}>
                                     {current.patient_name
                                         .split(" ")
-                                        .map(n => n[0])
+                                        .map((n) => n[0])
                                         .join("")
                                         .toUpperCase()}
                                 </div>
                             )}
 
-                            {/* details */}
                             <div className={styles.currentDetails}>
                                 <div className={styles.patientName}>
                                     {current.patient_name}
@@ -165,12 +246,13 @@ export default function DoctorDashboard() {
                                 </div>
                             </div>
 
-                            {/* actions */}
                             <div className={styles.actionsRow}>
-                                <button className={styles.actionBtn}>
+                                <button
+                                    className={styles.actionBtn}
+                                    onClick={() => openReportMenu(current)}
+                                >
                                     Patient Medical Report
                                 </button>
-
                                 {current.appointment_type === "Virtual" && (
                                     <button
                                         className={styles.actionBtn}
@@ -179,7 +261,6 @@ export default function DoctorDashboard() {
                                         Connect to Live Chat
                                     </button>
                                 )}
-
                                 <div className={styles.statusLegend}>
                                     <span
                                         className={styles.actionClickable}
@@ -216,8 +297,11 @@ export default function DoctorDashboard() {
                         <p>No more appointments today</p>
                     ) : (
                         <div className={styles.nextAppointmentsGrid}>
-                            {next.map(appt => (
-                                <div key={appt._id} className={styles.appointmentCard}>
+                            {next.map((appt) => (
+                                <div
+                                    key={appt._id}
+                                    className={styles.appointmentCard}
+                                >
                                     {appt.patient_avatar ? (
                                         <img
                                             src={
@@ -232,7 +316,7 @@ export default function DoctorDashboard() {
                                         <div className={styles.avatarCircle}>
                                             {appt.patient_name
                                                 .split(" ")
-                                                .map(n => n[0])
+                                                .map((n) => n[0])
                                                 .join("")
                                                 .toUpperCase()}
                                         </div>
@@ -251,15 +335,6 @@ export default function DoctorDashboard() {
                                                 <Users size={14} /> – {appt.appointment_type}
                                             </span>
                                         </div>
-
-                                        {appt.appointment_type === "Virtual" && (
-                                            <button
-                                                className={styles.joinBtn}
-                                                onClick={() => handleLiveChat(appt)}
-                                            >
-                                                Join Live Chat
-                                            </button>
-                                        )}
                                     </div>
                                 </div>
                             ))}
@@ -268,6 +343,7 @@ export default function DoctorDashboard() {
                 </section>
             </div>
 
+            {/* Confirm status overlay */}
             {confirmAction.show && (
                 <div className={styles.overlay}>
                     <div className={styles.confirmDialog}>
@@ -282,11 +358,201 @@ export default function DoctorDashboard() {
                             Yes
                         </button>
                         <button
-                            onClick={cancelUpdateStatus}
+                            onClick={() => setConfirmAction({ show: false })}
                             className={styles.cancelBtn}
                         >
                             No
                         </button>
+                    </div>
+                </div>
+            )}
+
+            {/* Patient Report Modal */}
+            {reportModal.show && (
+                <div className={styles.reportOverlay}>
+                    <div className={styles.reportModal}>
+
+                        {/* MENU */}
+                        {reportModal.mode === "menu" && (
+                            <>
+                                <h4 className={styles.modalTitle}>
+                                    Patient Medical Report
+                                </h4>
+                                <p className={styles.modalSubtitle}>
+                                    What would you like to do?
+                                </p>
+                                <button
+                                    className={styles.optionBtn}
+                                    onClick={startNewRecord}
+                                >
+                                    <PlusSquare size={16} /> Create New Record
+                                </button>
+                                <button
+                                    className={styles.optionBtn}
+                                    onClick={viewList}
+                                >
+                                    <FileText size={16} /> View Previous Records
+                                </button>
+                                <button
+                                    className={styles.optionBtn}
+                                    onClick={downloadAllReports}
+                                >
+                                    <Download size={16} /> Download All Records
+                                </button>
+                                <button
+                                    className={styles.modalCloseBtn}
+                                    onClick={closeReportModal}
+                                >
+                                    Close
+                                </button>
+                            </>
+                        )}
+
+                        {/* LIST */}
+                        {reportModal.mode === "list" && (
+                            <>
+                                <h4 className={styles.modalTitle}>
+                                    Previous Reports
+                                </h4>
+                                {prevLoading ? (
+                                    <p>Loading…</p>
+                                ) : previousReports.length === 0 ? (
+                                    <p>No reports yet</p>
+                                ) : (
+                                    <ul
+                                        style={{
+                                            maxHeight: 240,
+                                            overflowY: "auto",
+                                            padding: 0,
+                                        }}
+                                    >
+                                        {previousReports.map((r) => (
+                                            <li
+                                                key={r._id}
+                                                style={{
+                                                    display: "flex",
+                                                    justifyContent: "space-between",
+                                                    alignItems: "center",
+                                                    marginBottom: ".5rem",
+                                                    listStyle: "none",
+                                                }}
+                                            >
+                                                <div>
+                                                    <strong>
+                                                        {new Date(r.createdAt).toLocaleDateString()}
+                                                    </strong>
+                                                    <div
+                                                        style={{
+                                                            fontSize: ".8rem",
+                                                            color: "#6b7280",
+                                                        }}
+                                                    >
+                                                        {r.diagnosis.slice(0, 40)}
+                                                        {r.diagnosis.length > 40 && "…"}
+                                                    </div>
+                                                </div>
+                                                <button
+                                                    className={styles.actionBtn}
+                                                    onClick={() => downloadReport(r._id)}
+                                                    title="Download PDF"
+                                                >
+                                                    <Download size={14} />
+                                                </button>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )}
+                                <div className={styles.modalBtnRow}>
+                                    <button
+                                        className={styles.cancelBtn}
+                                        onClick={() =>
+                                            setReportModal((p) => ({ ...p, mode: "menu" }))
+                                        }
+                                    >
+                                        Back
+                                    </button>
+                                </div>
+                            </>
+                        )}
+
+                        {/* FORM */}
+                        {reportModal.mode === "form" && (
+                            <>
+                                <h4 className={styles.modalTitle}>
+                                    New Medical Record
+                                </h4>
+                                <form
+                                    className={styles.modalForm}
+                                    onSubmit={submitNewReport}
+                                >
+                                    <label className={styles.modalLabel}>
+                                        Diagnosis
+                                        <textarea
+                                            required
+                                            className={styles.modalTextarea}
+                                            value={newReport.diagnosis}
+                                            onChange={(e) =>
+                                                setNewReport({
+                                                    ...newReport,
+                                                    diagnosis: e.target.value,
+                                                })
+                                            }
+                                        />
+                                    </label>
+                                    <label className={styles.modalLabel}>
+                                        Treatment
+                                        <textarea
+                                            required
+                                            className={styles.modalTextarea}
+                                            value={newReport.treatment}
+                                            onChange={(e) =>
+                                                setNewReport({
+                                                    ...newReport,
+                                                    treatment: e.target.value,
+                                                })
+                                            }
+                                        />
+                                    </label>
+                                    <label className={styles.modalLabel}>
+                                        Prescription State
+                                        <select
+                                            className={styles.modalSelect}
+                                            value={newReport.prescription_state}
+                                            onChange={(e) =>
+                                                setNewReport({
+                                                    ...newReport,
+                                                    prescription_state: e.target.value,
+                                                })
+                                            }
+                                        >
+                                            <option value="Pending">Pending</option>
+                                            <option value="Issued">Issued</option>
+                                            <option value="Dispensed">Dispensed</option>
+                                        </select>
+                                    </label>
+                                    <div className={styles.modalBtnRow}>
+                                        <button
+                                            type="submit"
+                                            className={styles.confirmBtn}
+                                        >
+                                            Save
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className={styles.cancelBtn}
+                                            onClick={() =>
+                                                setReportModal((p) => ({
+                                                    ...p,
+                                                    mode: "menu",
+                                                }))
+                                            }
+                                        >
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </form>
+                            </>
+                        )}
                     </div>
                 </div>
             )}

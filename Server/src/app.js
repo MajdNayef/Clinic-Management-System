@@ -15,8 +15,8 @@ const dialogflowRoute = require('./routes/dialogFlow');
 const notificationsRoutes = require('./routes/notificationsRoutes');
 const chatSessionsRoute = require('./routes/chatSessions');
 const { authenticate, protectAdminOnly } = require("./middlewares/auth");
-
 const adminRoutes = require('./routes/adminRoutes');
+const medicalReportRoutes = require('./routes/medicalReportRoutes');
 
 const app = express();
 
@@ -53,6 +53,9 @@ app.use(
     protectAdminOnly,    // ② allows only role === "admin"
     adminRoutes          // ③ your existing admin endpoints
 );
+
+
+app.use('/api/medical-reports', medicalReportRoutes);
 
 // app.use('/api/admin', adminRoutes);
 
