@@ -101,10 +101,10 @@ const Login = () => {
                             autoComplete="current-password"
                         />
                     </div>
-
+{/* 
                     <a href="#" title="Forget your password?" onClick={() => setShowOverlay(true)}>
                         Forgot password?
-                    </a>
+                    </a> */}
                     <br />
 
                     {error && <p className="error">{error}</p>}
