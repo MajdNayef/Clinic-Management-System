@@ -144,7 +144,7 @@ const HelpCenter = () => {
 
                         <div className={styles.faqContactBox}>
                             <h3>Still need help?</h3>
-                            <a href="#">
+                            <a href="/">
                                 <MessageCircle size={16} /> Open Chat Bot
                             </a>
                             <hr />
