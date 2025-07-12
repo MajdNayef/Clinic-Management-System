@@ -10,9 +10,11 @@ import {
 } from 'react-icons/fi';
 import { jwtDecode } from 'jwt-decode';              // ← named import
 import { NavLink } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import MedconnectLogo from '../../Assets/MedconnectLogo.png';
 import Chatbot from '../../CommonPages/ChatBot';
+import LanguageSelector from '../../CommonPages/LanguageSelector';
 import styles from './dashboardLayout.module.css';
 
 axios.defaults.baseURL =
@@ -24,6 +26,7 @@ const DashboardLayout = ({ children }) => {
   const [showChatbot, setShowChatbot] = useState(false);
   const [user, setUser] = useState(null);
   const [greet, setGreet] = useState('Hello');
+  const { t } = useTranslation();
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -44,10 +47,10 @@ const DashboardLayout = ({ children }) => {
 
   useEffect(() => {
     const hr = new Date().getHours();
-    setGreet(hr < 12 ? 'Good morning' : hr < 18 ? 'Good afternoon' : 'Good evening');
-  }, []);
+    setGreet(hr < 12 ? t('dashboard.goodMorning') : hr < 18 ? t('dashboard.goodAfternoon') : t('dashboard.goodEvening'));
+  }, [t]);
 
-  const fullName = user ? `${user.first_name} ${user.last_name}` : 'Unknown';
+  const fullName = user ? `${user.first_name} ${user.last_name}` : t('common.unknown');
 
   return (
     <div className={styles.dashboardWrapper}>
@@ -65,7 +68,7 @@ const DashboardLayout = ({ children }) => {
               isActive ? `${styles.link} ${styles.active}` : styles.link
             }
           >
-            Dashboard
+            {t('common.dashboard')}
           </NavLink>
           <NavLink
             to="/Services"
@@ -73,7 +76,7 @@ const DashboardLayout = ({ children }) => {
               isActive ? `${styles.link} ${styles.active}` : styles.link
             }
           >
-            Services
+            {t('common.services')}
           </NavLink>
           <NavLink
             to="/HelpCenter"
@@ -81,7 +84,7 @@ const DashboardLayout = ({ children }) => {
               isActive ? `${styles.link} ${styles.active}` : styles.link
             }
           >
-            Help Center
+            {t('common.helpCenter')}
           </NavLink>
           <NavLink
             to="/ContactUs"
@@ -89,7 +92,7 @@ const DashboardLayout = ({ children }) => {
               isActive ? `${styles.link} ${styles.active}` : styles.link
             }
           >
-            Contact Us
+            {t('common.contactUs')}
           </NavLink>
         </nav>
 
@@ -101,14 +104,9 @@ const DashboardLayout = ({ children }) => {
               window.location = '/';
             }}
           >
-            Logout
+            {t('common.logout')}
           </button>
-          <div className={styles.languageSelector}>
-            <select>
-              <option>English</option>
-              <option>العربية</option>
-            </select>
-          </div>
+          <LanguageSelector className={styles.languageSelector} />
         </div>
       </header>
 
@@ -129,7 +127,7 @@ const DashboardLayout = ({ children }) => {
                 />
                 {showNotifications && (
                   <div className={styles.notificationPopup}>
-                    <h4>🔔 Notifications</h4>
+                    <h4>{t('dashboard.notifications')}</h4>
                     <ul className={styles.notificationList}>
 
                       {notifications.length
@@ -143,7 +141,7 @@ const DashboardLayout = ({ children }) => {
                             </span>
                           </li>
                         ))
-                        : <li className={styles.empty}>No notifications</li>
+                        : <li className={styles.empty}>{t('common.noNotifications')}</li>
                       }
                     </ul>
                   </div>
@@ -181,7 +179,7 @@ const DashboardLayout = ({ children }) => {
                   : styles.sidebarLink
               }
             >
-              <FiInfo size={16} /> Overview
+              <FiInfo size={16} /> {t('common.overview')}
             </NavLink>
             <NavLink
               to="/book"
@@ -191,7 +189,7 @@ const DashboardLayout = ({ children }) => {
                   : styles.sidebarLink
               }
             >
-              <FiClipboard size={16} /> Book a new appointment
+              <FiClipboard size={16} /> {t('dashboard.bookNewAppointment')}
             </NavLink>
             <NavLink
               to="/MyAppointments"
@@ -201,7 +199,7 @@ const DashboardLayout = ({ children }) => {
                   : styles.sidebarLink
               }
             >
-              <FiCalendar size={16} /> My Appointments
+              <FiCalendar size={16} /> {t('dashboard.myAppointments')}
             </NavLink>
           </nav>
 
@@ -214,11 +212,11 @@ const DashboardLayout = ({ children }) => {
                   : styles.sidebarLink
               }
             >
-              <FiSettings size={16} /> My profile
+              <FiSettings size={16} /> {t('common.myProfile')}
             </NavLink>
             <div className={styles.notificationToggle}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <FiBell size={16} /> Email Notification
+                <FiBell size={16} /> {t('common.emailNotification')}
               </div>
               <label className={styles.switch}>
                 <input
@@ -238,7 +236,7 @@ const DashboardLayout = ({ children }) => {
         className={styles.dashboardFooter}
         onClick={() => setShowChatbot(!showChatbot)}
       >
-        Need Help ? 💬
+        {t('common.needHelp')}
       </footer>
 
       {showChatbot && <Chatbot onClose={() => setShowChatbot(false)} />}

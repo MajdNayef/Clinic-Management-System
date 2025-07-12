@@ -1,0 +1,332 @@
+/* Pharmacist Dashboard Styles */
+.pharmacistDashboardContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.sectionTitle {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 0.5rem;
+}
+
+.divider {
+  border: none;
+  border-top: 2px solid #e5e7eb;
+  margin: 1.5rem 0;
+}
+
+.searchFilterSection {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.searchBox {
+  display: flex;
+  align-items: center;
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  flex: 1;
+  min-width: 250px;
+}
+
+.searchBox svg {
+  color: #6b7280;
+  margin-right: 0.5rem;
+}
+
+.searchInput {
+  border: none;
+  outline: none;
+  flex: 1;
+  font-size: 0.9rem;
+}
+
+.filterBox {
+  display: flex;
+  align-items: center;
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+}
+
+.filterBox svg {
+  color: #6b7280;
+  margin-right: 0.5rem;
+}
+
+.filterSelect {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 0.9rem;
+  color: #374151;
+}
+
+.reportsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 1.5rem;
+}
+
+.reportCard {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s;
+}
+
+.reportCard:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.reportHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.patientInfo h4 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.metaRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: #6b7280;
+  margin-bottom: 0.25rem;
+}
+
+.statusBadge {
+  display: flex;
+  align-items: center;
+}
+
+.pendingStatus {
+  background: #fef3c7;
+  color: #92400e;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.issuedStatus {
+  background: #dbeafe;
+  color: #1e40af;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.dispensedStatus {
+  background: #dcfce7;
+  color: #166534;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.reportContent {
+  margin-bottom: 1.5rem;
+}
+
+.diagnosisSection,
+.treatmentSection {
+  margin-bottom: 1rem;
+}
+
+.diagnosisSection strong,
+.treatmentSection strong {
+  color: #374151;
+  font-size: 0.9rem;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.diagnosisSection p,
+.treatmentSection p {
+  color: #6b7280;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.reportActions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}
+
+.actionBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: white;
+  color: #374151;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.actionBtn:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+/* Modal Styles */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  max-width: 500px;
+  width: 90%;
+  box-shadow: 0 20px 25px rgba(0, 0, 0, 0.1);
+}
+
+.modal h4 {
+  margin: 0 0 1rem 0;
+  font-size: 1.2rem;
+  color: #1f2937;
+}
+
+.modal p {
+  color: #6b7280;
+  margin-bottom: 1.5rem;
+}
+
+.statusOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.statusOption {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.9rem;
+  color: #374151;
+}
+
+.statusOption:hover {
+  border-color: #3b82f6;
+  background: #f8fafc;
+}
+
+.statusOption.active {
+  border-color: #3b82f6;
+  background: #eff6ff;
+  color: #1e40af;
+}
+
+.cancelBtn {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: white;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cancelBtn:hover {
+  background: #f9fafb;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .searchFilterSection {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .searchBox,
+  .filterBox {
+    min-width: auto;
+  }
+  
+  .reportsGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .reportHeader {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .reportActions {
+    justify-content: stretch;
+  }
+  
+  .actionBtn {
+    flex: 1;
+    justify-content: center;
+  }
+}
+
+/* RTL Support */
+[dir="rtl"] .searchBox svg,
+[dir="rtl"] .filterBox svg {
+  margin-right: 0;
+  margin-left: 0.5rem;
+}
+
+[dir="rtl"] .metaRow {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .statusOption {
+  flex-direction: row-reverse;
+} 

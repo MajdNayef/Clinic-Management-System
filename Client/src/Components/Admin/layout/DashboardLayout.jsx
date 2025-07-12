@@ -4,11 +4,13 @@ import {
 } from 'react-icons/fi';
 import { jwtDecode } from 'jwt-decode';
 import { NavLink } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 import axios from 'axios';
 
 import MedconnectLogo from '../../Assets/MedconnectLogo.png';
 import Chatbot from '../../CommonPages/ChatBot';
+import LanguageSelector from '../../CommonPages/LanguageSelector';
 import styles from './dashboardLayout.module.css';
 
 axios.defaults.baseURL =
@@ -18,6 +20,7 @@ const DashboardLayout = ({ children }) => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [showChatbot, setShowChatbot] = useState(false);
   const [user, setUser] = useState(null);          // ← live profile
+  const { t } = useTranslation();
 
   /* ─── Load profile once on mount ──────────────────────────────── */
   useEffect(() => {
@@ -39,9 +42,9 @@ const DashboardLayout = ({ children }) => {
   /*  Greeting based on clock  */
   const greet = (() => {
     const h = new Date().getHours();
-    if (h < 12) return 'Good morning';
-    if (h < 18) return 'Good afternoon';
-    return 'Good evening';
+    if (h < 12) return t('dashboard.goodMorning');
+    if (h < 18) return t('dashboard.goodAfternoon');
+    return t('dashboard.goodEvening');
   })();
 
   const fullName = user ? `${user.first_name} ${user.last_name}` : 'Guest';
@@ -63,7 +66,7 @@ const DashboardLayout = ({ children }) => {
               isActive ? `${styles.link} ${styles.active}` : styles.link
             }
           >
-            Dashboard
+            {t('common.dashboard')}
           </NavLink>
           {/* <NavLink
             to="/Services"
@@ -96,14 +99,9 @@ const DashboardLayout = ({ children }) => {
             className={styles.logoutButton}
             onClick={() => { localStorage.removeItem('token'); window.location = '/'; }}
           >
-            Logout
+            {t('common.logout')}
           </button>
-          <div className={styles.languageSelector}>
-            <select>
-              <option>English</option>
-              <option>العربية</option>
-            </select>
-          </div>
+          <LanguageSelector className={styles.languageSelector} />
         </div>
       </header>
 
@@ -122,7 +120,7 @@ const DashboardLayout = ({ children }) => {
                 />
                 {showNotifications && (
                   <div className={styles.notificationPopup}>
-                    <h4>🔔 Notifications</h4>
+                    <h4>{t('dashboard.notifications')}</h4>
                     <ul className={styles.notificationList}>
                       <li>💉 Your appointment was rescheduled</li>
                     </ul>
@@ -161,7 +159,7 @@ const DashboardLayout = ({ children }) => {
                   : styles.sidebarLink
               }
             >
-              <FiInfo size={16} /> Overview
+              <FiInfo size={16} /> {t('admin.overview')}
             </NavLink>
 
             <NavLink
@@ -172,7 +170,7 @@ const DashboardLayout = ({ children }) => {
                   : styles.sidebarLink
               }
             >
-              <FiClipboard size={16} /> Manage users
+              <FiClipboard size={16} /> {t('admin.manageUsers')}
             </NavLink>
 
             <NavLink
@@ -183,7 +181,7 @@ const DashboardLayout = ({ children }) => {
                   : styles.sidebarLink
               }
             >
-              <FiCalendar size={16} /> Manage Appointments
+              <FiCalendar size={16} /> {t('admin.manageAppointments')}
             </NavLink>
 
             <NavLink
@@ -194,7 +192,7 @@ const DashboardLayout = ({ children }) => {
                   : styles.sidebarLink
               }
             >
-              <FiUser size={16} /> Clinic Capacity
+              <FiUser size={16} /> {t('admin.clinicCapacity')}
             </NavLink>
 
             <NavLink
@@ -205,7 +203,7 @@ const DashboardLayout = ({ children }) => {
                   : styles.sidebarLink
               }
             >
-              <FiClipboard size={16} /> Reports and Analytics
+              <FiClipboard size={16} /> {t('admin.reportsAndAnalyticsSidebar')}
             </NavLink>
           </nav>
 
@@ -218,15 +216,14 @@ const DashboardLayout = ({ children }) => {
                   : styles.sidebarLink
               }
             >
-              <FiSettings size={16} /> My profile
+              <FiSettings size={16} /> {t('common.myProfile')}
             </NavLink>
 
             <div className={styles.notificationToggle}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <FiBell size={16} /> Email Notification
+                <FiBell size={16} /> {t('common.emailNotification')}
               </div>
               <label className={styles.switch}>
-                <input type="checkbox" defaultChecked={user?.notifications_enabled} />
                 <span className={styles.slider} />
               </label>
             </div>
@@ -237,7 +234,7 @@ const DashboardLayout = ({ children }) => {
       </div>
 
       <footer className={styles.dashboardFooter} onClick={() => setShowChatbot(!showChatbot)}>
-        Need Help ? 💬
+        {t('common.needHelp')}
       </footer>
 
       {showChatbot && <Chatbot onClose={() => setShowChatbot(false)} />}

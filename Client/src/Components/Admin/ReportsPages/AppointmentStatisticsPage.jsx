@@ -2,8 +2,10 @@
 import React, { useState } from "react";
 import axios from "axios";
 import styles from "./reports.module.css";
+import { useTranslation } from 'react-i18next';
 
 const AppointmentStatisticsPage = () => {
+    const { t } = useTranslation();
     const [startMonth, setStartMonth] = useState("");
     const [endMonth, setEndMonth] = useState("");
     const [stats, setStats] = useState([]);
@@ -53,12 +55,12 @@ const AppointmentStatisticsPage = () => {
 
     return (
         <div className={styles.pageContent}>
-            <h2 className={styles.title}>Appointment Statistics Reports</h2>
+            <h2 className={styles.title}>{t('admin.appointmentStatisticsReports')}</h2>
 
             {/* ► Date-range picker row */}
             <div className={styles.filterBar}>
                 <label>
-                    Start&nbsp;Month&nbsp;
+                    {t('admin.startMonth')}
                     <input
                         type="month"
                         value={startMonth}
@@ -68,7 +70,7 @@ const AppointmentStatisticsPage = () => {
                 </label>
 
                 <label>
-                    End&nbsp;Month&nbsp;
+                    {t('admin.endMonth')}
                     <input
                         type="month"
                         value={endMonth}
@@ -88,9 +90,9 @@ const AppointmentStatisticsPage = () => {
                     <thead>
                         <tr>
                             <th>Date Range</th>
-                            <th>Total Appointments</th>
-                            <th>Face-to-Face</th>
-                            <th>Virtual</th>
+                            <th>{t('admin.totalAppointments')}</th>
+                            <th>{t('admin.virtual')}</th>
+                            <th>{t('admin.physical')}</th>
                             <th>Created At</th>
                             <th>Action</th>
                         </tr>
@@ -109,8 +111,8 @@ const AppointmentStatisticsPage = () => {
                             <tr key={r._id}>
                                 <td>{r.report_date_range}</td>
                                 <td>{r.total_appointments}</td>
-                                <td>{r.f2f_appointments}</td>
                                 <td>{r.virtual_appointments}</td>
+                                <td>{r.f2f_appointments}</td>
                                 <td>{new Date(r.created_at).toLocaleDateString()}</td>
                                 <td>
                                     <button

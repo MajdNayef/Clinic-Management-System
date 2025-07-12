@@ -1,9 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-
+import { useTranslation } from 'react-i18next';
 import MedconnectLogo from '../Assets/MedconnectLogo.png';
+import LanguageSelector from '../CommonPages/LanguageSelector';
 
-const Header = () => {
+export default function Header() {
+  const { t } = useTranslation();
+    
     return (
 
         <header className="navbar">
@@ -15,23 +18,16 @@ const Header = () => {
 
             {/* Navigation Links */}
             <nav className="nav-links">
-                <a href="/" className="text-gray-700 hover:text-blue-500"> Home</a>
-                <a href="/Guestabout" className="text-gray-700 hover:text-blue-500">About Us</a>
-                <a href="/GuestContactUs" className="text-gray-700 hover:text-blue-500"> Contact Us</a>
+                <a href="/" className="text-gray-700 hover:text-blue-500">{t('header.home')}</a>
+                <a href="/Guestabout" className="text-gray-700 hover:text-blue-500">{t('common.aboutUs')}</a>
+                <a href="/GuestContactUs" className="text-gray-700 hover:text-blue-500">{t('common.contactUs')}</a>
             </nav>
 
 
             {/* Language Selector */}
-            <div className="language-selector">
-                <select>
-                    <option>English</option>
-                    <option>العربية</option>
-                </select>
-            </div>
+            <LanguageSelector />
 
         </header>
 
     );
 };
-
-export default Header;

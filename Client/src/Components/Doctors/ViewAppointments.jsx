@@ -4,8 +4,10 @@ import axios from 'axios';
 import DashboardLayout from './layout/DashboardLayout';
 import styles from './css/viewAppointments.module.css';
 import { FaStethoscope, FaComments } from 'react-icons/fa';
+import { useTranslation } from 'react-i18next';
 
 export default function ViewAppointments() {
+    const { t } = useTranslation();
     const [appts, setAppts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -53,10 +55,10 @@ export default function ViewAppointments() {
     return (
         <DashboardLayout>
             <div className={styles.container}>
-                <h2 className={styles.title}>Doctor’s Monthly Schedule</h2>
+                <h2 className={styles.title}>{t('doctor.monthlySchedule')}</h2>
                 <hr className={styles.divider} />
 
-                {loading && <p>Loading calendar…</p>}
+                {loading && <p>{t('doctor.loadingCalendar')}</p>}
                 {error && <p className={styles.error}>{error}</p>}
 
                 {!loading && !error && (
@@ -67,7 +69,7 @@ export default function ViewAppointments() {
                         </div>
 
                         <div className={styles.grid}>
-                            {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(d => (
+                            {[t('common.sun'), t('common.mon'), t('common.tue'), t('common.wed'), t('common.thu'), t('common.fri'), t('common.sat')].map(d => (
                                 <div key={d} className={styles.dayLabel}>{d}</div>
                             ))}
 
@@ -91,7 +93,7 @@ export default function ViewAppointments() {
                                             className={`${styles.cell} ${isOff ? styles.offDay : ''}`}
                                         >
                                             <div className={styles.date}>{day}</div>
-                                            {isOff && <div className={styles.offDayText}>Off Day</div>}
+                                            {isOff && <div className={styles.offDayText}>{t('doctor.offDay')}</div>}
 
                                             {!isOff && physical > 0 && (
                                                 <div className={styles.tag}>

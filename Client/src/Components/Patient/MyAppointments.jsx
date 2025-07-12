@@ -12,10 +12,12 @@ import {
 import axios from "axios";
 import DashboardLayout from "./layout/DashboardLayout";
 import styles from "./css/myAppointments.module.css";
+import { useTranslation } from 'react-i18next';
 
 export default function MyAppointments() {
     const [appointments, setAppointments] = useState([]);
     const [loading, setLoading] = useState(true);
+    const { t } = useTranslation();
 
     // overlay state
     const [cancelAppt, setCancelAppt] = useState(null);
@@ -150,15 +152,15 @@ export default function MyAppointments() {
     return (
         <DashboardLayout>
             <div className={styles.wrapper}>
-                <h2 className={styles.heading}>My Appointments</h2>
+                <h2 className={styles.heading}>{t('dashboard.myAppointments')}</h2>
                 <hr />
 
                 {loading ? (
                     <p>Loading…</p>
                 ) : (
                     <>
-                        <Section title="Upcoming Appointments">
-                            {upcoming.length === 0 && <p>No upcoming appointments</p>}
+                        <Section title={t('dashboard.upcomingAppointments')}>
+                            {upcoming.length === 0 && <p>{t('dashboard.noUpcomingAppointments')}</p>}
                             {upcoming.map((appt) => (
                                 <Card
                                     key={appt._id}
@@ -170,13 +172,13 @@ export default function MyAppointments() {
                                             className={styles.link}
                                             onClick={() => startReschedule(appt)}
                                         >
-                                            Reschedule
+                                            {t('appointments.reschedule')}
                                         </button>
                                         <button
                                             className={styles.link}
                                             onClick={() => confirmCancel(appt)}
                                         >
-                                            Cancel
+                                            {t('common.cancel')}
                                         </button>
                                     </div>
                                 </Card>
@@ -219,17 +221,17 @@ export default function MyAppointments() {
             {cancelAppt && (
                 <Overlay onClose={() => setCancelAppt(null)}>
                     <div className={styles.modal}>
-                        <h3>Cancel Appointment</h3>
+                        <h3>{t('appointments.cancelTitle')}</h3>
                         <p>
-                            Are you sure you want to cancel your appointment with{" "}
-                            <strong>
-                                Dr. {cancelAppt.doctor.first_name} {cancelAppt.doctor.last_name}
-                            </strong>{" "}
-                            on {cancelAppt.date} at {cancelAppt.time}?
+                            {t('appointments.cancelConfirm', {
+                                doctor: `${cancelAppt.doctor.first_name} ${cancelAppt.doctor.last_name}`,
+                                date: cancelAppt.date,
+                                time: cancelAppt.time
+                            })}
                         </p>
                         <div className={styles.modalActions}>
-                            <button onClick={() => setCancelAppt(null)}>No</button>
-                            <button onClick={doCancel}>Yes, cancel</button>
+                            <button onClick={() => setCancelAppt(null)}>{t('common.no')}</button>
+                            <button onClick={doCancel}>{t('appointments.yesCancel')}</button>
                         </div>
                     </div>
                 </Overlay>
@@ -245,29 +247,29 @@ export default function MyAppointments() {
                         >
                             <CloseIcon size={18} />
                         </button>
-                        <h3>Appointment Details</h3>
+                        <h3>{t('appointments.details')}</h3>
                         <p>
-                            <strong>Doctor:</strong> Dr. {detailsAppt.doctor.first_name}{" "}
+                            <strong>{t('appointments.doctor')}:</strong> Dr. {detailsAppt.doctor.first_name}{" "}
                             {detailsAppt.doctor.last_name}
                         </p>
                         <p>
-                            <strong>Specialization:</strong>{" "}
+                            <strong>{t('appointments.specialization')}:</strong>{" "}
                             {detailsAppt.doctor.specialization}
                         </p>
                         <p>
-                            <strong>Bio:</strong> {detailsAppt.doctor.bio}
+                            <strong>{t('appointments.bio')}:</strong> {detailsAppt.doctor.bio}
                         </p>
                         <p>
-                            <strong>Date:</strong> {detailsAppt.date}
+                            <strong>{t('appointments.date')}:</strong> {detailsAppt.date}
                         </p>
                         <p>
-                            <strong>Time:</strong> {detailsAppt.time}
+                            <strong>{t('appointments.time')}:</strong> {detailsAppt.time}
                         </p>
                         <p>
-                            <strong>Type:</strong> {detailsAppt.appointment_type}
+                            <strong>{t('appointments.type')}:</strong> {detailsAppt.appointment_type}
                         </p>
                         <div className={styles.modalActions}>
-                            <button onClick={() => setDetailsAppt(null)}>Close</button>
+                            <button onClick={() => setDetailsAppt(null)}>{t('common.close')}</button>
                         </div>
                     </div>
                 </Overlay>
@@ -284,14 +286,14 @@ export default function MyAppointments() {
                             <CloseIcon size={18} />
                         </button>
 
-                        <h3>Reschedule Appointment</h3>
+                        <h3>{t('appointments.rescheduleTitle')}</h3>
                         <p>
                             Dr. {reschedAppt.doctor.first_name}{" "}
                             {reschedAppt.doctor.last_name}
                         </p>
 
                         <label>
-                            New Date:
+                            {t('appointments.newDate')}:
                             <input
                                 type="date"
                                 value={newDate}
@@ -323,14 +325,12 @@ export default function MyAppointments() {
                         </div>
 
                         <div className={styles.modalActions}>
-                            <button onClick={() => setReschedAppt(null)}>
-                                Cancel
-                            </button>
+                            <button onClick={() => setReschedAppt(null)}>{t('common.cancel')}</button>
                             <button
                                 onClick={doReschedule}
                                 disabled={!newDate || !newTime}
                             >
-                                Confirm
+                                {t('common.confirm')}
                             </button>
                         </div>
                     </div>
@@ -342,10 +342,10 @@ export default function MyAppointments() {
             {feedbackAppt && (
                 <Overlay onClose={() => setFeedbackAppt(null)}>
                     <div className={styles.modal}>
-                        <h3>Give Feedback</h3>
+                        <h3>{t('appointments.giveFeedback')}</h3>
 
                         <div className={styles.feedbackSection}>
-                            <label><strong>Rate your experience:</strong></label>
+                            <label><strong>{t('appointments.rateExperience')}:</strong></label>
                             <div className={styles.stars}>
                                 {[1, 2, 3, 4, 5].map((star) => (
                                     <Star
@@ -365,11 +365,11 @@ export default function MyAppointments() {
                         </div>
 
                         <div className={styles.feedbackSection}>
-                            <label><strong>Leave a note:</strong></label>
+                            <label><strong>{t('appointments.leaveNote')}:</strong></label>
                             <textarea
                                 rows="4"
                                 className={styles.textarea}
-                                placeholder="Write your feedback here..."
+                                placeholder={t('appointments.feedbackPlaceholder')}
                                 value={feedback.note}
                                 onChange={(e) =>
                                     setFeedback((f) => ({ ...f, note: e.target.value }))
@@ -382,7 +382,7 @@ export default function MyAppointments() {
                                 onClick={() => setFeedbackAppt(null)}
                                 disabled={feedbackLoading}
                             >
-                                Cancel
+                                {t('common.cancel')}
                             </button>
                             <button
                                 onClick={submitFeedback}
@@ -392,7 +392,7 @@ export default function MyAppointments() {
                                     feedback.note.trim() === ""
                                 }
                             >
-                                {feedbackLoading ? "Submitting..." : "Submit Feedback"}
+                                {feedbackLoading ? t('appointments.submitting') : t('appointments.submitFeedback')}
                             </button>
                         </div>
                     </div>

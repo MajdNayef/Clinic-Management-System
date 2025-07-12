@@ -35,6 +35,9 @@ router.get(
     ctrl.generateAllPatientReportsPDF
 );
 
+// Pharmacist dashboard: all medical reports
+router.get('/pharmacist', ctrl.getAllReportsForPharmacist);
+
 // 5️⃣ Create new report record
 router.post(
     '/reports/patient',

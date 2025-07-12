@@ -4,6 +4,8 @@
 // App.js
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import './i18n'; // Initialize i18n
+import './rtl.css'; // RTL support
 
 // for Guests
 import Signup from "./Components/loginSign/Signup";
@@ -28,6 +30,10 @@ import ViewAppointments from "./Components/Doctors/ViewAppointments";
 import DoctorProfilePage from "./Components/Doctors/DoctorProfilePage";
 import DoctorLiveChat from "./Components/Doctors/LiveChat";
 import DoctorManageAppointments from "./Components/Doctors/DoctorManageAppointments";
+
+// For Pharmacist
+import PharmacistDashboard from "./Components/Pharmacist/PharmacistDashboard";
+import PharmacistProfilePage from "./Components/Pharmacist/PharmacistProfilePage";
 
 // For Admin
 import AdminDashboard from "./Components/Admin/AdminDashboard";
@@ -73,6 +79,10 @@ function App() {
         <Route path="/DoctorProfilePage" element={<DoctorProfilePage />} />
         <Route path="/doctor/live-chat" element={<DoctorLiveChat doctorId="123" patientId="456" />} />
         <Route path="/DoctorManageAppointments" element={<DoctorManageAppointments />} />
+
+        {/* Protected / Pharmacist routes */}
+        <Route path="/PharmacistDashboard" element={<PharmacistDashboard />} />
+        <Route path="/PharmacistProfilePage" element={<PharmacistProfilePage />} />
 
         {/* Protected / Admin routes */}
         <Route path="/AdminDashboard" element={<AdminDashboard />} />

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useTranslation } from 'react-i18next';
 
 import Header from './Header';
 import AddUser from '../Assets/adduser.png';
@@ -8,6 +9,7 @@ import alarmIcon from '../Assets/alarm.svg';
 import './style.css';
 
 const Signup = () => {
+    const { t } = useTranslation();
     const [form, setForm] = useState({
         first_name: '',
         last_name: '',
@@ -44,9 +46,9 @@ const Signup = () => {
 
             <form className="FormContainer" onSubmit={handleSubmit}>
                 <div className="header">
-                    <div className="text">Welcome to DMC Community</div>
+                    <div className="text">{t('signup.welcome')}</div>
                     <br />
-                    <div className="text">Sign up</div>
+                    <div className="text">{t('signup.title')}</div>
                     <div className="underline"></div>
                 </div>
 
@@ -54,12 +56,12 @@ const Signup = () => {
                     {/* first / last name */}
                     <div className="input-row">
                         <div className="input-group">
-                            <label>Enter your first name</label>
+                            <label>{t('signup.firstNameLabel')}</label>
                             <div className="input">
                                 <input
                                     type="text"
                                     name="first_name"
-                                    placeholder="First Name"
+                                    placeholder={t('signup.firstNamePlaceholder')}
                                     value={form.first_name}
                                     onChange={handleChange}
                                     required
@@ -68,12 +70,12 @@ const Signup = () => {
                         </div>
 
                         <div className="input-group">
-                            <label>Enter your last name</label>
+                            <label>{t('signup.lastNameLabel')}</label>
                             <div className="input">
                                 <input
                                     type="text"
                                     name="last_name"
-                                    placeholder="Last Name"
+                                    placeholder={t('signup.lastNamePlaceholder')}
                                     value={form.last_name}
                                     onChange={handleChange}
                                     required
@@ -83,12 +85,12 @@ const Signup = () => {
                     </div>
 
                     {/* phone */}
-                    <label>Enter your phone number</label>
+                    <label>{t('signup.phoneLabel')}</label>
                     <div className="input">
                         <input
                             type="text"
                             name="phone_number"
-                            placeholder="+966"
+                            placeholder={t('signup.phonePlaceholder')}
                             value={form.phone_number}
                             onChange={handleChange}
                             required
@@ -96,12 +98,12 @@ const Signup = () => {
                     </div>
 
                     {/* address */}
-                    <label>Enter your Address</label>
+                    <label>{t('signup.addressLabel')}</label>
                     <div className="input">
                         <input
                             type="text"
                             name="address"
-                            placeholder="Address"
+                            placeholder={t('signup.addressPlaceholder')}
                             value={form.address}
                             onChange={handleChange}
                             required
@@ -109,12 +111,12 @@ const Signup = () => {
                     </div>
 
                     {/* email */}
-                    <label>Enter your email</label>
+                    <label>{t('signup.emailLabel')}</label>
                     <div className="input">
                         <input
                             type="email"
                             name="email"
-                            placeholder="example@gmail.com"
+                            placeholder={t('signup.emailPlaceholder')}
                             value={form.email}
                             onChange={handleChange}
                             required
@@ -124,12 +126,12 @@ const Signup = () => {
                     {/* password + confirm */}
                     <div className="input-row">
                         <div className="input-group">
-                            <label>Enter your password</label>
+                            <label>{t('signup.passwordLabel')}</label>
                             <div className="input">
                                 <input
                                     type="password"
                                     name="password"
-                                    placeholder="******"
+                                    placeholder={t('signup.passwordPlaceholder')}
                                     value={form.password}
                                     onChange={handleChange}
                                     required
@@ -138,12 +140,12 @@ const Signup = () => {
                         </div>
 
                         <div className="input-group">
-                            <label>Confirm your password</label>
+                            <label>{t('signup.confirmPasswordLabel')}</label>
                             <div className="input">
                                 <input
                                     type="password"
                                     name="confirm_password"
-                                    placeholder="******"
+                                    placeholder={t('signup.confirmPasswordPlaceholder')}
                                     value={form.confirm_password}
                                     onChange={handleChange}
                                     required
@@ -159,15 +161,13 @@ const Signup = () => {
                             checked={form.notifications_enabled}
                             onChange={handleCheckbox}
                         />
-                        <label>I would like to receive email notifications</label>
+                        <label>{t('signup.emailNotifications')}</label>
                         <img src={alarmIcon} alt="Alarm" id="alarmIcon" />
                     </div>
 
-                    {error && <p className="error">{error}</p>}
+                    {error && <p className="error">{t(error)}</p>}
 
-                    <button className="signup-button" type="submit">
-                        Sign up
-                    </button>
+                    <button className="signup-button" type="submit">{t('signup.button')}</button>
                 </div>
             </form>
 

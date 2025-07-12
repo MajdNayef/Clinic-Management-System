@@ -9,8 +9,10 @@ import {
     FileText,
     Edit2,
 } from "react-feather";
+import { useTranslation } from 'react-i18next';
 
 export default function DoctorManageAppointments() {
+    const { t } = useTranslation();
     const [appointments, setAppointments] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showPast, setShowPast] = useState(false);
@@ -68,13 +70,13 @@ export default function DoctorManageAppointments() {
     return (
         <DashboardLayout>
             <div className={styles.wrapper}>
-                <h2 className={styles.heading}>Doctor Appointments</h2>
+                <h2 className={styles.heading}>{t('doctor.appointmentsTitle')}</h2>
 
                 {/* ─── control bar ───────────────────────────────────────────── */}
                 <div className={styles.controls}>
                     <input
                         type="text"
-                        placeholder="Search patient name…"
+                        placeholder={t('doctor.searchPatientName')}
                         value={searchName}
                         onChange={(e) => setSearchName(e.target.value)}
                         className={styles.searchInput}
@@ -91,18 +93,18 @@ export default function DoctorManageAppointments() {
                         onClick={() => setShowPast(!showPast)}
                         className={styles.addBtn}
                     >
-                        {showPast ? "Show Today’s Appointments" : "Show Past Appointments"}
+                        {showPast ? t('doctor.showTodayAppointments') : t('doctor.showPastAppointments')}
                     </button>
                 </div>
 
                 {/* ─── list / loader ─────────────────────────────────────────── */}
                 {loading ? (
-                    <p>Loading…</p>
+                    <p>{t('common.loading')}</p>
                 ) : (
                     <Section
-                        title={showPast ? "Past Appointments" : "Today’s Appointments"}
+                        title={showPast ? t('doctor.pastAppointments') : t('doctor.todaysAppointments')}
                     >
-                        {filtered.length === 0 && <p>No appointments found.</p>}
+                        {filtered.length === 0 && <p>{t('doctor.noAppointmentsFound')}</p>}
 
                         {filtered.map((appt) => (
                             <Card
@@ -112,14 +114,14 @@ export default function DoctorManageAppointments() {
                                 setReschedAppt={setReschedAppt}
                             >
                                 <div className={styles.actions}>
-                                    {["Completed", "Canceled"].map((s) => (
+                                    {['Completed', 'Canceled'].map((s) => (
                                         <button
                                             key={s}
                                             onClick={() => handleStatusUpdate(appt._id, s)}
                                             className={styles.statusBtn}
                                             disabled={appt.status === s}
                                         >
-                                            {s}
+                                            {s === 'Completed' ? t('common.completed') : t('common.canceled')}
                                         </button>
                                     ))}
 
@@ -127,7 +129,7 @@ export default function DoctorManageAppointments() {
                                         onClick={() => setReschedAppt(appt)}
                                         className={styles.statusBtn}
                                     >
-                                        <Edit2 size={14} /> Reschedule
+                                        <Edit2 size={14} /> {t('doctor.reschedule')}
                                     </button>
 
                                     {appt.medical_report_url && (
@@ -137,7 +139,7 @@ export default function DoctorManageAppointments() {
                                             rel="noreferrer"
                                             className={styles.reportLink}
                                         >
-                                            <FileText size={14} /> Report
+                                            <FileText size={14} /> {t('doctor.report')}
                                         </a>
                                     )}
                                 </div>
@@ -151,24 +153,24 @@ export default function DoctorManageAppointments() {
             {detailsAppt && (
                 <Overlay onClose={() => setDetailsAppt(null)}>
                     <div className={styles.modal}>
-                        <h3>Appointment Details</h3>
+                        <h3>{t('doctor.appointmentDetails')}</h3>
                         <p>
-                            <strong>Patient:</strong> {detailsAppt.patient_name}
+                            <strong>{t('doctor.patient')}:</strong> {detailsAppt.patient_name}
                         </p>
                         <p>
-                            <strong>Date:</strong> {detailsAppt.date}
+                            <strong>{t('doctor.date')}:</strong> {detailsAppt.date}
                         </p>
                         <p>
-                            <strong>Time:</strong> {detailsAppt.time}
+                            <strong>{t('doctor.time')}:</strong> {detailsAppt.time}
                         </p>
                         <p>
-                            <strong>Type:</strong> {detailsAppt.appointment_type}
+                            <strong>{t('doctor.type')}:</strong> {detailsAppt.appointment_type}
                         </p>
                         <p>
-                            <strong>Status:</strong> {detailsAppt.status}
+                            <strong>{t('doctor.status')}:</strong> {detailsAppt.status}
                         </p>
                         <div className={styles.modalActions}>
-                            <button onClick={() => setDetailsAppt(null)}>Close</button>
+                            <button onClick={() => setDetailsAppt(null)}>{t('common.close')}</button>
                         </div>
                     </div>
                 </Overlay>

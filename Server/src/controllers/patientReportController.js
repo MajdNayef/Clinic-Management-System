@@ -465,3 +465,36 @@ exports.getAllReportsForPatient = async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch reports' });
     }
 };
+
+// ─── Pharmacist: List all medical reports for dashboard ─────────────
+exports.getAllReportsForPharmacist = async (req, res) => {
+    try {
+        // Join with users to get patient name
+        const reports = await PatientReports().aggregate([
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "patient_id",
+                    foreignField: "_id",
+                    as: "patientInfo"
+                }
+            },
+            { $unwind: "$patientInfo" },
+            {
+                $project: {
+                    _id: 1,
+                    diagnosis: 1,
+                    treatment: 1,
+                    prescription_state: 1,
+                    createdAt: 1,
+                    patient_name: { $concat: ["$patientInfo.first_name", " ", "$patientInfo.last_name"] }
+                }
+            },
+            { $sort: { createdAt: -1 } }
+        ]).toArray();
+        res.json(reports);
+    } catch (err) {
+        console.error("Error fetching reports for pharmacist:", err);
+        res.status(500).json({ error: "Failed to fetch reports" });
+    }
+};

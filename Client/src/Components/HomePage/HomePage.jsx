@@ -1,11 +1,14 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 import './style.css'
 import Header from './Header'
 
 import userIcon from '../Assets/community.png'
 import dmcIcon from '../Assets/DMC.png'
 
-const HomePage = () => {
+export default function HomePage() {
+  const { t } = useTranslation();
+    
     return (
         <div>
             {/* Include the Header here */}
@@ -13,38 +16,36 @@ const HomePage = () => {
 
             <section className='heroSection'>
                 <div className='heroContent'>
-                    <h1>Welcome to MedConnect</h1>
-                    <p>Your bridge to smarter, simpler healthcare.</p>
-                    <a href='/signup' className='ctaButton' >Get Started</a>
+                    <h1>{t('homepage.welcomeTitle')}</h1>
+                    <p>{t('homepage.welcomeSubtitle')}</p>
+                    <a href='/signup' className='ctaButton' >{t('homepage.getStarted')}</a>
                 </div>
                 <img src={userIcon} alt='Hero Icon' className='heroIcon' />
             </section>
 
             <section className='featuresSection'>
-                <h2>Why Choose MedConnect?</h2>
+                <h2>{t('homepage.whyChooseTitle')}</h2>
                 <div className='featuresGrid'>
                     <div className='featureBox'>
-                        <h3>Book Appointments Easily</h3>
-                        <p>Schedule physical or virtual visits in just a few clicks.</p>
+                        <h3>{t('homepage.bookAppointmentsTitle')}</h3>
+                        <p>{t('homepage.bookAppointmentsDesc')}</p>
                     </div>
                     <div className='featureBox'>
-                        <h3>Secure Medical Records</h3>
-                        <p>Access your history and prescriptions anytime, anywhere.</p>
+                        <h3>{t('homepage.secureRecordsTitle')}</h3>
+                        <p>{t('homepage.secureRecordsDesc')}</p>
                     </div>
                     <div className='featureBox'>
-                        <h3>Talk to Trusted Doctors</h3>
-                        <p>Consult with qualified healthcare professionals online or onsite.</p>
+                        <h3>{t('homepage.trustedDoctorsTitle')}</h3>
+                        <p>{t('homepage.trustedDoctorsDesc')}</p>
                     </div>
                 </div>
             </section>
 
             <section className='aboutSection'>
-                <h2>About Distinct Medicine Complex (DMC)</h2>
-                <p>Based in Medina, Saudi Arabia, DMC offers modern healthcare services with a compassionate approach. MedConnect enhances that experience through digital innovation.</p>
+                <h2>{t('homepage.aboutTitle')}</h2>
+                <p>{t('homepage.aboutDesc')}</p>
                 <img src={dmcIcon} alt='DMC Logo' className='dmcIcon' />
             </section>
         </div>
     )
 }
-
-export default HomePage

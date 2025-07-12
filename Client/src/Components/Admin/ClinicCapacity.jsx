@@ -3,8 +3,10 @@ import axios from "axios";
 import DashboardLayout from "./layout/DashboardLayout";
 import styles from "./css/cliniccapacity.module.css";
 import toast from "react-hot-toast";
+import { useTranslation } from 'react-i18next';
 
 export default function ClinicCapacity() {
+    const { t } = useTranslation();
     const [startTime, setStartTime] = useState("");
     const [endTime, setEndTime] = useState("");
     const [loading, setLoading] = useState(false);
@@ -16,7 +18,9 @@ export default function ClinicCapacity() {
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split("T")[0]);
     const [selectedDays, setSelectedDays] = useState([]);
 
-    const weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+    const weekdays = [
+        t('admin.monday'), t('admin.tuesday'), t('admin.wednesday'), t('admin.thursday'), t('admin.friday'), t('admin.saturday'), t('admin.sunday')
+    ];
 
     useEffect(() => {
         fetchDoctors();
@@ -44,7 +48,7 @@ export default function ClinicCapacity() {
     };
 
     const handleSaveWorkingHours = async () => {
-        if (!startTime || !endTime) return toast.error("Start and end time required");
+        if (!startTime || !endTime) return toast.error(t('admin.startEndTimeRequired'));
 
         try {
             setLoading(true);
@@ -56,26 +60,26 @@ export default function ClinicCapacity() {
 
             if (target === "all") {
                 await axios.put("/api/admin/working-hours", workingData);
-                toast.success("Updated working hours for all doctors");
+                toast.success(t('admin.updatedWorkingHoursAll'));
             } else {
                 await axios.put("/api/admin/working-hours/bulk", {
                     doctorIds: selectedDoctors,
                     ...workingData
                 });
-                toast.success("Updated selected doctors' working hours");
+                toast.success(t('admin.updatedWorkingHoursSelected'));
             }
 
             fetchDoctors();
         } catch (err) {
             console.error("Update failed", err);
-            toast.error("Update failed");
+            toast.error(t('admin.updateFailed'));
         } finally {
             setLoading(false);
         }
     };
 
     const handleSaveCapacity = async () => {
-        if (!maxPhysical || !maxVirtual) return toast.error("Slot limits are required");
+        if (!maxPhysical || !maxVirtual) return toast.error(t('admin.slotLimitsRequired'));
 
         try {
             setLoading(true);
@@ -84,11 +88,11 @@ export default function ClinicCapacity() {
                 max_virtual: maxVirtual,
                 date: selectedDate
             });
-            toast.success("Updated global clinic capacity slots");
+            toast.success(t('admin.updatedGlobalClinicCapacity'));
             fetchDoctors();
         } catch (err) {
             console.error("Failed to update capacities", err);
-            toast.error("Failed to update slots");
+            toast.error(t('admin.failedToUpdateSlots'));
         } finally {
             setLoading(false);
         }
@@ -108,26 +112,26 @@ export default function ClinicCapacity() {
     return (
         <DashboardLayout>
             <div className={styles.container}>
-                <h2 className={styles.title}>Clinic Capacity Management</h2>
+                <h2 className={styles.title}>{t('admin.clinicCapacityManagement')}</h2>
                 <hr />
 
                 {/* Section 1: Global Capacity Slots */}
                 <div className={styles.section}>
-                    <h3 className={styles.sectionTitle}>1. Set Global Max Slots</h3>
+                    <h3 className={styles.sectionTitle}>{t('admin.setGlobalMaxSlots')}</h3>
                     <div className={styles.formRow}>
                         <button
                             className={styles.tabButton}
                             onClick={setToday}
                         >
-                            Today
+                            {t('admin.today')}
                         </button>
                         <button
                             className={styles.tabButton}
                             onClick={setTomorrow}
                         >
-                            Tomorrow
+                            {t('admin.tomorrow')}
                         </button>
-                        <label>Or choose date:</label>
+                        <label>{t('admin.orChooseDate')}</label>
                         <input
                             type="date"
                             className={styles.datePickerInput}
@@ -136,13 +140,13 @@ export default function ClinicCapacity() {
                         />
                     </div>
                     <div className={styles.formRow}>
-                        <label>Max Physical:</label>
+                        <label>{t('admin.maxPhysical')}</label>
                         <input type="number" value={maxPhysical} onChange={(e) => setMaxPhysical(e.target.value)} />
-                        <label>Max Virtual:</label>
+                        <label>{t('admin.maxVirtual')}</label>
                         <input type="number" value={maxVirtual} onChange={(e) => setMaxVirtual(e.target.value)} />
                         <div className={styles.rightAligned}>
                             <button className={styles.primaryButton} onClick={handleSaveCapacity} disabled={loading}>
-                                {loading ? "Saving..." : "Save Slot Limits"}
+                                {loading ? t('admin.saving') : t('admin.saveSlotLimits')}
                             </button>
                         </div>
 
@@ -152,7 +156,7 @@ export default function ClinicCapacity() {
 
                 {/* Section 2: Working Hours */}
                 <div className={styles.section}>
-                    <h3 className={styles.sectionTitle}>2. Set Working Hours</h3>
+                    <h3 className={styles.sectionTitle}>{t('admin.setWorkingHours')}</h3>
                     <div className={styles.formRow}>
                         <div className={styles.formRow}>
                             <div className={styles.radioGroup}>
@@ -163,7 +167,7 @@ export default function ClinicCapacity() {
                                         checked={target === "all"}
                                         onChange={() => setTarget("all")}
                                     />
-                                    All Doctors
+                                    {t('admin.allDoctors')}
                                 </label>
                                 <label className={styles.radioOption}>
                                     <input
@@ -172,20 +176,20 @@ export default function ClinicCapacity() {
                                         checked={target === "selected"}
                                         onChange={() => setTarget("selected")}
                                     />
-                                    Selected Only
+                                    {t('admin.selectedOnly')}
                                 </label>
                             </div>
                         </div>
 
                     </div>
                     <div className={styles.formRow}>
-                        <label>Start Time:</label>
+                        <label>{t('admin.startTime')}</label>
                         <input type="time" value={startTime} onChange={e => setStartTime(e.target.value)} />
-                        <label>End Time:</label>
+                        <label>{t('admin.endTime')}</label>
                         <input type="time" value={endTime} onChange={e => setEndTime(e.target.value)} />
                     </div>
                     <div className={styles.formRow}>
-                        <label>Available Days:</label>
+                        <label>{t('admin.availableDays')}</label>
                         <div className={styles.checkboxGroup}>
                             {weekdays.map(day => (
                                 <label key={day} className={styles.dayCheckbox}>
@@ -200,22 +204,22 @@ export default function ClinicCapacity() {
                     </div>
                     <div className={`${styles.formRow} ${styles.rightAligned}`}>
                         <button className={styles.primaryButton} onClick={handleSaveWorkingHours} disabled={loading}>
-                            {loading ? "Saving..." : "Save Working Hours"}
+                            {loading ? t('admin.saving') : t('admin.saveWorkingHours')}
                         </button>
                     </div>
 
                     {/* Section 3: Doctor Overview */}
-                    <h3 className={styles.sectionTitle}>3. Doctor Overview</h3>
+                    <h3 className={styles.sectionTitle}>{t('admin.doctorOverview')}</h3>
                     <table className={styles.table}>
                         <thead>
                             <tr>
-                                {target === "selected" && <th>Select</th>}
-                                <th>Name</th>
-                                <th>Available Days</th>
-                                <th>Start</th>
-                                <th>End</th>
-                                <th>Max Physical</th>
-                                <th>Max Virtual</th>
+                                {target === "selected" && <th>{t('admin.select')}</th>}
+                                <th>{t('admin.name')}</th>
+                                <th>{t('admin.availableDays')}</th>
+                                <th>{t('admin.start')}</th>
+                                <th>{t('admin.end')}</th>
+                                <th>{t('admin.maxPhysical')}</th>
+                                <th>{t('admin.maxVirtual')}</th>
                             </tr>
                         </thead>
                         <tbody>

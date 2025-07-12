@@ -6,8 +6,10 @@ import styles from "./css/admindashboard.module.css";
 import { Users, User, UserCheck, UserPlus, Activity, Calendar } from "react-feather";
 import { FaStethoscope, FaComments } from 'react-icons/fa';
 import axios from "axios";
+import { useTranslation } from 'react-i18next';
 
 export default function AdminDashboard() {
+    const { t } = useTranslation();
     const [stats, setStats] = useState({
         totalUsers: 0,
         doctors: 0,
@@ -94,19 +96,19 @@ export default function AdminDashboard() {
     return (
         <DashboardLayout>
             <div className={styles.adminDashboardContainer}>
-                <h2 className={styles.sectionTitle}>DMC Admin Dashboard</h2>
+                <h2>{t('admin.dmcAdminDashboard')}</h2>
                 <hr className={styles.divider} />
 
                 {/* Community Section */}
                 <section>
-                    <h3 className={styles.sectionSubtitle}>DMC Community</h3>
+                    <h3>{t('admin.dmcCommunity')}</h3>
                     <div className={styles.statBox}>
-                        <div className={styles.statItem}><Users size={18} /> Total System Users: {stats.totalUsers}</div>
+                        <div className={styles.statItem}><Users size={18} /> {t('admin.totalSystemUsers')}: {stats.totalUsers}</div>
                         <div className={styles.statRow}>
-                            <div className={styles.statMini}><User size={16} /> Doctors: {stats.doctors}</div>
-                            <div className={styles.statMini}><UserCheck size={16} /> Patients: {stats.patients}</div>
-                            <div className={styles.statMini}><UserPlus size={16} /> Admins: {stats.admins}</div>
-                            <div className={styles.statMini}><Activity size={16} /> Pharmacists: {stats.pharmacists}</div>
+                            <div className={styles.statMini}><User size={16} /> {t('admin.doctors')}: {stats.doctors}</div>
+                            <div className={styles.statMini}><UserCheck size={16} /> {t('admin.patients')}: {stats.patients}</div>
+                            <div className={styles.statMini}><UserPlus size={16} /> {t('admin.admins')}: {stats.admins}</div>
+                            <div className={styles.statMini}><Activity size={16} /> {t('admin.pharmacists')}: {stats.pharmacists}</div>
                         </div>
                     </div>
                 </section>
@@ -114,28 +116,28 @@ export default function AdminDashboard() {
                 <div className={styles.sectionRow}>
 
                     <section className={styles.halfWidth}>
-                        <h3 className={styles.sectionSubtitle}>DMC Today Appointments</h3>
+                        <h3>{t('admin.dmcTodayAppointments')}</h3>
                         <div className={styles.statBox}>
                             <div className={styles.statRow}>
-                            <div className={styles.statMini}><Users size={18} /> Total : {stats.totalAppointments}</div>
-                                <div className={styles.statMini}><User size={16} /> Virtual: {stats.virtualAppointments}</div>
-                                <div className={styles.statMini}><UserCheck size={16} /> Physical: {stats.physicalAppointments}</div>
+                            <div className={styles.statMini}><Users size={18} /> {t('admin.total')}: {stats.totalAppointments}</div>
+                                <div className={styles.statMini}><User size={16} /> {t('admin.virtual')}: {stats.virtualAppointments}</div>
+                                <div className={styles.statMini}><UserCheck size={16} /> {t('admin.physical')}: {stats.physicalAppointments}</div>
                             </div>
                         </div>
                     </section>
                     <section className={styles.halfWidth}>
-                        <h3 className={styles.sectionSubtitle}>Today's Slot Limits</h3>
+                        <h3>{t('admin.todaysSlotLimits')}</h3>
                         <div className={styles.statBox}>
                             <div className={styles.statRow}>
-                                <div className={styles.statMini}><FaStethoscope /> Max Physical Slots: {todaySlotLimits.physical}</div>
-                                <div className={styles.statMini}><FaComments /> Max Virtual Slots: {todaySlotLimits.virtual}</div>
+                                <div className={styles.statMini}><FaStethoscope /> {t('admin.maxPhysicalSlots')}: {todaySlotLimits.physical}</div>
+                                <div className={styles.statMini}><FaComments /> {t('admin.maxVirtualSlots')}: {todaySlotLimits.virtual}</div>
                             </div>
                         </div>
                     </section>
                 </div>
                 {/* On-Site Tracking */}
                 <section>
-                    <h3 className={styles.sectionSubtitle}>Real-Time On-Site Patients</h3>
+                    <h3>{t('admin.realTimeOnSitePatients')}</h3>
                     <div className={styles.statBox}>
 
                         {onSitePatients.length > 0 ? (
@@ -146,13 +148,13 @@ export default function AdminDashboard() {
                                     </li>
                                 ))}
                             </ul>
-                        ) : <p>No patients currently on-site.</p>}
+                        ) : <p>{t('admin.noPatientsCurrentlyOnSite')}</p>}
                     </div>
                 </section>
 
                 {/* Calendar View */}
                 <section>
-                    <h3 className={styles.sectionSubtitle}><Calendar size={18} /> Appointment Calendar</h3>
+                    <h3>{t('admin.appointmentCalendar')}</h3>
                     <div className={styles.statBox}>
 
                         {calendarError ? <p>{calendarError}</p> : (

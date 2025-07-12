@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
+import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 
 import Header from './Header';
@@ -26,6 +27,7 @@ const Login = () => {
     const [resetMessage, setResetMessage] = useState('');
 
     const navigate = useNavigate();
+    const { t } = useTranslation();
 
     const handleChange = e =>
         setForm({ ...form, [e.target.name]: e.target.value });
@@ -45,7 +47,7 @@ const Login = () => {
             const msg =
                 err.response?.data?.message ||
                 err.response?.data?.errors?.[0]?.msg ||
-                'Email or password is incorrect';
+                t('auth.emailOrPasswordIncorrect');
             setError(msg);
         } finally {
             setLoading(false);
@@ -57,9 +59,9 @@ const Login = () => {
         setResetMessage('');
         try {
             await axios.post('/api/auth/forgot-password', { email: resetEmail });
-            setResetMessage('A password reset link has been sent to your email.');
+            setResetMessage(t('auth.resetLinkSent'));
         } catch (err) {
-            setResetMessage('Failed to send reset link. Please try again.');
+            setResetMessage(t('auth.resetLinkFailed'));
         }
     };
 
@@ -69,19 +71,19 @@ const Login = () => {
 
             <form className="FormContainer" onSubmit={handleSubmit}>
                 <div className="header">
-                    <div className="text">Welcome Back</div>
+                    <div className="text">{t('auth.welcomeBack')}</div>
                     <br />
-                    <div className="text">Login to your account</div>
+                    <div className="text">{t('auth.loginToAccount')}</div>
                     <div className="underline"></div>
                 </div>
 
                 <div className="inputs">
-                    <label>Enter your email</label>
+                    <label>{t('auth.enterEmail')}</label>
                     <div className="input">
                         <input
                             type="email"
                             name="email"
-                            placeholder="example@gmail.com"
+                            placeholder={t('auth.emailPlaceholder')}
                             value={form.email}
                             onChange={handleChange}
                             required
@@ -89,12 +91,12 @@ const Login = () => {
                         />
                     </div>
 
-                    <label>Enter your password</label>
+                    <label>{t('auth.enterPassword')}</label>
                     <div className="input">
                         <input
                             type="password"
                             name="password"
-                            placeholder="******"
+                            placeholder={t('auth.passwordPlaceholder')}
                             value={form.password}
                             onChange={handleChange}
                             required
@@ -103,14 +105,14 @@ const Login = () => {
                     </div>
 
                     <a href="#" title="Forget your password?" onClick={() => setShowOverlay(true)}>
-                        Forgot password?
+                        {t('auth.forgotPassword')}
                     </a>
                     <br />
 
                     {error && <p className="error">{error}</p>}
 
                     <button className="login-button" type="submit" disabled={loading}>
-                        {loading ? 'Signing in…' : 'Login'}
+                        {loading ? t('auth.signingIn') : t('common.login')}
                     </button>
                 </div>
             </form>
@@ -120,26 +122,26 @@ const Login = () => {
             {showOverlay && (
                 <div className="overlay">
                     <form className="overlay-content" onSubmit={handleResetPassword}>
-                        <div className="overlay-header">
-                            <button className="close-button" onClick={() => setShowOverlay(false)}>
-                                &times;
-                            </button>
-                        </div>
-                        <h2>Reset Password</h2>
-                        <label>Enter your email</label>
-                        <div className="input">
-                            <input
-                                type="email"
-                                name="resetEmail"
-                                placeholder="example@gmail.com"
-                                value={resetEmail}
-                                onChange={e => setResetEmail(e.target.value)}
-                                required
-                            />
-                        </div>
-                        <button className="signup-button" type="submit">
-                            Send Reset Link
-                        </button>
+                                        <div className="overlay-header">
+                    <button className="close-button" onClick={() => setShowOverlay(false)}>
+                        &times;
+                    </button>
+                </div>
+                <h2>{t('auth.resetPassword')}</h2>
+                <label>{t('auth.enterEmail')}</label>
+                <div className="input">
+                    <input
+                        type="email"
+                        name="resetEmail"
+                        placeholder={t('auth.emailPlaceholder')}
+                        value={resetEmail}
+                        onChange={e => setResetEmail(e.target.value)}
+                        required
+                    />
+                </div>
+                <button className="signup-button" type="submit">
+                    {t('auth.sendResetLink')}
+                </button>
                         {resetMessage && <p className="message">{resetMessage}</p>}
                     </form>
                 </div>

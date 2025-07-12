@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import styles from "./reports.module.css";
 import axios from "axios";
+import { useTranslation } from 'react-i18next';
 
 const DoctorReports = () => {
     const [doctors, setDoctors] = useState([]);
+    const { t } = useTranslation();
 
     useEffect(() => {
         const fetchSummary = async () => {
@@ -43,17 +45,17 @@ const DoctorReports = () => {
 
     return (
         <div className={styles.pageContent}>
-            <h2 className={styles.title}>Doctor Performance Reports</h2>
+            <h2 className={styles.title}>{t('admin.doctorPerformanceReports')}</h2>
 
             <div className={styles.tableWrapper}>
                 <table className={styles.reportTable}>
                     <thead>
                         <tr>
-                            <th>Doctor Name</th>
+                            <th>{t('admin.doctorName')}</th>
                             <th>Specialization</th>
-                            <th>Total Appointments</th>
-                            <th>Virtual</th>
-                            <th>Physical</th>
+                            <th>{t('admin.totalAppointments')}</th>
+                            <th>{t('admin.virtual')}</th>
+                            <th>{t('admin.physical')}</th>
                             <th>Avg Rating ⭐</th>
                             <th>Action</th>
                         </tr>

@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
+import { useTranslation } from 'react-i18next';
 
 import Header from './Header';
 import './style.css';
 
 const ResetPassword = () => {
+    const { t } = useTranslation();
     const [form, setForm] = useState({ password: '', confirm_password: '' });
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
@@ -21,21 +23,21 @@ const ResetPassword = () => {
         setSuccess('');
         const token = searchParams.get('token');
         if (!token) {
-            setError('Invalid or missing reset token.');
+            setError(t('resetPassword.invalidToken'));
             return;
         }
 
         if (form.password !== form.confirm_password) {
-            setError('Passwords do not match.');
+            setError(t('resetPassword.passwordMismatch'));
             return;
         }
 
         try {
             await axios.post('/api/auth/reset-password', { token, password: form.password });
-            setSuccess('Password reset successfully. Redirecting to login...');
+            setSuccess(t('resetPassword.passwordResetSuccess'));
             setTimeout(() => navigate('/login'), 3000);
         } catch (err) {
-            setError(err.response?.data?.message || 'Failed to reset password.');
+            setError(err.response?.data?.message || t('resetPassword.passwordResetFailed'));
         }
     };
 
@@ -44,41 +46,39 @@ const ResetPassword = () => {
             <Header />
             <form className="FormContainer" onSubmit={handleSubmit}>
                 <div className="header">
-                    <div className="text">Reset Your Password</div>
+                    <div className="text">{t('resetPassword.title')}</div>
                     <div className="underline"></div>
                 </div>
 
                 <div className="inputs">
-                    <label>Enter your new password</label>
+                    <label>{t('resetPassword.newPasswordLabel')}</label>
                     <div className="input">
                         <input
                             type="password"
                             name="password"
-                            placeholder="******"
+                            placeholder={t('resetPassword.newPasswordPlaceholder')}
                             value={form.password}
                             onChange={handleChange}
                             required
                         />
                     </div>
 
-                    <label>Confirm your new password</label>
+                    <label>{t('resetPassword.confirmPasswordLabel')}</label>
                     <div className="input">
                         <input
                             type="password"
                             name="confirm_password"
-                            placeholder="******"
+                            placeholder={t('resetPassword.confirmPasswordPlaceholder')}
                             value={form.confirm_password}
                             onChange={handleChange}
                             required
                         />
                     </div>
 
-                    {error && <p className="error">{error}</p>}
-                    {success && <p className="success">{success}</p>}
+                    {error && <p className="error">{t(error)}</p>}
+                    {success && <p className="success">{t(success)}</p>}
 
-                    <button className="signup-button" type="submit">
-                        Reset Password
-                    </button>
+                    <button className="signup-button" type="submit">{t('resetPassword.resetButton')}</button>
                 </div>
             </form>
         </div>

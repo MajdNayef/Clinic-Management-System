@@ -5,10 +5,12 @@ import { Edit2, Save, X, Camera } from "react-feather";
 // import DashboardLayout from "../Doctors/layout/DashboardLayout";
 import styles from "./css/ProfilePage.module.css";
 import toast from "react-hot-toast";
+import { useTranslation } from 'react-i18next';
 
 const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:5000";
 
 const ProfilePage = () => {
+  const { t } = useTranslation();
   const [isEditing, setIsEditing] = useState(false);
 
   // when the user picks a file:
@@ -119,10 +121,10 @@ const ProfilePage = () => {
     // <DashboardLayout>
       <div className={styles.profileWrapper}>
         <div className={styles.headerRow}>
-          <h2>My Profile</h2>
+          <h2>{t('profile.myProfile')}</h2>
           {!isEditing ? (
             <button onClick={handleEditToggle} className={styles.editBtn}>
-              <Edit2 size={16} /> Edit
+              <Edit2 size={16} /> {t('profile.edit')}
             </button>
           ) : (
             <div className={styles.editActions}>
@@ -172,7 +174,7 @@ const ProfilePage = () => {
           <div className={styles.formSection}>
             <div className={styles.inputRow}>
               <div className={styles.inputGroup}>
-                <label>First Name</label>
+                <label>{t('profile.firstName')}</label>
                 <input
                   type="text"
                   name="firstName"
@@ -182,7 +184,7 @@ const ProfilePage = () => {
                 />
               </div>
               <div className={styles.inputGroup}>
-                <label>Last Name</label>
+                <label>{t('profile.lastName')}</label>
                 <input
                   type="text"
                   name="lastName"
@@ -194,7 +196,7 @@ const ProfilePage = () => {
             </div>
             <div className={styles.inputRow}>
               <div className={styles.inputGroup}>
-                <label>Email</label>
+                <label>{t('profile.email')}</label>
                 <input
                   type="email"
                   name="email"
@@ -204,7 +206,7 @@ const ProfilePage = () => {
                 />
               </div>
               <div className={styles.inputGroup}>
-                <label>Phone</label>
+                <label>{t('profile.phone')}</label>
                 <input
                   type="text"
                   name="phone"
@@ -215,7 +217,7 @@ const ProfilePage = () => {
               </div>
             </div>
             <div className={styles.inputGroup}>
-              <label>Address</label>
+              <label>{t('profile.address')}</label>
               <input
                 type="text"
                 name="address"

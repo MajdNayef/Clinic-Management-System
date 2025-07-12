@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { FiClock, FiCalendar, FiUser } from 'react-icons/fi';
 import DashboardLayout from './layout/DashboardLayout';
 import styles from './css/patientdashboard.module.css';
+import { useTranslation } from 'react-i18next';
 
 export default function PatientDashboard() {
     const [appointments, setAppointments] = useState([]);
@@ -13,6 +14,7 @@ export default function PatientDashboard() {
     const [selectedAppt, setSelectedAppt] = useState(null);
 
     const navigate = useNavigate();
+    const { t } = useTranslation();
 
     // Fetch appointments on mount
     useEffect(() => {
@@ -83,23 +85,23 @@ export default function PatientDashboard() {
 
     return (
         <DashboardLayout>
-            <h2 className={styles.dashboardTitle}>DMC Patient Dashboard</h2>
+            <h2 className={styles.dashboardTitle}>{t('dashboard.patientDashboard')}</h2>
             <hr className={styles.sectionDivider} />
 
             <section className={styles.appointmentsSection}>
-                <h3 className={styles.sectionHeading}>📌 Upcoming Appointments</h3>
+                <h3 className={styles.sectionHeading}>📌 {t('dashboard.upcomingAppointments')}</h3>
 
                 {loading ? (
-                    <p>Loading…</p>
+                    <p>{t('common.loading')}</p>
                 ) : (
                     <div className={styles.appointmentsGrid}>
-                        {upcoming.length === 0 && <p>No upcoming appointments</p>}
+                        {upcoming.length === 0 && <p>{t('dashboard.noUpcomingAppointments')}</p>}
 
                         {upcoming.map(appt => {
                             const name = `Dr. ${appt.doctor.first_name} ${appt.doctor.last_name}`;
                             const isVirtual = appt.appointment_type === 'Virtual';
                             const typeCls = isVirtual ? styles.live : styles.physical;
-                            const typeLabel = isVirtual ? 'Live chat' : 'Physical';
+                            const typeLabel = isVirtual ? t('appointments.liveChat') : t('appointments.physical');
                             const dt = new Date(appt.date);
                             const dateStr = `${dt.getDate()} / ${dt.getMonth() + 1} / ${dt.getFullYear()}`;
 
@@ -121,14 +123,14 @@ export default function PatientDashboard() {
                                                 className={styles.detailsButton}
                                                 onClick={() => setSelectedAppt(appt)}
                                             >
-                                                Details
+                                                {t('appointments.detailsBtn')}
                                             </button>
                                             {isVirtual && (
                                                 <button
                                                     className={styles.detailsButton}
                                                     onClick={() => handleLiveChat(appt)}
                                                 >
-                                                    Join Live Chat
+                                                    {t('appointments.joinLiveChat')}
                                                 </button>
                                             )}
                                         </div>
@@ -162,29 +164,29 @@ export default function PatientDashboard() {
                             ×
                         </button>
 
-                        <h2>Appointment Details</h2>
+                        <h2>{t('appointments.details')}</h2>
                         <p>
-                            <strong>Doctor:</strong>{' '}
+                            <strong>{t('appointments.doctor')}:</strong>{' '}
                             Dr. {selectedAppt.doctor.first_name} {selectedAppt.doctor.last_name}
                         </p>
                         <p>
-                            <strong>Specialization:</strong>{' '}
+                            <strong>{t('appointments.specialization')}:</strong>{' '}
                             {selectedAppt.doctor.specialization}
                         </p>
                         <p>
-                            <strong>Bio:</strong> {selectedAppt.doctor.bio}
+                            <strong>{t('appointments.bio')}:</strong> {selectedAppt.doctor.bio}
                         </p>
                         <p>
-                            <strong>Date:</strong> {selectedAppt.date}
+                            <strong>{t('appointments.date')}:</strong> {selectedAppt.date}
                         </p>
                         <p>
-                            <strong>Time:</strong> {selectedAppt.time}
+                            <strong>{t('appointments.time')}:</strong> {selectedAppt.time}
                         </p>
                         <p>
-                            <strong>Type:</strong> {selectedAppt.appointment_type}
+                            <strong>{t('appointments.type')}:</strong> {selectedAppt.appointment_type}
                         </p>
                         <p>
-                            <strong>Status:</strong>{' '}
+                            <strong>{t('appointments.status')}:</strong>{' '}
                             <span
                                 className={
                                     selectedAppt.status === 'Canceled' ? styles.canceled : ''
@@ -196,7 +198,7 @@ export default function PatientDashboard() {
 
                         {selectedAppt.appointment_type === 'In-Person' && (
                             <div className={styles.mapContainer}>
-                                <h3>Clinic Location</h3>
+                                <h3>{t('appointments.clinicLocation')}</h3>
                                 <iframe
                                     title="Clinic Location"
                                     src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3630.8143522730757!2d39.62500285933744!3d24.491888478262545!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x15bdbf99191c3081%3A0x9c4a2e5b638155ec!2z2YXYrNmF2Lkg2KfZhNi32Kgg2KfZhNmF2KrZhdmK2LIg2KfZhNi32KjZig!5e0!3m2!1sar!2smy!4v1748242571068!5m2!1sar!2smy"

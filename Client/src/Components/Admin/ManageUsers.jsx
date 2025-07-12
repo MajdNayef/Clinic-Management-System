@@ -2,8 +2,10 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import DashboardLayout from "./layout/DashboardLayout";
 import styles from "./css/manageusers.module.css";
+import { useTranslation } from 'react-i18next';
 
 export default function ManageUsers() {
+  const { t } = useTranslation();
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [search, setSearch] = useState("");
@@ -16,6 +18,14 @@ export default function ManageUsers() {
     show: false,
     userId: null,
   });
+
+  const roleOptions = [
+    { value: 'All', label: t('roles.all') },
+    { value: 'Patient', label: t('roles.patient') },
+    { value: 'Doctor', label: t('roles.doctor') },
+    { value: 'Admin', label: t('roles.admin') },
+    { value: 'Pharmacist', label: t('roles.pharmacist') },
+  ];
 
   /* ------------------------------------------------------------------
      LOAD + FILTER
@@ -140,27 +150,27 @@ export default function ManageUsers() {
   ------------------------------------------------------------------ */
   return (
     <DashboardLayout>
-      <h2 className={styles.sectionTitle}>Manage MedConnect Users</h2>
+      <h2 className={styles.sectionTitle}>{t('admin.manageUsers')}</h2>
       <hr />
       <div className={styles.container}>
         {/* Search & role filter */}
         <div className={styles.controls}>
           <input
             type="text"
-            placeholder="Search by name or email…"
+            placeholder={t('admin.searchByNameOrEmail')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className={styles.searchInput}
           />
 
           <div className={styles.roleTabs}>
-            {["All", "Patient", "Doctor", "Admin", "Pharmacist"].map((r) => (
+            {roleOptions.map((r) => (
               <button
-                key={r}
-                onClick={() => setRoleFilter(r)}
-                className={roleFilter === r ? styles.activeTab : styles.tab}
+                key={r.value}
+                onClick={() => setRoleFilter(r.value)}
+                className={roleFilter === r.value ? styles.activeTab : styles.tab}
               >
-                {r}
+                {r.label}
               </button>
             ))}
           </div>
@@ -215,10 +225,9 @@ export default function ManageUsers() {
                           value={editData.role}
                           onChange={handleChange}
                         >
-                          <option value="Patient">Patient</option>
-                          <option value="Doctor">Doctor</option>
-                          <option value="Admin">Admin</option>
-                          <option value="Pharmacist">Pharmacist</option>
+                          {roleOptions.filter(r => r.value !== 'All').map((r) => (
+                            <option key={r.value} value={r.value}>{r.label}</option>
+                          ))}
                         </select>
                       ) : (
                         u.role || "-"
@@ -357,13 +366,13 @@ export default function ManageUsers() {
                         onClick={handleSave}
                         className={styles.saveBtn}
                       >
-                        Save
+                        {t('admin.save')}
                       </button>
                       <button
                         onClick={handleCancel}
                         className={styles.cancelBtn}
                       >
-                        Cancel
+                        {t('admin.cancel')}
                       </button>
                     </>
                   ) : (
@@ -372,13 +381,13 @@ export default function ManageUsers() {
                         onClick={() => handleEdit(u)}
                         className={styles.editBtn}
                       >
-                        Edit
+                        {t('admin.edit')}
                       </button>
                       <button
                         onClick={() => handleDelete(u._id)}
                         className={styles.deleteBtn}
                       >
-                        Delete
+                        {t('admin.delete')}
                       </button>
                     </>
                   )}

@@ -6,5 +6,10 @@
     "start": "concurrently \"npm run server\" \"npm run client\"",
     "client": "npm start --prefix Client",
     "server": "npm run dev --prefix Server"
+  },
+  "dependencies": {
+    "i18next": "^23.7.16",
+    "i18next-browser-languagedetector": "^7.2.0",
+    "react-i18next": "^14.0.5"
   }
 }

@@ -13,8 +13,10 @@ import styles from "./css/helpCenter.module.css";
 
 // Import the shared data module
 import { faqData, getAllFAQs } from "./data/faqData";
+import { useTranslation } from 'react-i18next';
 
 const HelpCenter = () => {
+    const { t } = useTranslation();
     const [searchQuery, setSearchQuery] = useState("");
     const [activeCategory, setActiveCategory] = useState("general");
     const [expandedQuestions, setExpandedQuestions] = useState({});
@@ -61,9 +63,9 @@ const HelpCenter = () => {
 
     const getCategoryTitle = (categoryKey) => {
         const titles = {
-            general: "General Questions",
-            appointments: "Appointments",
-            account: "Account Settings",
+            general: t('faq.general'),
+            appointments: t('faq.appointments'),
+            account: t('faq.account'),
             payments: "Payments & Billing",
             technical: "Technical Support",
         };
@@ -74,15 +76,15 @@ const HelpCenter = () => {
         <DashboardLayout>
             <div className={styles.faqWrapper}>
                 <div className={styles.faqHeader}>
-                    <h1>Frequently Asked Questions</h1>
-                    <p>Browse by category, or search for answers below.</p>
+                    <h1>{t('faq.title')}</h1>
+                    <p>{t('faq.subtitle')}</p>
                     <hr className={styles.sectionDivider} />
 
                     <div className={styles.faqSearchBox}>
                         <Search size={18} className={styles.searchIcon} />
                         <input
                             type="text"
-                            placeholder="Search for answers..."
+                            placeholder={t('faq.searchPlaceholder')}
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
@@ -92,7 +94,7 @@ const HelpCenter = () => {
                 <div className={styles.faqBody}>
                     {/* Sidebar: Categories */}
                     <div className={styles.faqSidebar}>
-                        <h3>Categories</h3>
+                        <h3>{t('faq.categories')}</h3>
                         {Object.keys(faqData).map((catKey) => (
                             <button
                                 key={catKey}
@@ -143,12 +145,12 @@ const HelpCenter = () => {
                         )}
 
                         <div className={styles.faqContactBox}>
-                            <h3>Still need help?</h3>
+                            <h3>{t('faq.stillNeedHelp')}</h3>
                             <a href="#">
-                                <MessageCircle size={16} /> Open Chat Bot
+                                <MessageCircle size={16} /> {t('faq.openChatBot')}
                             </a>
                             <hr />
-                            <p>Or contact us via:</p>
+                            <p>{t('faq.orContactUs')}</p>
                             <ul>
                                 <li>
                                     <Mail size={16} /> support@medconnect.com

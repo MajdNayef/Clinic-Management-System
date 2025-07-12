@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import styles from './reports.module.css';
 import { FaDownload, FaHistory, FaSearch } from 'react-icons/fa';
 import axios from 'axios';
+import { useTranslation } from 'react-i18next';
 
 const AppointmentReports = () => {
+    const { t } = useTranslation();
     const [appointment, setAppointment] = useState(null);
     const [generatedReports, setGeneratedReports] = useState([]);
     const [searchId, setSearchId] = useState('');
@@ -43,7 +45,7 @@ const AppointmentReports = () => {
 
     return (
         <div className={styles.reportContainer}>
-            <h2 className={styles.sectionTitle}>Appointment Report</h2>
+            <h2 className={styles.sectionTitle}>{t('admin.appointmentReport')}</h2>
 
             {/* Search by Appointment ID */}
             <div className={styles.searchRow}>
@@ -55,7 +57,7 @@ const AppointmentReports = () => {
                     className={styles.searchInput}
                 />
                 <button onClick={fetchAppointmentById} className={styles.searchBtn}>
-                    <FaSearch /> Search
+                    <FaSearch /> {t('common.search')}
                 </button>
             </div>
 
@@ -63,8 +65,8 @@ const AppointmentReports = () => {
             {/* Appointment Info */}
             {appointment && (
                 <div className={styles.singleResult}>
-                    <p><strong>Patient:</strong> {appointment.patient?.first_name} {appointment.patient?.last_name}</p>
-                    <p><strong>Doctor:</strong> {appointment.doctor?.first_name} {appointment.doctor?.last_name}</p>
+                    <p><strong>{t('admin.patient')}:</strong> {appointment.patient?.first_name} {appointment.patient?.last_name}</p>
+                    <p><strong>{t('admin.doctor')}:</strong> {appointment.doctor?.first_name} {appointment.doctor?.last_name}</p>
                     <p><strong>Appointment Type :</strong> {appointment.appointment?.appointment_type || 'N/A'}</p>
                     <p><strong>Date:</strong> {appointment.appointment?.date || 'N/A'}</p>
                     <p><strong>Time:</strong> {appointment.appointment?.time || 'N/A'}</p>
@@ -81,7 +83,7 @@ const AppointmentReports = () => {
             )}
 
             {/* History */}
-            <h3 className={styles.sectionSubtitle}><FaHistory /> Generated PDFs</h3>
+            <h3 className={styles.sectionSubtitle}><FaHistory /> {t('admin.generatedPDFs')}</h3>
             <div className={styles.historyList}>
                 {generatedReports.length > 0 ? generatedReports.map((r) => (
                     <div key={r._id} className={styles.historyItem}>

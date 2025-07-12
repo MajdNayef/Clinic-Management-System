@@ -5,8 +5,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
 import DashboardLayout from "./layout/DashboardLayout";
 import styles from "./css/services.module.css";
+import { useTranslation } from 'react-i18next';
 
 export default function Services() {
+  const { t } = useTranslation();
   const [departments, setDepartments] = useState([]);
   const [expanded, setExpanded] = useState(null);
 
@@ -19,10 +21,10 @@ export default function Services() {
           if (!acc[spec]) acc[spec] = [];
           acc[spec].push({
             id: d._id,
-            name: `Dr. ${d.first_name} ${d.last_name}`,
+            name: t('services.doctorName', { first: d.first_name, last: d.last_name }),
             initials: d.first_name[0] + d.last_name[0],
             credentials: d.bio || "",
-            status: "Available",          // or derive from another API
+            status: t('services.available'),          // or derive from another API
             next: "TBD"                 // placeholder
           });
           return acc;
@@ -33,7 +35,7 @@ export default function Services() {
           id: spec.toLowerCase().replace(/\s+/g, "-"),
           name: spec,
           icon: <User />,            // you can swap icons per spec if you like
-          description: `Our ${spec.toLowerCase()} team specializes in ${spec.toLowerCase()}.`,
+          description: t('services.departmentDescription', { department: spec }),
           doctors: docs
         })));
       })
@@ -43,10 +45,8 @@ export default function Services() {
   return (
     <DashboardLayout>
       <div className={styles.servicesSection}>
-        <h1 className={styles.pageTitle}>Our Medical Departments</h1>
-        <p className={styles.pageIntro}>
-          Explore our specialties and meet our expert physicians.
-        </p>
+        <h1 className={styles.pageTitle}>{t('services.ourMedicalDepartments')}</h1>
+        <p className={styles.pageIntro}>{t('services.pageIntro')}</p>
 
         <div className={styles.departmentGrid}>
           {departments.map((d) => (
@@ -83,7 +83,7 @@ export default function Services() {
                             <p className={styles.credentials}>{doc.credentials}</p>
                             <p>
                               <span className={styles.available}>{doc.status}</span> &nbsp;
-                              <small>Next: {doc.next}</small>
+                              <small>{t('services.next')}: {doc.next}</small>
                             </p>
                           </div>
                         </div>

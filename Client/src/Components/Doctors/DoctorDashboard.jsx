@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
     Clock,
     Calendar,
@@ -19,6 +20,7 @@ export default function DoctorDashboard() {
     /* ─────────────────── state ─────────────────── */
     const [allAppts, setAllAppts] = useState([]);
     const [loading, setLoading] = useState(true);
+    const { t } = useTranslation();
 
     const [confirmAction, setConfirmAction] = useState({
         show: false,
@@ -43,7 +45,7 @@ export default function DoctorDashboard() {
 
     const navigate = useNavigate();
 
-    /* ───────────────── fetch today’s appointments ───────────────── */
+    /* ───────────────── fetch today's appointments ───────────────── */
     useEffect(fetchData, []);
     function fetchData() {
         setLoading(true);
@@ -65,7 +67,7 @@ export default function DoctorDashboard() {
             });
             fetchData();
         } catch {
-            alert("Could not update status");
+            alert(t("doctor.couldNotUpdateStatus"));
         } finally {
             setConfirmAction({ show: false, id: null, status: "" });
         }
@@ -77,7 +79,7 @@ export default function DoctorDashboard() {
         const doctorId = appt.doctor_id;
         const patientId = appt.patient_id;
         if (!appointmentId || !doctorId || !patientId) {
-            return alert("Missing IDs; cannot start chat");
+            return alert(t("doctor.missingIdsCannotStartChat"));
         }
         try {
             const { data } = await axios.post("/api/chat-sessions", { appointmentId });
@@ -91,7 +93,7 @@ export default function DoctorDashboard() {
             );
         } catch (err) {
             console.error("live chat error", err);
-            alert("Could not start live chat");
+            alert(t("doctor.couldNotStartLiveChat"));
         }
     }
 
@@ -138,10 +140,10 @@ export default function DoctorDashboard() {
         try {
             // ← updated path here
             await axios.post(`/api/medical-reports/reports/patient`, payload);
-            alert("Medical report saved ✔");
+            alert(t("doctor.medicalReportSaved"));
             closeReportModal();
         } catch {
-            alert("Could not save report");
+            alert(t("doctor.couldNotSaveReport"));
         }
     }
 
@@ -159,7 +161,7 @@ export default function DoctorDashboard() {
             setTimeout(() => URL.revokeObjectURL(url), 1000 * 60);
         } catch (err) {
             console.error("Could not open report in new tab:", err);
-            alert("Could not open report");
+            alert(t("doctor.couldNotOpenReport"));
         }
     }
 
@@ -176,7 +178,7 @@ export default function DoctorDashboard() {
             setTimeout(() => URL.revokeObjectURL(url), 1000 * 60);
         } catch (err) {
             console.error("Could not open combined report:", err);
-            alert("Could not open all reports");
+            alert(t("doctor.couldNotOpenCombinedReport"));
         }
     }
 
@@ -199,14 +201,14 @@ export default function DoctorDashboard() {
     return (
         <DashboardLayout>
             <div className={styles.doctorDashboardContainer}>
-                <h2 className={styles.sectionTitle}>DMC Doctor Dashboard</h2>
+                <h2 className={styles.sectionTitle}>{t("doctor.doctorDashboard")}</h2>
                 <hr className={styles.divider} />
 
                 {/* Current Appointment */}
                 <section>
-                    <h3 className={styles.sectionTitle}>Current Appointment</h3>
+                    <h3 className={styles.sectionTitle}>{t("doctor.currentAppointment")}</h3>
                     {loading ? (
-                        <p>Loading…</p>
+                        <p>{t("common.loading")}</p>
                     ) : current ? (
                         <div className={styles.currentAppointmentCard}>
                             {current.patient_avatar ? (
@@ -251,14 +253,14 @@ export default function DoctorDashboard() {
                                     className={styles.actionBtn}
                                     onClick={() => openReportMenu(current)}
                                 >
-                                    Patient Medical Report
+                                    {t("doctor.patientMedicalReport")}
                                 </button>
                                 {current.appointment_type === "Virtual" && (
                                     <button
                                         className={styles.actionBtn}
                                         onClick={() => handleLiveChat(current)}
                                     >
-                                        Connect to Live Chat
+                                        {t("doctor.connectToLiveChat")}
                                     </button>
                                 )}
                                 <div className={styles.statusLegend}>
@@ -268,7 +270,7 @@ export default function DoctorDashboard() {
                                             handleActionClick(current._id, "Completed")
                                         }
                                     >
-                                        <Check size={14} /> Done
+                                        <Check size={14} /> {t("common.done")}
                                     </span>
                                     <span
                                         className={styles.actionClickable}
@@ -276,25 +278,25 @@ export default function DoctorDashboard() {
                                             handleActionClick(current._id, "Canceled")
                                         }
                                     >
-                                        <Cancel size={14} /> Canceled
+                                        <Cancel size={14} /> {t("common.canceled")}
                                     </span>
                                 </div>
                             </div>
                         </div>
                     ) : (
-                        <p>No current appointment</p>
+                        <p>{t("common.noCurrentAppointment")}</p>
                     )}
                 </section>
 
-                {/* Rest of Today’s Appointments */}
+                {/* Rest of Today's Appointments */}
                 <section>
                     <h3 className={styles.sectionTitle}>
-                        Rest of Today’s Appointments
+                        {t("doctor.restOfTodayAppointments")}
                     </h3>
                     {loading ? (
-                        <p>Loading…</p>
+                        <p>{t("common.loading")}</p>
                     ) : next.length === 0 ? (
-                        <p>No more appointments today</p>
+                        <p>{t("common.noMoreAppointments")}</p>
                     ) : (
                         <div className={styles.nextAppointmentsGrid}>
                             {next.map((appt) => (
@@ -348,20 +350,19 @@ export default function DoctorDashboard() {
                 <div className={styles.overlay}>
                     <div className={styles.confirmDialog}>
                         <p>
-                            Are you sure you want to mark this appointment as{" "}
-                            {confirmAction.status}?
+                            {t("doctor.areYouSureMarkAppointment")} {confirmAction.status}?
                         </p>
                         <button
                             onClick={confirmUpdateStatus}
                             className={styles.confirmBtn}
                         >
-                            Yes
+                            {t("common.yes")}
                         </button>
                         <button
                             onClick={() => setConfirmAction({ show: false })}
                             className={styles.cancelBtn}
                         >
-                            No
+                            {t("common.no")}
                         </button>
                     </div>
                 </div>
@@ -376,34 +377,34 @@ export default function DoctorDashboard() {
                         {reportModal.mode === "menu" && (
                             <>
                                 <h4 className={styles.modalTitle}>
-                                    Patient Medical Report
+                                    {t("doctor.patientMedicalReportTitle")}
                                 </h4>
                                 <p className={styles.modalSubtitle}>
-                                    What would you like to do?
+                                    {t("doctor.whatWouldYouLikeToDo")}
                                 </p>
                                 <button
                                     className={styles.optionBtn}
                                     onClick={startNewRecord}
                                 >
-                                    <PlusSquare size={16} /> Create New Record
+                                    <PlusSquare size={16} /> {t("doctor.createNewRecord")}
                                 </button>
                                 <button
                                     className={styles.optionBtn}
                                     onClick={viewList}
                                 >
-                                    <FileText size={16} /> View Previous Records
+                                    <FileText size={16} /> {t("doctor.viewPreviousRecords")}
                                 </button>
                                 <button
                                     className={styles.optionBtn}
                                     onClick={downloadAllReports}
                                 >
-                                    <Download size={16} /> Download All Records
+                                    <Download size={16} /> {t("doctor.downloadAllRecords")}
                                 </button>
                                 <button
                                     className={styles.modalCloseBtn}
                                     onClick={closeReportModal}
                                 >
-                                    Close
+                                    {t("common.close")}
                                 </button>
                             </>
                         )}
@@ -412,12 +413,12 @@ export default function DoctorDashboard() {
                         {reportModal.mode === "list" && (
                             <>
                                 <h4 className={styles.modalTitle}>
-                                    Previous Reports
+                                    {t("doctor.previousReports")}
                                 </h4>
                                 {prevLoading ? (
-                                    <p>Loading…</p>
+                                    <p>{t("common.loading")}</p>
                                 ) : previousReports.length === 0 ? (
-                                    <p>No reports yet</p>
+                                    <p>{t("common.noReportsYet")}</p>
                                 ) : (
                                     <ul
                                         style={{
@@ -469,7 +470,7 @@ export default function DoctorDashboard() {
                                             setReportModal((p) => ({ ...p, mode: "menu" }))
                                         }
                                     >
-                                        Back
+                                        {t("common.back")}
                                     </button>
                                 </div>
                             </>
@@ -479,14 +480,14 @@ export default function DoctorDashboard() {
                         {reportModal.mode === "form" && (
                             <>
                                 <h4 className={styles.modalTitle}>
-                                    New Medical Record
+                                    {t("doctor.newMedicalRecord")}
                                 </h4>
                                 <form
                                     className={styles.modalForm}
                                     onSubmit={submitNewReport}
                                 >
                                     <label className={styles.modalLabel}>
-                                        Diagnosis
+                                        {t("doctor.diagnosis")}
                                         <textarea
                                             required
                                             className={styles.modalTextarea}
@@ -500,7 +501,7 @@ export default function DoctorDashboard() {
                                         />
                                     </label>
                                     <label className={styles.modalLabel}>
-                                        Treatment
+                                        {t("doctor.treatment")}
                                         <textarea
                                             required
                                             className={styles.modalTextarea}
@@ -514,7 +515,7 @@ export default function DoctorDashboard() {
                                         />
                                     </label>
                                     <label className={styles.modalLabel}>
-                                        Prescription State
+                                        {t("doctor.prescriptionState")}
                                         <select
                                             className={styles.modalSelect}
                                             value={newReport.prescription_state}
@@ -525,9 +526,9 @@ export default function DoctorDashboard() {
                                                 })
                                             }
                                         >
-                                            <option value="Pending">Pending</option>
-                                            <option value="Issued">Issued</option>
-                                            <option value="Dispensed">Dispensed</option>
+                                            <option value="Pending">{t("common.pending")}</option>
+                                            <option value="Issued">{t("common.issued")}</option>
+                                            <option value="Dispensed">{t("common.dispensed")}</option>
                                         </select>
                                     </label>
                                     <div className={styles.modalBtnRow}>
@@ -535,7 +536,7 @@ export default function DoctorDashboard() {
                                             type="submit"
                                             className={styles.confirmBtn}
                                         >
-                                            Save
+                                            {t("common.save")}
                                         </button>
                                         <button
                                             type="button"
@@ -547,7 +548,7 @@ export default function DoctorDashboard() {
                                                 }))
                                             }
                                         >
-                                            Cancel
+                                            {t("common.cancel")}
                                         </button>
                                     </div>
                                 </form>

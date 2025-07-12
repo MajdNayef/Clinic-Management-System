@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { io } from 'socket.io-client';
 import styles from './css/liveChat.module.css';
 import { Send, Clock, Calendar } from 'react-feather';
+import { useTranslation } from 'react-i18next';
 
 const SOCKET_SERVER_URL =
     process.env.REACT_APP_SOCKET_URL || 'http://localhost:5000';
@@ -12,6 +13,7 @@ function useQuery() {
 }
 
 export default function LiveChat() {
+    const { t } = useTranslation();
     const query = useQuery();
     const sessionId = query.get('sessionId');
     const chatWith = decodeURIComponent(query.get('chatWith') || 'Chat');
@@ -90,12 +92,12 @@ export default function LiveChat() {
                 <div className={styles.chatAvatars}>
                     {doctorAvatar && <img src={doctorAvatar} alt="Doctor Avatar" className={styles.avatar} />}
                     {patientAvatar && <img src={patientAvatar} alt="Patient Avatar" className={styles.avatar} />}
-                <h2>Chat with {chatWith}</h2> 
+                <h2>{t('liveChat_chatWith')}: {chatWith}</h2> 
                 </div>
                 <div className={styles.chatMeta}>
                     <span className={styles.chatTime}><Clock size={14} /> {appointmentTime}</span>
                     <span className={styles.chatDate}><Calendar size={14} /> {appointmentDate}</span>
-                    <span className={styles.liveTag}>Live Chat</span>
+                    <span className={styles.liveTag}>{t('liveChat')}</span>
                 </div>
             </div>
 
@@ -122,7 +124,7 @@ export default function LiveChat() {
                     value={newMessage}
                     onChange={e => setNewMessage(e.target.value)}
                     onKeyDown={e => e.key === 'Enter' && sendMessage()}
-                    placeholder="Type your message…"
+                    placeholder={t('liveChat_typeYourMessage')}
                 />
                 <button onClick={sendMessage}><Send size={18} /></button>
             </div>

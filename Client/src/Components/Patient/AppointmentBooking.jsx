@@ -5,12 +5,14 @@ import { FiX, FiClock, FiCalendar, FiUser } from "react-icons/fi";
 import styles from "./css/appointmentbooking.module.css";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 
 
 axios.defaults.baseURL =
     process.env.REACT_APP_API_URL || "http://localhost:5000";
 
 export default function AppointmentBooking() {
+    const { t } = useTranslation();
     // --- appointment type (matches API expectations) ---
     const [appointmentType, setAppointmentType] = useState("In-Person");
 
@@ -29,6 +31,11 @@ export default function AppointmentBooking() {
     const [time, setTime] = useState("");
     const [confirmationMessage, setConfirmationMessage] = useState(""); // Add state for confirmation message
     const navigate = useNavigate();                       // ← hook
+
+    const appointmentTypes = [
+        { value: 'In-Person', label: t('appointments.inPerson') },
+        { value: 'Virtual', label: t('appointments.virtual') }
+    ];
 
     // 1️⃣ load doctor list
     useEffect(() => {
@@ -86,8 +93,8 @@ export default function AppointmentBooking() {
         <DashboardLayout>
             <div className={styles.appointmentContainer}>
                 <div className={styles.appointmentHeader}>
-                    <h1>Book an Appointment</h1>
-                    <p>Schedule your visit with our healthcare professionals</p>
+                    <h1>{t('appointments.bookTitle')}</h1>
+                    <p>{t('appointments.bookSubtitle')}</p>
                     <hr className={styles.sectionDivider} />
                 </div>
 
@@ -95,22 +102,22 @@ export default function AppointmentBooking() {
 
                     {/* Appointment Type */}
                     <div className={styles.appointmentTypeSelector}>
-                        <h2>Select Appointment Type</h2>
+                        <h2>{t('appointments.selectType')}</h2>
                         <div className={styles.typeButtons}>
-                            {["In-Person", "Virtual"].map(type => (
+                            {appointmentTypes.map(type => (
                                 <button
-                                    key={type}
+                                    key={type.value}
                                     type="button"
-                                    className={`${styles.typeButton} ${appointmentType === type ? styles.active : ""}`}
-                                    onClick={() => setAppointmentType(type)}
+                                    className={`${styles.typeButton} ${appointmentType === type.value ? styles.active : ""}`}
+                                    onClick={() => setAppointmentType(type.value)}
                                 >
                                     <span className="icon">
-                                        {type === "In-Person" ? "🏥" : "💻"}
+                                        {type.value === "In-Person" ? "🏥" : "💻"}
                                     </span>
                                     <span>
-                                        {type === "In-Person"
-                                            ? "In-Person Visit"
-                                            : "Virtual Consultation"}
+                                        {type.value === "In-Person"
+                                            ? t('appointments.inPersonVisit')
+                                            : t('appointments.virtualConsultation')}
                                     </span>
                                 </button>
                             ))}
@@ -121,7 +128,7 @@ export default function AppointmentBooking() {
 
                         {/* Select Doctor */}
                         <div className={styles.formSection}>
-                            <h2>Select Doctor</h2>
+                            <h2>{t('appointments.selectDoctor')}</h2>
                             <div className={styles.doctorsList}>
                                 {doctors.map(d => {
                                     const displayName = d.first_name && d.last_name
@@ -154,7 +161,7 @@ export default function AppointmentBooking() {
 
                         {/* Select Date */}
                         <div className={styles.formSection}>
-                            <h2>Select Date</h2>
+                            <h2>{t('appointments.selectDate')}</h2>
                             <div className={styles.dateInput}>
                                 <span className="icon">📅</span>
                                 <input
@@ -169,7 +176,7 @@ export default function AppointmentBooking() {
 
                         {/* Select Time */}
                         <div className={styles.formSection}>
-                            <h2>Select Time</h2>
+                            <h2>{t('appointments.selectTime')}</h2>
                             {loadingSlots ? (
                                 <p>Loading…</p>
                             ) : (
@@ -194,36 +201,36 @@ export default function AppointmentBooking() {
 
                         {/* Summary */}
                         <div className={styles.formSection}>
-                            <h2>Appointment Details</h2>
+                            <h2>{t('appointments.details')}</h2>
                             <div className={styles.appointmentSummary}>
                                 {selectedDoctor && date && time ? (
                                     <>
                                         <div className={styles.summaryItem}>
                                             <span className="icon">👨‍⚕️</span>
-                                            <span><strong>Doctor:</strong> {selectedDoctor}</span>
+                                            <span><strong>{t('appointments.doctor')}:</strong> {selectedDoctor}</span>
                                         </div>
                                         <div className={styles.summaryItem}>
                                             <span className="icon">📅</span>
-                                            <span><strong>Date:</strong> {date}</span>
+                                            <span><strong>{t('appointments.date')}:</strong> {date}</span>
                                         </div>
                                         <div className={styles.summaryItem}>
                                             <span className="icon">⏰</span>
-                                            <span><strong>Time:</strong> {time}</span>
+                                            <span><strong>{t('appointments.time')}:</strong> {time}</span>
                                         </div>
                                         <div className={styles.summaryItem}>
                                             <span className="icon">
                                                 {appointmentType === "In-Person" ? "🏥" : "💻"}
                                             </span>
                                             <span>
-                                                <strong>Type:</strong>{" "}
+                                                <strong>{t('appointments.type')}:</strong>{" "}
                                                 {appointmentType === "In-Person"
-                                                    ? "In-Person Visit"
-                                                    : "Virtual Consultation"}
+                                                    ? t('appointments.inPersonVisit')
+                                                    : t('appointments.virtualConsultation')}
                                             </span>
                                         </div>
                                     </>
                                 ) : (
-                                    <p className={styles.noSelection}>Please complete your selection</p>
+                                    <p className={styles.noSelection}>{t('appointments.completeSelection')}</p>
                                 )}
                             </div>
                         </div>
@@ -233,7 +240,7 @@ export default function AppointmentBooking() {
                             className={styles.bookButton}
                             disabled={!selectedDoctor || !date || !time}
                         >
-                            Book Appointment
+                            {t('appointments.bookBtn')}
                         </button>
                     </form>
 

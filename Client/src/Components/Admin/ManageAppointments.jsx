@@ -4,10 +4,12 @@ import axios from "axios";
 import DashboardLayout from "./layout/DashboardLayout";
 import styles from "./css/manageappointments.module.css";
 import Select from "react-select";
+import { useTranslation } from 'react-i18next';
 
 export default function ManageAppointments() {
     const [appointments, setAppointments] = useState([]);
     const [loading, setLoading] = useState(true);
+    const { t } = useTranslation();
 
     /* filters & search */
     const [search, setSearch] = useState("");
@@ -124,7 +126,7 @@ export default function ManageAppointments() {
     /* ─────────────────────────────────────────── render ─── */
     return (
         <DashboardLayout>
-            <h2 className={styles.sectionTitle}>Manage Appointments</h2>
+            <h2 className={styles.sectionTitle}>{t('admin.manageAppointments')}</h2>
             <hr />
 
             {/* ------------- Controls ------------- */}
@@ -134,7 +136,7 @@ export default function ManageAppointments() {
                     <div style={{ flexGrow: 1 }}>
                         <input
                             type="text"
-                            placeholder="Search by doctor or patient name..."
+                            placeholder={t('admin.searchByDoctorOrPatient')}
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             className={styles.searchInput}

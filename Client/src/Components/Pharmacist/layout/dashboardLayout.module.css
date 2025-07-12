@@ -1,0 +1,381 @@
+/* Reset + General Styling */
+body {
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    background-color: #f5f7fa;
+    color: #333;
+    box-sizing: border-box;
+}
+
+h1,
+h2,
+h3,
+h4 {
+    margin: 0;
+}
+
+/* Layout */
+.dashboardWrapper {
+    font-family: "Trebuchet MS", sans-serif;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.dashboardMain {
+    flex: 1;
+    padding: 60px 80px;
+    background-color: #ffffff;
+    overflow-y: auto;
+}
+
+
+.dashboardBody {
+    display: flex;
+    margin-top: 70px;
+    /* header height */
+    margin-left: 300px;
+    /* sidebar width */
+    height: calc(100vh - 70px);
+    overflow-y: auto;
+}
+
+/* Header Styling */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 11;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #ffffff;
+    padding: 10px 20px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 15px;
+    font-weight: bold;
+    color: #333;
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+}
+
+.logoImg {
+    height: 50px;
+    width: auto;
+}
+
+.navLinks {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 30px;
+    font-weight: 500;
+    flex: 1;
+    margin-left: 50px;
+    /* 👈 Adjust this value as needed */
+
+    /* take up space in the middle */
+}
+
+
+.navLinks a {
+    color: #333;
+    text-decoration: none;
+    padding: 10px 30px;
+    border-bottom: 3px solid transparent;
+}
+
+.navLinks a.active {
+    border-bottom: 3px solid #000;
+}
+
+.headerControls {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.logoutButton {
+    background-color: #4a5568;
+    color: white;
+    padding: 6px 14px;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.languageSelector select {
+    padding: 5px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    background-color: #ebebeb;
+    font-size: 14px;
+}
+
+/* Sidebar Styling */
+.sidebar {
+    position: fixed;
+    top: 70px;
+    /* or the height of your navbar */
+    left: 0;
+    width: 300px;
+    height: calc(100vh - 70px);
+    /* fill full height below navbar */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    /* pushes footer to bottom */
+    background-color: #f5f7fa;
+    padding: 30px 20px;
+    border-right: 1px solid #ddd;
+    box-sizing: border-box;
+    overflow-y: auto;
+    gap: 20px;
+}
+
+
+.sidebarHeaderRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    font-weight: bold;
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.profileDetails {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    /* keep horizontal alignment */
+    justify-content: flex-start;
+    gap: 15px;
+    width: 100%;
+}
+
+.profileText {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-top: -5px;
+    /* ✨ this centers the text vertically */
+    gap: 5px;
+}
+
+.avatarCircle {
+    background-color: #718096;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    flex-shrink: 0;
+}
+
+.username {
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.userEmail {
+    font-size: 12px;
+    color: gray;
+    margin-top: -2px;
+}
+
+.sidebarDivider {
+    margin: 20px auto 10px;
+    width: 100%;
+    border: none;
+    border-top: 1px solid #ccc;
+}
+
+.sidebarNav {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    flex-grow: 1;
+    /* push footer down */
+}
+
+.sidebarNav a {
+    text-decoration: none;
+    color: #333;
+    display: flex;
+    align-items: center;
+    font-size: 15px;
+    gap: 10px;
+}
+
+.sidebarNav a.active {
+    font-weight: bold;
+}
+
+.sidebarFooter {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    font-size: 14px;
+}
+
+.sidebarFooter a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #333;
+    text-decoration: none;
+}
+
+.notificationToggle {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Toggle switch */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 34px;
+    height: 18px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 18px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 12px;
+    width: 12px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked+.slider {
+    background-color: #4a5568;
+}
+
+input:checked+.slider:before {
+    transform: translateX(16px);
+}
+
+.dashboardFooter {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #ffffff;
+    padding: 8px 14px;
+    font-size: 14px;
+    color: #333;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    z-index: 200;
+    cursor: pointer;
+    border: 1px solid #ddd;
+}
+
+.dashboardFooter:hover {
+    background-color: #f1f2f4;
+}
+
+.sidebarNotifications {
+    background-color: #f9fafb;
+    padding: 10px;
+    /* margin-top: 10px; */
+    margin: auto -20px !important;
+    /* margin-bottom: 50px; */
+    border-radius: 10px;
+    border: 2px solid #e5e7eb;
+}
+
+.sidebarNotifications h4 {
+    font-size: 14px;
+    margin-bottom: 10px;
+    color: #374151;
+    font-weight: 600;
+}
+
+.notificationList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 13.5px;
+    color: #4b5563;
+}
+
+.notificationList li {
+    margin-bottom: 6px;
+}
+
+
+.notificationPopup {
+    position: fixed;
+    top: 125x;
+    left: 275px;
+    width: 260px;
+    background-color: rgba(255, 255, 255, 0.719);
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    padding: 15px;
+    z-index: 100;
+}
+
+.notificationPopup h4 {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.notificationList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 13px;
+    color: #4b5563;
+}
+
+.notificationList li {
+    margin-bottom: 8px;
+}
+
+.avatarImg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}

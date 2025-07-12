@@ -1,0 +1,157 @@
+/* RTL Support for Arabic */
+[dir="rtl"] {
+  direction: rtl;
+  text-align: right;
+}
+
+[dir="rtl"] .nav-links {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .headerControls {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .language-selector {
+  margin-left: 0;
+  margin-right: 20px;
+}
+
+[dir="rtl"] .sidebar {
+  right: 0;
+  left: auto;
+  border-right: none;
+  border-left: 1px solid #ddd;
+}
+
+[dir="rtl"] .dashboardBody {
+  margin-left: 0;
+  margin-right: 300px;
+}
+
+[dir="rtl"] .navLinks {
+  margin-left: 0;
+  margin-right: 50px;
+}
+
+[dir="rtl"] .logo {
+  margin-right: 0;
+  margin-left: 0;
+}
+
+[dir="rtl"] .profileDetails {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .sidebarHeaderRow {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .modalBtnRow {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .actionsRow {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .statusLegend {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .input-row {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .featuresGrid {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .nextAppointmentsGrid {
+  flex-direction: row-reverse;
+}
+
+/* RTL for form elements */
+[dir="rtl"] input,
+[dir="rtl"] textarea,
+[dir="rtl"] select {
+  text-align: right;
+}
+
+[dir="rtl"] .modalLabel {
+  text-align: right;
+}
+
+[dir="rtl"] .modalTitle,
+[dir="rtl"] .modalSubtitle {
+  text-align: center;
+}
+
+/* RTL for buttons */
+[dir="rtl"] .actionBtn,
+[dir="rtl"] .confirmBtn,
+[dir="rtl"] .cancelBtn,
+[dir="rtl"] .optionBtn {
+  text-align: center;
+}
+
+/* RTL for navigation */
+[dir="rtl"] .navLinks a {
+  border-bottom: 3px solid transparent;
+}
+
+[dir="rtl"] .navLinks a.active {
+  border-bottom: 3px solid #000;
+}
+
+/* RTL for sidebar links */
+[dir="rtl"] .sidebarLink {
+  text-align: right;
+}
+
+[dir="rtl"] .sidebarLink svg {
+  margin-left: 8px;
+  margin-right: 0;
+}
+
+/* RTL for notifications */
+[dir="rtl"] .notificationPopup {
+  right: auto;
+  left: 0;
+}
+
+/* RTL for modals */
+[dir="rtl"] .reportModal,
+[dir="rtl"] .confirmDialog {
+  text-align: center;
+}
+
+/* RTL for lists */
+[dir="rtl"] ul {
+  padding-right: 0;
+  padding-left: 20px;
+}
+
+[dir="rtl"] li {
+  text-align: right;
+}
+
+/* RTL for meta information */
+[dir="rtl"] .metaRow {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .metaRow svg {
+  margin-left: 4px;
+  margin-right: 0;
+}
+
+/* RTL for tags */
+[dir="rtl"] .tag {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .tag svg {
+  margin-left: 4px;
+  margin-right: 0;
+} 
